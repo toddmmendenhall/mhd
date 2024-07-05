@@ -4,6 +4,8 @@
 
 #include <memory>
 
+namespace MHD {
+
 class Logger;
 
 class Calc {
@@ -16,3 +18,5 @@ public:
 private:
     std::unique_ptr<Logger> m_logger;
 };
+
+}

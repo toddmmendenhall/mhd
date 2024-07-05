@@ -5,6 +5,8 @@
 
 #include <memory>
 
+namespace MHD {
+
 Calc::Calc() {
     m_logger = std::make_unique<Logger>();
 }
@@ -17,4 +19,6 @@ Error Calc::Run() {
         return Error::SUCCESS;
     });
     return Error::SUCCESS;
+}
+
 }
