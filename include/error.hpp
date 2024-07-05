@@ -1,5 +1,5 @@
 #pragma once
 
-enum class Exception {
+enum class Error {
     SUCCESS = 0,
 };

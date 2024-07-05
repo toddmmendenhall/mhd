@@ -1,20 +1,20 @@
-#include "api_safe.hpp"
+#include "error.hpp"
 #include "exception.hpp"
 #include "logger.hpp"
+#include "safe.hpp"
 
 #include <functional>
 #include <memory>
 #include <stdexcept>
 
-Exception api_safe(std::unique_ptr<Logger> const& logger, std::function<Exception()> api_unsafe) {
+Error safe(std::unique_ptr<Logger> const& logger, std::function<Error()> const unsafe) {
     try {
-        api_unsafe();
+        return unsafe();
     } catch (Exception const& e) {
-        logger.Error(e);
+        logger.LogError(e);
     } catch (std::exception const& e) {
-        logger.Error(e);
+        logger.LogError(e);
     } catch (...) {
-        logger.Error(UNHANDLED_EXCEPTION);
         std::cout << "UNHANDLED EXCEPTION";
     }
     return SUCCESS;
