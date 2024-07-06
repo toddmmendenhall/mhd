@@ -1,0 +1,14 @@
+#pragma once
+
+namespace MHD {
+
+class enum
+
+class Profile {
+public:
+    Profile();
+    ~Profile();
+private:
+};
+
+}

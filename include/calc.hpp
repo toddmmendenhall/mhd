@@ -1,6 +1,7 @@
 #pragma once
 
 #include "error.hpp"
+#include "profile.hpp"
 
 #include <memory>
 
@@ -17,6 +18,7 @@ public:
 
 private:
     std::unique_ptr<Logger> m_logger;
+    std::unique_ptr<Profile> m_profile;
 };
 
 }

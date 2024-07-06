@@ -9,6 +9,7 @@ namespace MHD {
 
 Calc::Calc() {
     m_logger = std::make_unique<Logger>();
+    m_profile = std::make_unique<Profile>();
 }
 
 Calc::~Calc() {}
