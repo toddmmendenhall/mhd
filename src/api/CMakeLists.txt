@@ -1,13 +1,18 @@
 # Accumulate sources
 set(sources calc.cpp
+            error.cpp
+            exception.cpp
             grid.cpp
-            profile.cpp)
+            logger.cpp
+            profile.cpp
+            safe.cpp)
 
 # Set public include dir
 set(include_dir ${CMAKE_SOURCE_DIR}/include)
 
 # Accumulate public includes
 set(includes ${include_dir}/calc.hpp
+             ${include_dir}/error.hpp
              ${include_dir}/grid.hpp
              ${include_dir}/profile.hpp)
 

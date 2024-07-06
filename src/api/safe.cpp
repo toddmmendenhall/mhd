@@ -4,18 +4,23 @@
 #include "safe.hpp"
 
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <stdexcept>
 
-Error safe(std::unique_ptr<Logger> const& logger, std::function<Error()> const unsafe) {
+namespace MHD {
+
+Error safe(std::unique_ptr<Logger> const& logger, std::function<Error()> const& unsafe) {
     try {
         return unsafe();
-    } catch (Exception const& e) {
-        logger.LogError(e);
-    } catch (std::exception const& e) {
-        logger.LogError(e);
+    } catch (Exception const& exception) {
+        logger->LogError(exception);
+    } catch (std::exception const& exception) {
+        logger->LogError(exception);
     } catch (...) {
         std::cout << "UNHANDLED EXCEPTION";
     }
-    return SUCCESS;
+    return Error::SUCCESS;
+}
+
 }

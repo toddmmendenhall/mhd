@@ -8,6 +8,6 @@
 
 namespace MHD {
 
-Error safe(std::unique_ptr<Logger> const& logger, std::function<Error()> const unsafe);
+Error safe(std::unique_ptr<Logger> const& logger, std::function<Error()> const& unsafe);
 
 }
