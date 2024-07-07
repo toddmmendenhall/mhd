@@ -1,12 +1,11 @@
 var searchData=
 [
-  ['geometry_16',['Geometry',['../namespaceMHD.html#a57ac39a6998c7912b3aa0dd77ea55bdf',1,'MHD']]],
-  ['getgridboundaryconditions_17',['GetGridBoundaryConditions',['../classMHD_1_1Profile.html#a445229ec6796fed5c36a6a8a8a6ea8e3',1,'MHD::Profile']]],
-  ['getgriddimension_18',['GetGridDimension',['../classMHD_1_1Profile.html#ab573862adea645b31d31e3a410bba053',1,'MHD::Profile']]],
-  ['getgridgeometry_19',['GetGridGeometry',['../classMHD_1_1Profile.html#a3ed0286f2b9997877c237f7def607b5e',1,'MHD::Profile']]],
-  ['getgridlimits_20',['GetGridLimits',['../classMHD_1_1Profile.html#a41e1afb678dca020cdfbbb8e44c7d488',1,'MHD::Profile']]],
-  ['grid_21',['Grid',['../classMHD_1_1Grid.html#a1b8b4c481d8c2208eab51901d94f2d6e',1,'MHD::Grid::Grid()'],['../classMHD_1_1Grid.html',1,'MHD::Grid']]],
-  ['grid_2ecpp_22',['grid.cpp',['../grid_8cpp.html',1,'']]],
-  ['grid_2ehpp_23',['grid.hpp',['../grid_8hpp.html',1,'']]],
-  ['gridprofile_24',['GridProfile',['../structMHD_1_1GridProfile.html',1,'MHD']]]
+  ['error_18',['Error',['../namespaceMHD.html#ac4a6824739e4c5a0a5f180f423520ade',1,'MHD']]],
+  ['error_2ecpp_19',['error.cpp',['../error_8cpp.html',1,'']]],
+  ['error_2ecpp_2eo_2ed_20',['error.cpp.o.d',['../error_8cpp_8o_8d.html',1,'']]],
+  ['error_2ehpp_21',['error.hpp',['../error_8hpp.html',1,'']]],
+  ['exception_22',['Exception',['../classMHD_1_1Exception.html#a3e2ea7684a7d181020b99b31e8c69dc0',1,'MHD::Exception::Exception()'],['../classMHD_1_1Exception.html',1,'MHD::Exception']]],
+  ['exception_2ecpp_23',['exception.cpp',['../exception_8cpp.html',1,'']]],
+  ['exception_2ecpp_2eo_2ed_24',['exception.cpp.o.d',['../exception_8cpp_8o_8d.html',1,'']]],
+  ['exception_2ehpp_25',['exception.hpp',['../exception_8hpp.html',1,'']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['profile_111',['Profile',['../classMHD_1_1Profile.html#ada2a3c3b399c36c5b2104e0e05e7ca3e',1,'MHD::Profile']]]
+  ['norm_147',['Norm',['../classVec3.html#a35592ba39fef1023911e4a2806286876',1,'Vec3']]],
+  ['normsquared_148',['NormSquared',['../classVec3.html#a59e4576ad4160fad1d77d399f2a12370',1,'Vec3']]]
 ];

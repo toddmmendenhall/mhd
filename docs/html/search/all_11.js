@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['_7ecalc_61',['~Calc',['../classMHD_1_1Calc.html#adc50803a310e686676336d0f356a7029',1,'MHD::Calc']]],
-  ['_7egrid_62',['~Grid',['../classMHD_1_1Grid.html#ae1acf1cea680b153bafc1b5d446ae7cd',1,'MHD::Grid']]],
-  ['_7elogger_63',['~Logger',['../classMHD_1_1Logger.html#a44cd90e64658a5ae6905247e5b110c14',1,'MHD::Logger']]],
-  ['_7eprofile_64',['~Profile',['../classMHD_1_1Profile.html#a6fe34897441787ed3a2a7f6c765f47c4',1,'MHD::Profile']]],
-  ['_7evec3_65',['~Vec3',['../classVec3.html#a03c0bc08173339ae406ce1e1bc194aee',1,'Vec3']]]
+  ['vec3_83',['Vec3',['../classVec3.html',1,'Vec3'],['../classVec3.html#aeecf02c008ca1e3a1695d8962a5b24da',1,'Vec3::Vec3()=default'],['../classVec3.html#af4585f55a3fa21eeb317fbb4c29743a3',1,'Vec3::Vec3(double const x, double const y, double const z)'],['../classVec3.html#a7dbf5260b93f1ba110206493165a4e02',1,'Vec3::Vec3(std::array&lt; double, 3 &gt; const &amp;v)']]],
+  ['vector_2ecpp_84',['vector.cpp',['../vector_8cpp.html',1,'']]],
+  ['vector_2ehpp_85',['vector.hpp',['../vector_8hpp.html',1,'']]],
+  ['vectorfield_86',['VectorField',['../classVectorField.html',1,'']]]
 ];

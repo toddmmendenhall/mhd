@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['norm_34',['Norm',['../classVec3.html#a35592ba39fef1023911e4a2806286876',1,'Vec3']]],
-  ['normsquared_35',['NormSquared',['../classVec3.html#a59e4576ad4160fad1d77d399f2a12370',1,'Vec3']]]
+  ['hex_39',['HEX',['../CMakeCCompilerId_8c.html#a46d5d95daa1bef867bd0179594310ed5',1,'HEX():&#160;CMakeCCompilerId.c'],['../CMakeCXXCompilerId_8cpp.html#a46d5d95daa1bef867bd0179594310ed5',1,'HEX():&#160;CMakeCXXCompilerId.cpp']]]
 ];

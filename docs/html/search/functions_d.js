@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['_7ecalc_122',['~Calc',['../classMHD_1_1Calc.html#adc50803a310e686676336d0f356a7029',1,'MHD::Calc']]],
-  ['_7egrid_123',['~Grid',['../classMHD_1_1Grid.html#ae1acf1cea680b153bafc1b5d446ae7cd',1,'MHD::Grid']]],
-  ['_7elogger_124',['~Logger',['../classMHD_1_1Logger.html#a44cd90e64658a5ae6905247e5b110c14',1,'MHD::Logger']]],
-  ['_7eprofile_125',['~Profile',['../classMHD_1_1Profile.html#a6fe34897441787ed3a2a7f6c765f47c4',1,'MHD::Profile']]],
-  ['_7evec3_126',['~Vec3',['../classVec3.html#a03c0bc08173339ae406ce1e1bc194aee',1,'Vec3']]]
+  ['y_165',['Y',['../classVec3.html#ac2d8cd9acf2b36de045c4c36a957c1b7',1,'Vec3::Y() const'],['../classVec3.html#a72fe0bb12522bf662f90cd0c502eead6',1,'Vec3::Y(double const c)']]]
 ];
