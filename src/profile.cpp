@@ -1,7 +1,7 @@
 #include "profile.hpp"
 
-#include <array>
 #include <memory>
+#include <vector>
 
 namespace MHD {
 
@@ -11,7 +11,7 @@ Profile::Profile() {
 
 Profile::~Profile() {}
 
-short const Profile::GetGridDimension() const {
+unsigned short const Profile::GetGridDimension() const {
     return m_gridProfile->m_dimension;
 }
 
@@ -19,15 +19,19 @@ Geometry const Profile::GetGridGeometry() const {
     return m_gridProfile->m_geometry;
 }
 
-std::array<BoundaryCondition, 6> const& Profile::GetGridBoundaryConditions() const {
+std::vector<BoundaryCondition> const& Profile::GetGridBoundaryConditions() const {
     return m_gridProfile->m_boundaryConditions;
 }
 
-std::array<double, 6> const& Profile::GetGridLimits() const {
+std::vector<double> const& Profile::GetGridLimits() const {
     return m_gridProfile->m_limits;
 }
 
-void Profile::SetGridDimension(short const dimension) {
+std::vector<double> const& Profile::GetSpacing() const {
+    return m_gridProfile->m_spacing;
+}
+
+void Profile::SetGridDimension(unsigned short const dimension) {
     m_gridProfile->m_dimension = dimension;
 }
 
@@ -35,12 +39,16 @@ void Profile::SetGridGeometry(Geometry const geometry) {
     m_gridProfile->m_geometry = geometry;
 }
 
-void Profile::SetGridBoundaryConditions(std::array<BoundaryCondition, 6> const& boundaryConditions) {
+void Profile::SetGridBoundaryConditions(std::vector<BoundaryCondition> const& boundaryConditions) {
     m_gridProfile->m_boundaryConditions = boundaryConditions;
 }
 
-void Profile::SetGridLimits(std::array<double, 6> const& limits) {
+void Profile::SetGridLimits(std::vector<double> const& limits) {
     m_gridProfile->m_limits = limits;
+}
+
+void Profile::SetSpacing(std::vector<double> const& spacing) {
+    m_gridProfile->m_spacing = spacing;
 }
 
 }

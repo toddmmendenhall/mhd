@@ -29,3 +29,4 @@ add_library(${CMAKE_PROJECT_NAME} ${sources} ${includes} ${public_includes})
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${include_dir})
 target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC ${public_include_dir})
 
+add_subdirectory(grid)
