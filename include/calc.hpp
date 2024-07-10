@@ -1,13 +1,12 @@
 #pragma once
 
 #include "error.hpp"
+#include "grid.hpp"
 #include "profile.hpp"
 
 #include <memory>
 
 namespace MHD {
-
-class Logger;
 
 /**
  * \brief Adds two numbers.
@@ -24,10 +23,10 @@ public:
     ~Calc();
 
     Error Run();
-
+        
 private:
-    std::unique_ptr<Logger> m_logger;
     std::unique_ptr<Profile> m_profile;
+    std::unique_ptr<Grid> m_grid;
 };
 
 }
