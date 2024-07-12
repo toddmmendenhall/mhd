@@ -11,12 +11,4 @@ Calc::Calc() {
 
 Calc::~Calc() {}
 
-// Error Calc::Run() {
-//     safe(m_logger, [&]() {
-//         // do stuff here
-//         return Error::SUCCESS;
-//     });
-//     return Error::SUCCESS;
-// }
-
 }
