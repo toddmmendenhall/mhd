@@ -2,6 +2,8 @@
 #include "grid_factory.hpp"
 #include "profile.hpp"
 
+#include <iostream>
+
 namespace MHD {
 
 Calc::Calc() {
@@ -14,6 +16,10 @@ Calc::Calc() {
 Calc::~Calc() {
     delete m_profile;
     delete m_grid;
+}
+
+void Calc::Run() {
+    std::cout << "Running calc..." << std::endl;
 }
 
 Profile* Calc::GetProfile() const {return m_profile;}

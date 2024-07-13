@@ -10,8 +10,10 @@ public:
     Calc();
     ~Calc();
 
+    void Run();
+
     Profile* GetProfile() const;
-    Grid* GetGrid() const;
+    Grid* GetGrid() const;    
 
 private:
     Profile* m_profile;

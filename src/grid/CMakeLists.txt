@@ -13,4 +13,4 @@ add_library(grid ${sources} ${includes})
 
 target_include_directories(grid PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(grid PUBLIC mhd)
+target_link_libraries(grid PUBLIC api)

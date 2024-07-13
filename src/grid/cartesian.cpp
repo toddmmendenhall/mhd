@@ -5,6 +5,8 @@
 
 namespace MHD {
 
+Cartesian1DGrid::Cartesian1DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions) {}
+
 Cartesian2DGrid::Cartesian2DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions) {
     m_xMin = bounds[0];
     m_xMax = bounds[1];
@@ -39,5 +41,7 @@ Cartesian2DGrid::Cartesian2DGrid(std::vector<double> const& bounds, std::vector<
         }
     }
 }
+
+Cartesian3DGrid::Cartesian3DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions) {}
 
 } // namespace MHD
