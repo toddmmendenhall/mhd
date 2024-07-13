@@ -2,22 +2,22 @@
 set(sources calc.cpp
             error.cpp
             exception.cpp
-            grid.cpp
             logger.cpp
             profile.cpp)
 
 # Accumulate includes
-set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-set(includes ${include_dir}/exception.hpp
-             ${include_dir}/logger.hpp
-             ${include_dir}/calc.hpp
-             ${include_dir}/error.hpp
-             ${include_dir}/grid.hpp
-             ${include_dir}/profile.hpp)
+set(includes ${CMAKE_CURRENT_SOURCE_DIR}/include/calc.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/include/error.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/include/exception.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/include/logger.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/include/profile_options.hpp
+             ${CMAKE_CURRENT_SOURCE_DIR}/include/profile.hpp)
 
 # Setup library
-add_library(${CMAKE_PROJECT_NAME} ${sources} ${includes})
+add_library(mhd ${sources} ${includes})
 
-# Add include directories
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ${include_dir})
+target_include_directories(mhd PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_subdirectory(grid)
+
+target_link_libraries(mhd PUBLIC grid)
