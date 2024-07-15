@@ -13,13 +13,13 @@ Grid* GridFactory::CreateGrid(Profile* profile) const {
     Geometry geometry = profile->GetGridGeometry();
 
     if (dimension == Dimension::ONE && geometry == Geometry::CARTESIAN) {
-        return new Cartesian1DGrid(profile->GetGridBounds(), profile->GetGridSpacing(), profile->GetGridBoundaryConditions());
+        return new Cartesian1DGrid(profile);
     }
     if (dimension == Dimension::TWO && geometry == Geometry::CARTESIAN) {
-        return new Cartesian2DGrid(profile->GetGridBounds(), profile->GetGridSpacing(), profile->GetGridBoundaryConditions());
+        return new Cartesian2DGrid(profile);
     }
     if (dimension == Dimension::THREE && geometry == Geometry::CARTESIAN) {
-        return new Cartesian3DGrid(profile->GetGridBounds(), profile->GetGridSpacing(), profile->GetGridBoundaryConditions());
+        return new Cartesian3DGrid(profile);
     }
 
     return nullptr;

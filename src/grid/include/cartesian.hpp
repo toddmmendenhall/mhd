@@ -1,6 +1,8 @@
 #pragma once
 
+#include "cell.hpp"
 #include "grid.hpp"
+#include "profile.hpp"
 #include "profile_options.hpp"
 
 #include <array>
@@ -10,24 +12,25 @@ namespace MHD {
 
 class Cartesian1DGrid : public Grid {
 public:
-    Cartesian1DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions);
+    Cartesian1DGrid(Profile* profile);
 };
 
 class Cartesian2DGrid : public Grid {
 public:
-    Cartesian2DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions);
+    Cartesian2DGrid(Profile* profile);
+
 private:
     double m_xMin;
     double m_xMax;
     double m_yMin;
     double m_yMax;
-    std::vector<std::array<double, 2>> m_cells;
+    std::vector<Cell> m_interiorCells;
     std::vector<std::array<double, 2>> m_boundaryCells;
 };
 
 class Cartesian3DGrid : public Grid {
 public:
-    Cartesian3DGrid(std::vector<double> const& bounds, std::vector<double> const& spacing, std::vector<BoundaryCondition> const& boundaryConditions);
+    Cartesian3DGrid(Profile* profile);
 };
 
 } // namespace MHD

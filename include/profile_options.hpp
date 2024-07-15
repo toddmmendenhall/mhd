@@ -13,8 +13,14 @@ enum class Geometry {
 };
 
 enum class BoundaryCondition {
-    DIRICHLET = 0,
-    NEUMANN = 1,
+    NOT_A_BOUNDARY = 0,
+    DIRICHLET = 1,
+    NEUMANN = 2,
+};
+
+enum class DerivativeMethod {
+    FINITE_DIFFERENCE = 0,
+    FINITE_VOLUME = 1,
 };
 
 } // namespace MHD

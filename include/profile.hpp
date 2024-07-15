@@ -15,12 +15,14 @@ public:
     std::vector<double> const& GetGridBounds() const;
     std::vector<double> const& GetGridSpacing() const;
     std::vector<BoundaryCondition> const& GetGridBoundaryConditions() const;
+    DerivativeMethod const GetDerivativeMethod() const;
 
     void SetGridDimension(Dimension const dimension);
     void SetGridGeometry(Geometry const geometry);
     void SetGridBounds(std::vector<double> const& bounds);
     void SetGridSpacing(std::vector<double> const& spacing);
     void SetGridBoundaryConditions(std::vector<BoundaryCondition> const& boundaryConditions);
+    void SetDerivativeMethod(DerivativeMethod const derivativeMethod);
 
 private:
     Dimension m_gridDimension;
@@ -28,6 +30,7 @@ private:
     std::vector<double> m_gridBounds;
     std::vector<double> m_gridSpacing;
     std::vector<BoundaryCondition> m_gridBoundaryConditions;
+    DerivativeMethod m_derivativeMethod;
 };
 
 } // namespace MHD
