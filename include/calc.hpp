@@ -1,7 +1,10 @@
 #pragma once
 
+#include "domain.hpp"
 #include "grid.hpp"
 #include "profile.hpp"
+
+#include <memory>
 
 namespace MHD {
 
@@ -18,6 +21,7 @@ public:
 private:
     Profile* m_profile;
     Grid* m_grid;
+    std::unique_ptr<Domain> m_domain;
 };
 
 } // namespace MHD

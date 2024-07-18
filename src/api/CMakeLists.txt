@@ -1,12 +1,16 @@
 # Accumulate sources
 set(sources calc.cpp
+            domain.cpp
+            domain_impl.cpp
             profile.cpp)
 
 # Accumulate includes
 set(includes exception.hpp
+             domain_impl.hpp
              logger.hpp)
 
 set(public_includes ${CMAKE_SOURCE_DIR}/include/calc.hpp
+                    ${CMAKE_SOURCE_DIR}/include/domain.hpp
                     ${CMAKE_SOURCE_DIR}/include/error.hpp
                     ${CMAKE_SOURCE_DIR}/include/profile_options.hpp
                     ${CMAKE_SOURCE_DIR}/include/profile.hpp)

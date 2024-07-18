@@ -1,8 +1,10 @@
 #include "calc.hpp"
+#include "domain.hpp"
 #include "grid_factory.hpp"
 #include "profile.hpp"
 
 #include <iostream>
+#include <memory>
 
 namespace MHD {
 
@@ -11,6 +13,7 @@ Calc::Calc() {
     GridFactory* gridFactory = new GridFactory();
     m_grid = gridFactory->CreateGrid(m_profile);
     delete gridFactory;
+    m_domain = std::make_unique<Domain>(m_profile);
 }
 
 Calc::~Calc() {
