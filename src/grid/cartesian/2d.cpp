@@ -1,14 +1,15 @@
-#include "cartesian.hpp"
+#include "2d.hpp"
 #include "cell.hpp"
 
 #include <cmath>
+#include <memory>
 #include <vector>
 
 namespace MHD {
 
-Cartesian1DGrid::Cartesian1DGrid(Profile* profile) {}
 
-Cartesian2DGrid::Cartesian2DGrid(Profile* profile) {
+
+Cartesian2DGrid::Cartesian2DGrid(std::unique_ptr<Profile> const& profile) {
     std::vector<double> const& bounds = profile->GetGridBounds();
     std::vector<double> const& spacing = profile->GetGridSpacing();
     std::vector<BoundaryCondition> const& boundaryConditions = profile->GetGridBoundaryConditions();
@@ -46,11 +47,11 @@ Cartesian2DGrid::Cartesian2DGrid(Profile* profile) {
             }
         }
     }
-    CellFactory* cellFactory = new CellFactory();
-    m_interiorCells = cellFactory->SetCells(profile, cellPositions);
-    delete cellFactory;
+    //CellFactory* cellFactory = new CellFactory();
+    //m_interiorCells = cellFactory->SetCells(profile, cellPositions);
+    //delete cellFactory;
 }
 
-Cartesian3DGrid::Cartesian3DGrid(Profile* profile) {}
+
 
 } // namespace MHD

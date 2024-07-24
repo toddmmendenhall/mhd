@@ -2,6 +2,6 @@
 
 namespace MHD {
 
-class Grid {};
+class GridImpl {};
 
 } // namespace MHD

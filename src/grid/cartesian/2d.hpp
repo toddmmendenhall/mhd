@@ -1,23 +1,19 @@
 #pragma once
 
 #include "cell.hpp"
-#include "grid.hpp"
+#include "grid_impl.hpp"
 #include "profile.hpp"
 #include "profile_options.hpp"
 
 #include <array>
+#include <memory>
 #include <vector>
 
 namespace MHD {
 
-class Cartesian1DGrid : public Grid {
+class Cartesian2DGrid : public GridImpl {
 public:
-    Cartesian1DGrid(Profile* profile);
-};
-
-class Cartesian2DGrid : public Grid {
-public:
-    Cartesian2DGrid(Profile* profile);
+    Cartesian2DGrid(std::unique_ptr<Profile> const& profile);
 
 private:
     double m_xMin;
@@ -26,11 +22,6 @@ private:
     double m_yMax;
     std::vector<Cell> m_interiorCells;
     std::vector<std::array<double, 2>> m_boundaryCells;
-};
-
-class Cartesian3DGrid : public Grid {
-public:
-    Cartesian3DGrid(Profile* profile);
 };
 
 } // namespace MHD

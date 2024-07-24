@@ -7,9 +7,9 @@
 
 namespace MHD {
 
-class GridFactory {
+class Cartesian3DGrid : public GridImpl {
 public:
-    std::unique_ptr<GridImpl> CreateGrid(std::unique_ptr<Profile> const& profile) const;
+    Cartesian3DGrid(std::unique_ptr<Profile> const& profile);
 };
 
 } // namespace MHD

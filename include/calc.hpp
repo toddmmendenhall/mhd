@@ -1,6 +1,5 @@
 #pragma once
 
-#include "domain.hpp"
 #include "grid.hpp"
 #include "profile.hpp"
 
@@ -11,17 +10,17 @@ namespace MHD {
 class Calc {
 public:
     Calc();
-    ~Calc();
 
     void Run();
 
-    Profile* GetProfile() const;
-    Grid* GetGrid() const;    
+    std::unique_ptr<Profile> const& GetProfile() const;
+    std::unique_ptr<Grid> const& GetGrid() const;
 
 private:
-    Profile* m_profile;
-    Grid* m_grid;
-    std::unique_ptr<Domain> m_domain;
+    void SetupCalc();
+
+    std::unique_ptr<Profile> m_profile;
+    std::unique_ptr<Grid> m_grid;
 };
 
 } // namespace MHD

@@ -1,6 +1,5 @@
 #include "calc.hpp"
-#include "domain.hpp"
-#include "grid_factory.hpp"
+#include "grid.hpp"
 #include "profile.hpp"
 
 #include <iostream>
@@ -9,23 +8,24 @@
 namespace MHD {
 
 Calc::Calc() {
-    Profile* m_profile = new Profile();
-    GridFactory* gridFactory = new GridFactory();
-    m_grid = gridFactory->CreateGrid(m_profile);
-    delete gridFactory;
-    m_domain = std::make_unique<Domain>(m_profile);
-}
-
-Calc::~Calc() {
-    delete m_profile;
-    delete m_grid;
+    m_profile = std::make_unique<Profile>();
 }
 
 void Calc::Run() {
+    SetupCalc();
     std::cout << "Running calc..." << std::endl;
 }
 
-Profile* Calc::GetProfile() const {return m_profile;}
-Grid* Calc::GetGrid() const {return m_grid;}
+void Calc::SetupCalc() {
+    m_grid = std::make_unique<Grid>(m_profile);
+}
+
+std::unique_ptr<Profile> const& Calc::GetProfile() const {
+    return m_profile;
+}
+
+std::unique_ptr<Grid> const& Calc::GetGrid() const {
+    return m_grid;
+}
 
 } // namespace MHD
