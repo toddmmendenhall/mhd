@@ -1,16 +1,13 @@
 # Accumulate sources
-set(sources cell.cpp
-            grid_factory.cpp)
+set(sources grid_factory.cpp)
 
 # Accumulate includes
-set(includes cell.hpp
-             grid_factory.hpp)
+set(includes grid_factory.hpp)
 
 # Setup library
 add_library(grid ${sources} ${includes})
 
 target_include_directories(grid PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-
 
 add_subdirectory(cartesian)
 

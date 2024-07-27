@@ -14,3 +14,4 @@ add_library(cartesian ${sources} ${includes})
 target_include_directories(cartesian PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(cartesian PRIVATE grid)
+target_link_libraries(cartesian PUBLIC utilities)

@@ -1,11 +1,10 @@
 #pragma once
 
-#include "cell.hpp"
 #include "grid_impl.hpp"
 #include "profile.hpp"
-#include "profile_options.hpp"
+#include "point.hpp"
+#include "vector.hpp"
 
-#include <array>
 #include <memory>
 #include <vector>
 
@@ -16,12 +15,12 @@ public:
     Cartesian2DGrid(std::unique_ptr<Profile> const& profile);
 
 private:
-    double m_xMin;
-    double m_xMax;
-    double m_yMin;
-    double m_yMax;
-    std::vector<Cell> m_interiorCells;
-    std::vector<std::array<double, 2>> m_boundaryCells;
+    std::vector<GEOM_UTILS::Point2D> m_cells;
+    std::vector<bool> m_boundaryCellFlag;
+    std::vector<double> m_density;
+    std::vector<GEOM_UTILS::Vector2D> m_velocity;
+    std::vector<double> m_pressure;
+    std::vector<GEOM_UTILS::Vector2D> m_magneticField;
 };
 
 } // namespace MHD
