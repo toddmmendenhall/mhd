@@ -7,4 +7,5 @@ target_link_libraries(mhd PUBLIC api)
 
 add_subdirectory(api)
 add_subdirectory(grid)
+add_subdirectory(solver)
 add_subdirectory(utilities)

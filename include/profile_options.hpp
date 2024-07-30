@@ -18,9 +18,13 @@ enum class BoundaryCondition {
     NEUMANN = 2,
 };
 
-enum class DerivativeMethod {
+enum class SpatialDerivativeMethod {
     FINITE_DIFFERENCE = 0,
     FINITE_VOLUME = 1,
+};
+
+enum class TemporalIntegrationMethod {
+    FORWARD_EULER = 0,
 };
 
 } // namespace MHD

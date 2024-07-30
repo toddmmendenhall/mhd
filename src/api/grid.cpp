@@ -8,10 +8,15 @@
 namespace MHD {
 
 Grid::Grid(std::unique_ptr<Profile> const& profile) {
-    GridFactory gridFactory;
-    m_gridImpl = gridFactory.CreateGrid(profile);
+    auto gridFactory = new GridFactory();
+    m_gridImpl = gridFactory->CreateGrid(profile);
+    delete gridFactory;
 }
 
 Grid::~Grid() {}
+
+std::unique_ptr<GridImpl> const& Grid::GetGridImpl() const {
+    return m_gridImpl;
+}
 
 } // namespace MHD

@@ -13,6 +13,8 @@ public:
     Grid(std::unique_ptr<Profile> const& profile);
     ~Grid();
 
+    std::unique_ptr<GridImpl> const& GetGridImpl() const;
+
 private:
     std::unique_ptr<GridImpl> m_gridImpl;
 };

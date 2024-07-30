@@ -14,18 +14,12 @@ Calc::Calc() {
 void Calc::Run() {
     SetupCalc();
     std::cout << "Running calc..." << std::endl;
+    m_solver->SolveTimeStep(m_grid);
 }
 
 void Calc::SetupCalc() {
     m_grid = std::make_unique<Grid>(m_profile);
-}
-
-std::unique_ptr<Profile> const& Calc::GetProfile() const {
-    return m_profile;
-}
-
-std::unique_ptr<Grid> const& Calc::GetGrid() const {
-    return m_grid;
+    m_solver = std::make_unique<Solver>(m_profile);
 }
 
 } // namespace MHD

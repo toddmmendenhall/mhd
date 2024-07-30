@@ -2,6 +2,7 @@
 
 #include "grid.hpp"
 #include "profile.hpp"
+#include "solver.hpp"
 
 #include <memory>
 
@@ -13,14 +14,13 @@ public:
 
     void Run();
 
-    std::unique_ptr<Profile> const& GetProfile() const;
-    std::unique_ptr<Grid> const& GetGrid() const;
-
+    std::unique_ptr<Profile> m_profile;
+    std::unique_ptr<Grid> m_grid;
+    std::unique_ptr<Solver> m_solver;
+    
 private:
     void SetupCalc();
 
-    std::unique_ptr<Profile> m_profile;
-    std::unique_ptr<Grid> m_grid;
 };
 
 } // namespace MHD
