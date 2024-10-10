@@ -1,6 +1,6 @@
 #pragma once
 
-#include "profile_options.hpp"
+#include <profile_options.hpp>
 
 #include <vector>
 
@@ -9,6 +9,7 @@ namespace MHD {
 class Profile {
 public:
     Profile();
+    ~Profile();
 
     Dimension const GetGridDimension() const;
     Geometry const GetGridGeometry() const;

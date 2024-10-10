@@ -1,25 +1,21 @@
-#include "calc.hpp"
-#include "grid.hpp"
-#include "profile.hpp"
+#include <calc.hpp>
+#include <grid.hpp>
+#include <grid_factory.hpp>
+#include <profile.hpp>
 
-#include <iostream>
 #include <memory>
 
 namespace MHD {
 
 Calc::Calc() {
     m_profile = std::make_unique<Profile>();
+
+    GridFactory gridFactory;
+    m_grid = gridFactory.CreateGrid(*m_profile);
 }
 
-void Calc::Run() {
-    SetupCalc();
-    std::cout << "Running calc..." << std::endl;
-    m_solver->SolveTimeStep(m_grid);
-}
+Calc::~Calc() = default;
 
-void Calc::SetupCalc() {
-    m_grid = std::make_unique<Grid>(m_profile);
-    m_solver = std::make_unique<Solver>(m_profile);
-}
+void Calc::Run() {}
 
 } // namespace MHD

@@ -1,15 +1,19 @@
 #pragma once
 
-#include "grid_impl.hpp"
-#include "profile.hpp"
+#include <grid.hpp>
 
 #include <memory>
 
 namespace MHD {
 
-class Cartesian3DGrid : public GridImpl {
+class Profile;
+
+class Cartesian3DGrid : public Grid {
 public:
-    Cartesian3DGrid(std::unique_ptr<Profile> const& profile);
+    Cartesian3DGrid(Profile const& profile);
+    ~Cartesian3DGrid();
+
+    void SomeMethod() override;
 };
 
 } // namespace MHD
