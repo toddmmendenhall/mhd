@@ -27,4 +27,9 @@ enum class TemporalIntegrationMethod {
     FORWARD_EULER = 0,
 };
 
+enum class EquationOfState {
+    CALORICALLY_PERFECT_GAS = 0,
+    THERMALLY_PERFECT_GAS = 1,
+};
+
 } // namespace MHD

@@ -19,3 +19,4 @@ target_include_directories(api PUBLIC ${public_include_dir})
 target_include_directories(api PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(api PRIVATE grid)
+target_link_libraries(api PRIVATE solver)

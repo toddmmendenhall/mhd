@@ -2,8 +2,7 @@
 #include "profile.hpp"
 
 int main() {
-    MHD::Calc* calc = new MHD::Calc();
+    MHD::Calc* calc;
     calc->Run();
-    delete calc;
     return 0;
 }

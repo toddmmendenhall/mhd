@@ -1,3 +1,5 @@
-add_executable(grid_tests grid_tests.cpp)
-target_link_libraries(grid_tests GTest::gtest GTest::gtest_main)
-add_test(GridTests grid_tests)
+add_executable(mhd_tests grid_tests.cpp api_tests.cpp)
+target_link_libraries(mhd_tests GTest::gtest GTest::gtest_main)
+target_link_libraries(mhd_tests api)
+add_test(APITests mhd_tests)
+add_test(GridTests mhd_tests)

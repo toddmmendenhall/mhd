@@ -2,19 +2,19 @@
 #include <grid.hpp>
 #include <grid_factory.hpp>
 #include <profile.hpp>
+#include <solver.hpp>
 
 #include <memory>
 
 namespace MHD {
 
-Calc::Calc() {
-    m_profile = std::make_unique<Profile>();
-
+Calc::Calc(Profile const& profile) : m_profile(profile)
+{
     GridFactory gridFactory;
-    m_grid = gridFactory.CreateGrid(*m_profile);
-}
+    // m_grid = gridFactory.CreateGrid(*m_profile);
 
-Calc::~Calc() = default;
+    // m_solver = std::make_unique<Solver>(*m_profile, *m_grid);
+}
 
 void Calc::Run() {}
 

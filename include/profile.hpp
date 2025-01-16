@@ -9,7 +9,7 @@ namespace MHD {
 class Profile {
 public:
     Profile();
-    ~Profile();
+    ~Profile() = default;
 
     Dimension const GetGridDimension() const;
     Geometry const GetGridGeometry() const;

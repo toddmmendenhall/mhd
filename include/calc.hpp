@@ -6,17 +6,19 @@ namespace MHD {
 
 class Grid;
 class Profile;
+class Solver;
 
 class Calc {
 public:
-    Calc();
-    ~Calc();
+    Calc(Profile const& profile);
+    ~Calc() = default;
 
     void Run();
     
 private:
+    Profile const& m_profile;
     std::unique_ptr<Grid> m_grid;
-    std::unique_ptr<Profile> m_profile;
+    std::unique_ptr<Solver> m_solver;
 };
 
 } // namespace MHD
