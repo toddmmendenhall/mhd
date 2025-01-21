@@ -23,6 +23,8 @@ struct State {
 
     // Auxiliary
     std::vector<double> m_temperature;
+
+    std::vector<double> m_drhodx;
 };
 
 } // namespace MHD

@@ -7,5 +7,5 @@
 
 TEST(APITests, CanCreateProfile) {
     MHD::Profile profile;
-    EXPECT_EQ(profile.GetGridDimension(), MHD::Dimension::TWO);
+    EXPECT_EQ(profile.GetGridDimension(), MHD::Dimension::ONE);
 }

@@ -6,11 +6,11 @@
 namespace MHD {
 
 Profile::Profile() {
-    m_gridDimension = Dimension::TWO;
+    m_gridDimension = Dimension::ONE;
     m_gridGeometry = Geometry::CARTESIAN;
-    m_gridBounds = {-5.0, 5.0, -5.0, 5.0};
-    m_gridSpacing = {0.5, 0.5};
-    m_gridBoundaryConditions = {BoundaryCondition::DIRICHLET, BoundaryCondition::DIRICHLET, BoundaryCondition::DIRICHLET, BoundaryCondition::DIRICHLET};
+    m_gridBounds = {-1.0, 1.0};
+    m_gridSpacing = {0.2};
+    m_gridBoundaryConditions = BoundaryCondition::DIRICHLET;
     m_spatialDerivativeMethod = SpatialDerivativeMethod::FINITE_DIFFERENCE;
     m_temporalIntegrationMethod = TemporalIntegrationMethod::FORWARD_EULER;
 }
@@ -31,7 +31,7 @@ std::vector<double> const& Profile::GetGridSpacing() const {
     return m_gridSpacing;
 }
 
-std::vector<BoundaryCondition> const& Profile::GetGridBoundaryConditions() const {
+BoundaryCondition const& Profile::GetGridBoundaryConditions() const {
     return m_gridBoundaryConditions;
 }
 
@@ -59,7 +59,7 @@ void Profile::SetGridSpacing(std::vector<double> const& spacing) {
     m_gridSpacing = spacing;
 }
 
-void Profile::SetGridBoundaryConditions(std::vector<BoundaryCondition> const& boundaryConditions) {
+void Profile::SetGridBoundaryConditions(BoundaryCondition const& boundaryConditions) {
     m_gridBoundaryConditions = boundaryConditions;
 }
 

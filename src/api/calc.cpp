@@ -8,14 +8,14 @@
 
 namespace MHD {
 
-Calc::Calc(Profile const& profile) : m_profile(profile)
-{
+Calc::Calc(Profile const& profile) : m_profile(profile) {
     GridFactory gridFactory;
-    // m_grid = gridFactory.CreateGrid(*m_profile);
-
-    // m_solver = std::make_unique<Solver>(*m_profile, *m_grid);
+    m_grid = gridFactory.CreateGrid(m_profile);
+    m_solver = std::make_unique<Solver>(m_profile);
 }
 
-void Calc::Run() {}
+void Calc::Run() {
+    m_solver->SolveTimeStep(*m_grid);
+}
 
 } // namespace MHD

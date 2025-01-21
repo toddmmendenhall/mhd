@@ -1,14 +1,14 @@
 set(library_name cartesian)
 
 # Accumulate sources
-set(sources 1d.cpp
-            2d.cpp
-            3d.cpp)
+set(sources 1d.cpp)
+            # 2d.cpp
+            # 3d.cpp)
 
 # Accumulate includes
-set(includes 1d.hpp
-             2d.hpp
-             3d.hpp)
+set(includes 1d.hpp)
+            #  2d.hpp
+            #  3d.hpp)
 
 # Setup library
 add_library(${library_name} STATIC ${sources} ${includes})

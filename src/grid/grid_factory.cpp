@@ -1,6 +1,6 @@
 #include <1d.hpp>
-#include <2d.hpp>
-#include <3d.hpp>
+// #include <2d.hpp>
+// #include <3d.hpp>
 #include <grid.hpp>
 #include <grid_factory.hpp>
 #include <profile.hpp>
@@ -23,12 +23,12 @@ std::unique_ptr<Grid> GridFactory::CreateGrid(Profile const& profile) const {
         if (dimension == Dimension::ONE) {
             return std::make_unique<Cartesian1DGrid>(profile);
         }
-        if (dimension == Dimension::TWO) {
-            return std::make_unique<Cartesian2DGrid>(profile);
-        }
-        if (dimension == Dimension::THREE) {
-            return std::make_unique<Cartesian3DGrid>(profile);
-        }
+        // if (dimension == Dimension::TWO) {
+        //     return std::make_unique<Cartesian2DGrid>(profile);
+        // }
+        // if (dimension == Dimension::THREE) {
+        //     return std::make_unique<Cartesian3DGrid>(profile);
+        // }
     }
     return nullptr;
 }
