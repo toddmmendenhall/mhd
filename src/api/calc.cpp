@@ -14,8 +14,6 @@ Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_solver = std::make_unique<Solver>(m_profile);
 }
 
-void Calc::Run() {
-    m_solver->SolveTimeStep(*m_grid);
-}
+void Calc::Run() {}
 
 } // namespace MHD

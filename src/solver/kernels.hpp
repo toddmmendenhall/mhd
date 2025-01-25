@@ -1,64 +1,90 @@
+#pragma once
+
 #include <cmath>
 #include <cstddef>
 #include <vector>
 
-struct VelocityUKernel {
-    VelocityUKernel(std::vector<double> const& rho, std::vector<double> const& rho_u, std::vector<double>& u) :
-        rho(rho), rho_u(rho_u), u(u) {}
+namespace MHD {
+
+struct SpecificVolumeKernel {
+    SpecificVolumeKernel(std::vector<double> const& rho,
+                         std::vector<double>& rhoInv) :
+        rho(rho), rhoInv(rhoInv) {}
+
+    void operator()(std::size_t idx) {
+        rhoInv[idx] = 1.0 / rho[idx];
+    }
+
+    std::vector<double> const& rho;
+    std::vector<double>& rhoInv;
+};
+
+struct VelocityKernel {
+    VelocityKernel(std::vector<double> const& rhoInv,
+                   std::vector<double> const& rho_u, std::vector<double> const& rho_v, std::vector<double> const& rho_w,
+                   std::vector<double>& u, std::vector<double>& v, std::vector<double>& w, std::vector<double>& u_u) :
+        rhoInv(rhoInv), rho_u(rho_u), rho_v(rho_v), rho_w(rho_w), u(u), v(v), w(w), u_u(u_u){}
     
     void operator()(std::size_t idx) {
-        u[idx] = rho_u[idx] / rho[idx];
+        u[idx] = rho_u[idx] * rhoInv[idx];
+        v[idx] = rho_v[idx] * rhoInv[idx];
+        w[idx] = rho_w[idx] * rhoInv[idx];
+        u_u[idx] = u[idx] * u[idx] + v[idx] * v[idx] + w[idx] * w[idx];
     }
 
-    std::vector<double> const& rho;
+    std::vector<double> const& rhoInv;
     std::vector<double> const& rho_u;
+    std::vector<double> const& rho_v;
+    std::vector<double> const& rho_w;
     std::vector<double>& u;
+    std::vector<double>& v;
+    std::vector<double>& w;
+    std::vector<double>& u_u;
 };
 
-struct InternalEnergyKernel {
-    InternalEnergyKernel(std::vector<double> const& rho, std::vector<double> const& rho_u, std::vector<double> const& rho_e0, std::vector<double>& e) :
-        rho(rho), rho_u(rho_u), rho_e0(rho_e0), e(e) {}
+struct SpecificInternalEnergyKernel {
+    SpecificInternalEnergyKernel(std::vector<double> const& rhoInv, std::vector<double> const& rho_e,
+                                 std::vector<double> const& u_u, std::vector<double>& eInt) :
+        rhoInv(rhoInv), rho_e(rho_e), u_u(u_u), eInt(eInt) {}
 
     void operator()(std::size_t idx) {
-        double const rhoInverse = 1.0 / rho[idx];
-        double const u = rho_u[idx] * rhoInverse;
-        e[idx] = rho_e0[idx] * rhoInverse - 0.5 * u * u;
+        eInt[idx] = rho_e[idx] * rhoInv[idx] - 0.5 * u_u[idx];
     }
 
-    std::vector<double> const& rho;
-    std::vector<double> const& rho_u;
-    std::vector<double> const& rho_e0;
-    std::vector<double>& e;
+    std::vector<double> const& rhoInv;
+    std::vector<double> const& rho_e;
+    std::vector<double> const& u_u;
+    std::vector<double>& eInt;
 };
 
-struct CaloricallyPerfectIdealGasPressureKernel {
-    CaloricallyPerfectIdealGasPressureKernel(std::vector<double> const& rho, std::vector<double> const& rho_u, std::vector<double> const& rho_e0,
-                                             double const gammaMinusOne, std::vector<double>& P) :
-        rho(rho), rho_u(rho_u), rho_e0(rho_e0), gammaMinusOne(gammaMinusOne), P(P) {}
+struct CaloricallyPerfectGasPressureKernel {
+    CaloricallyPerfectGasPressureKernel(double const gammaMinus1, std::vector<double> const& rho,
+                                        std::vector<double> const& eInt, std::vector<double>& pres) :
+        gammaMinus1(gammaMinus1), rho(rho), eInt(eInt), pres(pres) {}
 
     void operator()(std::size_t idx) {
-        P[idx] = gammaMinusOne * (rho_e0[idx] - 0.5 * rho_u[idx] * rho_u[idx] / rho[idx]);
+        pres[idx] = rho[idx] * gammaMinus1 * eInt[idx];
     }
 
+    double const gammaMinus1;
     std::vector<double> const& rho;
-    std::vector<double> const& rho_u;
-    std::vector<double> const& rho_e0;
-    double const gammaMinusOne;
-    std::vector<double>& P;
+    std::vector<double> const& eInt;
+    std::vector<double>& pres;
 };
 
 struct PerfectGasTemperatureKernel {
-    PerfectGasTemperatureKernel(std::vector<double> const& rho, std::vector<double> const& pressure, double const rSpecific, std::vector<double>& T) :
-        rho(rho), pressure(pressure), R(rSpecific), T(T) {}
+    PerfectGasTemperatureKernel(double const rSpecInv, std::vector<double> const& rhoInv,
+                                std::vector<double> const& pres, std::vector<double>& temp) :
+        rSpecInv(rSpecInv), rhoInv(rhoInv), pres(pres), temp(temp) {}
 
     void operator()(std::size_t idx) {
-        T[idx] = pressure[idx] / (rho[idx] * R);
+        temp[idx] = pres[idx] * rhoInv[idx] * rSpecInv;
     }
 
-    std::vector<double> const& rho;
-    std::vector<double> const& pressure;
-    double const R;
-    std::vector<double>& T;
+    double const rSpecInv;
+    std::vector<double> const& rhoInv;
+    std::vector<double> const& pres;
+    std::vector<double>& temp;
 };
 
 double inline CpOverR(std::vector<double> const& a, double const T) {
@@ -80,10 +106,12 @@ struct ThermallyPerfectGasPressureKernel {
     ThermallyPerfectGasPressureKernel(std::vector<double> const& rho, std::vector<double>& p) :
         rho(rho), p(p) {}
 
-    double operator()(std::size_t idx) {
+    void operator()(std::size_t idx) {
         p[idx] = rho[idx];
     }
 
     std::vector<double> const& rho;
     std::vector<double>& p;
 };
+
+} // namespace MHD

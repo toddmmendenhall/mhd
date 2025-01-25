@@ -1,28 +1,46 @@
-#include "grid.hpp"
-#include "profile.hpp"
-#include "solver.hpp"
-#include <state.hpp>
-#include <finite_difference.hpp>
+#include <execution_controller.hpp>
+#include <kernels.hpp>
+#include <profile.hpp>
+#include <solver.hpp>
+#include <variable_store.hpp>
 
 #include <memory>
 
 namespace MHD {
 
 Solver::Solver(Profile const& profile) {
-    profile.GetSpatialDerivativeMethod();
-    profile.GetTemporalIntegrationMethod();
-
-    m_state = std::make_unique<State>();
+    varStore = std::make_unique<VariableStore>();
+    execCtrl = std::make_unique<ExecutionController>();
 }
 
 Solver::~Solver() = default;
 
-void Solver::SolveTimeStep(Grid const& grid) {
-    CentralFiniteDifference1DKernel drhodxKernel(m_state->m_rho, 1.0 / grid.GetDx(), m_state->m_drhodx);
+void Solver::ComputePrimitivesFromConserved()
+{
+    SpecificVolumeKernel rhoInvKern(varStore->rho,
+                                    varStore->rhoInv);
+    execCtrl->LaunchKernel(rhoInvKern, varStore->rho.size());
 
-    for (std::size_t i = 1; i < grid.GetNodePositions().size() - 1; ++i) {
-        drhodxKernel(i);
-    }
+    VelocityKernel velKern(varStore->rhoInv,
+                           varStore->rho_u, varStore->rho_v, varStore->rho_w,
+                           varStore->u, varStore->v, varStore->w, varStore->u_u);
+    execCtrl->LaunchKernel(velKern, varStore->rho.size());
+
+    SpecificInternalEnergyKernel eIntKern(varStore->rhoInv, varStore->rho_e,
+                                          varStore->u_u, varStore->eInt);
+    execCtrl->LaunchKernel(eIntKern, varStore->rho.size());
+
+    CaloricallyPerfectGasPressureKernel presKern(varStore->gamma - 1.0, varStore->rho,
+                                                 varStore->eInt, varStore->pres);
+    execCtrl->LaunchKernel(presKern, varStore->rho.size());
+
+    PerfectGasTemperatureKernel tempKern(1.0 / varStore->rSpec, varStore->rhoInv,
+                                         varStore->pres, varStore->temp);
+    execCtrl->LaunchKernel(tempKern, varStore->rho.size());
 }
-    
+
+void Solver::UpdateConservedFromPrimitives()
+{
+}
+
 } // namespace MHD

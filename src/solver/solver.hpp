@@ -4,19 +4,22 @@
 
 namespace MHD {
 
+class ExecutionController;
 class Profile;
-class Grid;
-class State;
+class VariableStore;
 
 class Solver {
 public:
     Solver(Profile const& profile);
     ~Solver();
 
-    void SolveTimeStep(Grid const& grid);
+    void ComputePrimitivesFromConserved();
+
+    void UpdateConservedFromPrimitives();
 
 private:
-    std::unique_ptr<State> m_state;
+    std::unique_ptr<VariableStore> varStore;
+    std::unique_ptr<ExecutionController> execCtrl;
 };
 
 } // namespace MHD
