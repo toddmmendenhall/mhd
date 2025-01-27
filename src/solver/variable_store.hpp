@@ -18,6 +18,9 @@ struct VariableStore {
     std::vector<double> rho_v;      // y momentum density
     std::vector<double> rho_w;      // z momentum density
     std::vector<double> rho_e;      // energy density
+    std::vector<double> phix;       // x magnetic flux
+    std::vector<double> phiy;       // y magnetic flux
+    std::vector<double> phiz;       // z magnetic flux
 
     // Primitive
     std::vector<double> u;          // x velocity
@@ -26,10 +29,14 @@ struct VariableStore {
     std::vector<double> eInt;       // specific internal energy
     std::vector<double> pres;       // pressure
     std::vector<double> temp;       // temperature
+    std::vector<double> bx;         // x magnetic field
+    std::vector<double> by;         // y magnetic field
+    std::vector<double> bz;         // z magnetic field
 
     // Auxiliary
     std::vector<double> rhoInv;     // specific volume
     std::vector<double> u_u;        // velocity squared
+    std::vector<double> b_b;        // magnetic field squared
 };
 
 } // namespace MHD

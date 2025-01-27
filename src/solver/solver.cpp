@@ -17,21 +17,23 @@ Solver::~Solver() = default;
 
 void Solver::ComputePrimitivesFromConserved()
 {
-    SpecificVolumeKernel rhoInvKern(varStore->rho,
-                                    varStore->rhoInv);
+    SpecificVolumeKernel rhoInvKern(varStore->rho, varStore->rhoInv);
     execCtrl->LaunchKernel(rhoInvKern, varStore->rho.size());
 
-    VelocityKernel velKern(varStore->rhoInv,
-                           varStore->rho_u, varStore->rho_v, varStore->rho_w,
+    VelocityKernel velKern(varStore->rhoInv, varStore->rho_u, varStore->rho_v, varStore->rho_w,
                            varStore->u, varStore->v, varStore->w, varStore->u_u);
     execCtrl->LaunchKernel(velKern, varStore->rho.size());
 
-    SpecificInternalEnergyKernel eIntKern(varStore->rhoInv, varStore->rho_e,
-                                          varStore->u_u, varStore->eInt);
+    MagneticFieldSquaredKernel bSquaredKern(varStore->bx, varStore->by, varStore->bz,
+                                            varStore->b_b);
+    execCtrl->LaunchKernel(bSquaredKern, varStore->rho.size());
+
+    SpecificInternalEnergyKernel eIntKern(varStore->rhoInv, varStore->rho_e, varStore->u_u, varStore->b_b,
+                                          varStore->eInt);
     execCtrl->LaunchKernel(eIntKern, varStore->rho.size());
 
-    CaloricallyPerfectGasPressureKernel presKern(varStore->gamma - 1.0, varStore->rho,
-                                                 varStore->eInt, varStore->pres);
+    CaloricallyPerfectGasPressureKernel presKern(varStore->gamma - 1.0, varStore->rho, varStore->eInt, varStore->b_b,
+                                                 varStore->pres);
     execCtrl->LaunchKernel(presKern, varStore->rho.size());
 
     PerfectGasTemperatureKernel tempKern(1.0 / varStore->rSpec, varStore->rhoInv,
