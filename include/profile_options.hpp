@@ -32,4 +32,9 @@ enum class EquationOfState {
     THERMALLY_PERFECT_GAS = 1,
 };
 
+enum class FluxScheme {
+    HLLC = 0,
+    KT = 1,
+};
+
 } // namespace MHD

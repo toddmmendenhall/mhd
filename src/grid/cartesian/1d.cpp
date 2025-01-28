@@ -7,7 +7,7 @@
 
 namespace MHD {
 
-Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) : Grid(profile) {
+Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) : IGrid(profile) {
     auto& bounds = profile.GetGridBounds();
     auto& spacing = profile.GetGridSpacing();
     auto numXNodes = (bounds[1] - bounds[0]) / spacing[0];

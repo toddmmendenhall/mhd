@@ -6,7 +6,7 @@
 
 namespace MHD {
 
-Cartesian3DGrid::Cartesian3DGrid(Profile const& profile) : Grid(profile) {}
+Cartesian3DGrid::Cartesian3DGrid(Profile const& profile) : IGrid(profile) {}
 
 Cartesian3DGrid::~Cartesian3DGrid() = default;
 

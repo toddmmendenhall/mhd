@@ -37,6 +37,9 @@ struct VariableStore {
     std::vector<double> rhoInv;     // specific volume
     std::vector<double> u_u;        // velocity squared
     std::vector<double> b_b;        // magnetic field squared
+    std::vector<double> ex;         // x electric field
+    std::vector<double> ey;         // y electric field
+    std::vector<double> ez;         // z electric field
 };
 
 } // namespace MHD

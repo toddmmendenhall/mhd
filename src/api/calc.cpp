@@ -1,6 +1,5 @@
 #include <calc.hpp>
 #include <grid.hpp>
-#include <grid_factory.hpp>
 #include <profile.hpp>
 #include <solver.hpp>
 
@@ -9,9 +8,8 @@
 namespace MHD {
 
 Calc::Calc(Profile const& profile) : m_profile(profile) {
-    GridFactory gridFactory;
-    m_grid = gridFactory.CreateGrid(m_profile);
-    m_solver = std::make_unique<Solver>(m_profile);
+    m_grid = grid_factory(m_profile);
+    m_solver = std::make_unique<Solver>(m_profile, *m_grid);
 }
 
 void Calc::Run() {}

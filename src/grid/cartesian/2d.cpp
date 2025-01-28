@@ -9,7 +9,7 @@
 
 namespace MHD {
 
-Cartesian2DGrid::Cartesian2DGrid(Profile const& profile) : Grid(profile) {
+Cartesian2DGrid::Cartesian2DGrid(Profile const& profile) : IGrid(profile) {
     // std::vector<double> const& bounds = profile->GetGridBounds();
     // std::vector<double> const& spacing = profile->GetGridSpacing();
 

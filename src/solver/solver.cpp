@@ -1,16 +1,20 @@
 #include <execution_controller.hpp>
+#include <grid.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
 #include <solver.hpp>
 #include <variable_store.hpp>
+#include <flux_scheme.hpp>
 
 #include <memory>
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile) {
+Solver::Solver(Profile const& profile, IGrid const& grid) :
+    m_grid(grid) {
     varStore = std::make_unique<VariableStore>();
     execCtrl = std::make_unique<ExecutionController>();
+    m_fluxScheme = flux_scheme_factory(profile, m_grid.NumFaces());
 }
 
 Solver::~Solver() = default;
@@ -43,6 +47,10 @@ void Solver::ComputePrimitivesFromConserved()
 
 void Solver::UpdateConservedFromPrimitives()
 {
+}
+
+void Solver::ComputeFluxes() {
+    execCtrl->LaunchKernel(*m_fluxScheme, m_grid.NumFaces());
 }
 
 } // namespace MHD

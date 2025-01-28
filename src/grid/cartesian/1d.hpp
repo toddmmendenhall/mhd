@@ -9,7 +9,7 @@ namespace MHD {
 
 class Profile;
 
-class Cartesian1DGrid : public Grid {
+class Cartesian1DGrid : public IGrid {
 public:
     Cartesian1DGrid(Profile const& profile);
     ~Cartesian1DGrid();
@@ -17,6 +17,7 @@ public:
     std::vector<double> const& GetNodePositions() const {return m_nodePositions;}
 
     void SomeMethod() override;
+
 private:
     std::vector<double> m_nodePositions;
     double m_dx;

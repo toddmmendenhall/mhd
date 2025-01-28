@@ -11,7 +11,7 @@ namespace MHD {
 
 class Profile;
 
-class Cartesian2DGrid : public Grid {
+class Cartesian2DGrid : public IGrid {
 public:
     Cartesian2DGrid(Profile const& profile);
     ~Cartesian2DGrid();

@@ -4,7 +4,7 @@
 
 namespace MHD {
 
-class Grid;
+class IGrid;
 class Profile;
 class Solver;
 
@@ -17,7 +17,7 @@ public:
     
 private:
     Profile const& m_profile;
-    std::unique_ptr<Grid> m_grid;
+    std::unique_ptr<IGrid> m_grid;
     std::unique_ptr<Solver> m_solver;
 };
 

@@ -1,12 +1,10 @@
 set(library_name grid)
 
 # Accumulate sources
-set(sources grid_factory.cpp
-            grid.cpp)
+set(sources grid.cpp)
 
 # Accumulate includes
-set(includes grid_factory.hpp
-             grid.hpp)
+set(includes grid.hpp)
 
 # Setup library
 add_library(${library_name} STATIC ${sources} ${includes})

@@ -8,7 +8,7 @@ namespace MHD {
 
 class Profile;
 
-class Cartesian3DGrid : public Grid {
+class Cartesian3DGrid : public IGrid {
 public:
     Cartesian3DGrid(Profile const& profile);
     ~Cartesian3DGrid();
