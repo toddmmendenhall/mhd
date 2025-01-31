@@ -3,7 +3,8 @@ set(sources flux_scheme.cpp
             solver.cpp)
 
 # Accumulate includes
-set(includes execution_controller.hpp
+set(includes context.hpp
+             execution_controller.hpp
              flux_scheme.hpp
              kernels.hpp
              solver.hpp

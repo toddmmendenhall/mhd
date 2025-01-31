@@ -35,6 +35,7 @@ enum class EquationOfState {
 enum class FluxScheme {
     HLLC = 0,
     KT = 1,
+    HOG = 2,    // High Order Goduov
 };
 
 } // namespace MHD

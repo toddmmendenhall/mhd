@@ -1,3 +1,4 @@
+#include <context.hpp>
 #include <execution_controller.hpp>
 #include <grid.hpp>
 #include <kernels.hpp>
@@ -14,7 +15,7 @@ Solver::Solver(Profile const& profile, IGrid const& grid) :
     m_grid(grid) {
     varStore = std::make_unique<VariableStore>();
     execCtrl = std::make_unique<ExecutionController>();
-    m_fluxScheme = flux_scheme_factory(profile, m_grid.NumFaces());
+    m_fluxScheme = flux_scheme_factory(profile, *execCtrl);
 }
 
 Solver::~Solver() = default;
@@ -24,24 +25,24 @@ void Solver::ComputePrimitivesFromConserved()
     SpecificVolumeKernel rhoInvKern(varStore->rho, varStore->rhoInv);
     execCtrl->LaunchKernel(rhoInvKern, varStore->rho.size());
 
-    VelocityKernel velKern(varStore->rhoInv, varStore->rho_u, varStore->rho_v, varStore->rho_w,
-                           varStore->u, varStore->v, varStore->w, varStore->u_u);
+    VelocityKernel velKern(varStore->rhoInv, varStore->rhoU, varStore->rhoV, varStore->rhoW,
+                           varStore->u, varStore->v, varStore->w, varStore->uu);
     execCtrl->LaunchKernel(velKern, varStore->rho.size());
 
-    MagneticFieldSquaredKernel bSquaredKern(varStore->bx, varStore->by, varStore->bz,
-                                            varStore->b_b);
+    MagneticFieldSquaredKernel bSquaredKern(varStore->bX, varStore->bY, varStore->bZ,
+                                            varStore->bb);
     execCtrl->LaunchKernel(bSquaredKern, varStore->rho.size());
 
-    SpecificInternalEnergyKernel eIntKern(varStore->rhoInv, varStore->rho_e, varStore->u_u, varStore->b_b,
-                                          varStore->eInt);
-    execCtrl->LaunchKernel(eIntKern, varStore->rho.size());
+    SpecificInternalEnergyKernel eKern(varStore->rhoInv, varStore->rhoE, varStore->uu, varStore->bb,
+                                          varStore->e);
+    execCtrl->LaunchKernel(eKern, varStore->rho.size());
 
-    CaloricallyPerfectGasPressureKernel presKern(varStore->gamma - 1.0, varStore->rho, varStore->eInt, varStore->b_b,
-                                                 varStore->pres);
-    execCtrl->LaunchKernel(presKern, varStore->rho.size());
+    CaloricallyPerfectGasPressureKernel pKern(varStore->gamma - 1.0, varStore->rho, varStore->e, varStore->bb,
+                                                 varStore->p);
+    execCtrl->LaunchKernel(pKern, varStore->rho.size());
 
     PerfectGasTemperatureKernel tempKern(1.0 / varStore->rSpec, varStore->rhoInv,
-                                         varStore->pres, varStore->temp);
+                                         varStore->p, varStore->t);
     execCtrl->LaunchKernel(tempKern, varStore->rho.size());
 }
 
@@ -50,7 +51,8 @@ void Solver::UpdateConservedFromPrimitives()
 }
 
 void Solver::ComputeFluxes() {
-    execCtrl->LaunchKernel(*m_fluxScheme, m_grid.NumFaces());
+    // FluxContext fluxContext;
+    // m_fluxScheme->computeInterfaceFluxes(fluxContext);
 }
 
 } // namespace MHD

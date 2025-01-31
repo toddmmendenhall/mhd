@@ -14,10 +14,10 @@ struct VariableStore {
 
     // Conserved
     std::vector<double> rho;        // mass density
-    std::vector<double> rho_u;      // x momentum density
-    std::vector<double> rho_v;      // y momentum density
-    std::vector<double> rho_w;      // z momentum density
-    std::vector<double> rho_e;      // energy density
+    std::vector<double> rhoU;       // x momentum density
+    std::vector<double> rhoV;       // y momentum density
+    std::vector<double> rhoW;       // z momentum density
+    std::vector<double> rhoE;       // total energy density
     std::vector<double> phix;       // x magnetic flux
     std::vector<double> phiy;       // y magnetic flux
     std::vector<double> phiz;       // z magnetic flux
@@ -26,20 +26,20 @@ struct VariableStore {
     std::vector<double> u;          // x velocity
     std::vector<double> v;          // y velocity
     std::vector<double> w;          // z velocity
-    std::vector<double> eInt;       // specific internal energy
-    std::vector<double> pres;       // pressure
-    std::vector<double> temp;       // temperature
-    std::vector<double> bx;         // x magnetic field
-    std::vector<double> by;         // y magnetic field
-    std::vector<double> bz;         // z magnetic field
+    std::vector<double> p;          // total pressure
+    std::vector<double> e;          // specific internal energy
+    std::vector<double> bX;         // x magnetic field
+    std::vector<double> bY;         // y magnetic field
+    std::vector<double> bZ;         // z magnetic field
 
     // Auxiliary
     std::vector<double> rhoInv;     // specific volume
-    std::vector<double> u_u;        // velocity squared
-    std::vector<double> b_b;        // magnetic field squared
-    std::vector<double> ex;         // x electric field
-    std::vector<double> ey;         // y electric field
-    std::vector<double> ez;         // z electric field
+    std::vector<double> uu;         // velocity squared
+    std::vector<double> t;          // temperature
+    std::vector<double> bb;         // magnetic field squared
+    std::vector<double> eX;         // x electric field
+    std::vector<double> eY;         // y electric field
+    std::vector<double> eZ;         // z electric field
 };
 
 } // namespace MHD
