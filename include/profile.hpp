@@ -19,6 +19,7 @@ public:
     SpatialDerivativeMethod const GetSpatialDerivativeMethod() const;
     TemporalIntegrationMethod const GetTemporalIntegrationMethod() const;
     FluxScheme const GetFluxScheme() const {return m_fluxScheme;}
+    ReconstructionOption const GetReconstructionOption() const { return m_reconstructionOption; }
 
     void SetGridDimension(Dimension const dimension);
     void SetGridGeometry(Geometry const geometry);
@@ -28,6 +29,7 @@ public:
     void SetSpatialDerivativeMethod(SpatialDerivativeMethod const method);
     void SetTemporalIntegrationMethod(TemporalIntegrationMethod const method);
     void SetFluxScheme(FluxScheme const value) {m_fluxScheme = value;}
+    void SetReconstructionOption(ReconstructionOption const option) { m_reconstructionOption = option; }
 
 private:
     Dimension m_gridDimension;
@@ -38,6 +40,7 @@ private:
     SpatialDerivativeMethod m_spatialDerivativeMethod;
     TemporalIntegrationMethod m_temporalIntegrationMethod;
     FluxScheme m_fluxScheme;
+    ReconstructionOption m_reconstructionOption;
 };
 
 } // namespace MHD

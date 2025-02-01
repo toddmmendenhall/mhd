@@ -1,11 +1,12 @@
 #include <context.hpp>
 #include <execution_controller.hpp>
+#include <flux_scheme.hpp>
 #include <grid.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
+#include <reconstruction.hpp>
 #include <solver.hpp>
 #include <variable_store.hpp>
-#include <flux_scheme.hpp>
 
 #include <memory>
 
@@ -16,6 +17,7 @@ Solver::Solver(Profile const& profile, IGrid const& grid) :
     varStore = std::make_unique<VariableStore>();
     execCtrl = std::make_unique<ExecutionController>();
     m_fluxScheme = flux_scheme_factory(profile, *execCtrl);
+    m_reconstruction = reconstructionFactory(profile, *execCtrl);
 }
 
 Solver::~Solver() = default;
@@ -53,6 +55,11 @@ void Solver::UpdateConservedFromPrimitives()
 void Solver::ComputeFluxes() {
     FluxContext fluxContext;
     m_fluxScheme->computeInterfaceFluxes(fluxContext);
+}
+
+void Solver::ReconstructVariables() {
+    ReconstructionContext context;
+    m_reconstruction->compute(context);
 }
 
 } // namespace MHD

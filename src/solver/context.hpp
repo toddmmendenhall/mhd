@@ -54,4 +54,42 @@ struct FluxContext {
     std::vector<double>& bZFlux;
 };
 
+struct ReconstructionContext {
+    ReconstructionContext();
+
+    std::size_t const dimension;
+    std::vector<double> const& gridSize;
+    double const timeStep;
+
+    // fluxes 
+    std::vector<double> const& rhoFluxLeft;
+    std::vector<double> const& rhoUFluxLeft;
+    std::vector<double> const& rhoVFluxLeft;
+    std::vector<double> const& rhoWFluxLeft;
+    std::vector<double> const& rhoEFluxLeft;
+    std::vector<double> const& bXFluxLeft;
+    std::vector<double> const& bYFluxLeft;
+    std::vector<double> const& bZFluxLeft;
+
+    // fluxes 
+    std::vector<double> const& rhoFluxRight;
+    std::vector<double> const& rhoUFluxRight;
+    std::vector<double> const& rhoVFluxRight;
+    std::vector<double> const& rhoWFluxRight;
+    std::vector<double> const& rhoEFluxRight;
+    std::vector<double> const& bXFluxRight;
+    std::vector<double> const& bYFluxRight;
+    std::vector<double> const& bZFluxRight;
+
+    // cell-centered conserved variables
+    std::vector<double>& rho;
+    std::vector<double>& rhoU;
+    std::vector<double>& rhoV;
+    std::vector<double>& rhoW;
+    std::vector<double>& rhoE;
+    std::vector<double>& bX;
+    std::vector<double>& bY;
+    std::vector<double>& bZ;
+};
+
 } // namespace MHD

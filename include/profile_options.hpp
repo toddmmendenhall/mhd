@@ -39,4 +39,8 @@ enum class FluxScheme {
     LOG = 3,    // Low Order Godunov
 };
 
+enum class ReconstructionOption {
+    LINEAR = 0,
+};
+
 } // namespace MHD

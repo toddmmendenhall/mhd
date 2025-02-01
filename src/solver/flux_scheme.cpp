@@ -146,28 +146,28 @@ struct LowOrderGodunovKernel {
                      ctx.vLeft[faceIdx] * ctx.bYLeft[faceIdx] +
                      ctx.wLeft[faceIdx] * ctx.bZLeft[faceIdx];
 
-        // face-centered mass density flux
+        // cell-centered mass density flux
         ctx.rhoFlux[faceIdx] = ctx.faceArea[faceIdx] * ctx.rhoLeft[faceIdx] * uBar;
 
-        // face-centered x-momentum density flux
+        // cell-centered x-momentum density flux
         ctx.rhoUFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoU * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalX[faceIdx] - ctx.bXLeft[faceIdx] * bBar);
                                                              
-        // face-centered y-momentum density flux
+        // cell-centered y-momentum density flux
         ctx.rhoVFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoV * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalY[faceIdx] - ctx.bYLeft[faceIdx] * bBar);
 
-        // face-centered z-momentum density flux
+        // cell-centered z-momentum density flux
         ctx.rhoWFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoW * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalZ[faceIdx] - ctx.bZLeft[faceIdx] * bBar);
 
-        // face-centered total energy density flux
+        // cell-centered total energy density flux
         ctx.rhoEFlux[faceIdx] = ctx.faceArea[faceIdx] * ((rhoE + ctx.pLeft[faceIdx]) * uBar - uDotB * bBar);
         
-        // face-centered x-magnetic flux
+        // cell-centered x-magnetic flux
         ctx.bXFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.uLeft[faceIdx] * bBar - ctx.bXLeft[faceIdx] * uBar);
 
-        // face-centered y-magnetic flux
+        // cell-centered y-magnetic flux
         ctx.bYFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.vLeft[faceIdx] * bBar - ctx.bYLeft[faceIdx] * uBar);
 
-        // face-centered z-magnetic flux
+        // cell-centered z-magnetic flux
         ctx.bZFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.wLeft[faceIdx] * bBar - ctx.bZLeft[faceIdx] * uBar);
     }
 
@@ -193,7 +193,7 @@ public:
     HighOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
     void computeInterfaceFluxes(FluxContext& fluxContext) const {
         HighOrderGodunovKernel kern(fluxContext);
-        
+        execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
     ExecutionController const& execCtrl;
 };
@@ -203,7 +203,7 @@ public:
     LowOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
     void computeInterfaceFluxes(FluxContext& fluxContext) const {
         LowOrderGodunovKernel kern(fluxContext);
-        // execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
+        execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
     ExecutionController const& execCtrl;
 };
