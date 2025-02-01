@@ -1,13 +1,10 @@
 #pragma once
 
+#include <constants.hpp>
+
 #include <cmath>
 #include <cstddef>
 #include <vector>
-
-namespace {
-    double const vacPerm = 1.256E-6;                // N * A^-2
-    double const vacPermInv = 1.0 / vacPerm;        // A^2 / N
-}
 
 namespace MHD {
 
@@ -68,7 +65,7 @@ struct SpecificInternalEnergyKernel {
         rhoInv(rhoInv), rho_e(rho_e), u_u(u_u), b_b(b_b), eInt(eInt) {}
 
     inline void operator()(std::size_t idx) {
-        eInt[idx] = rho_e[idx] * rhoInv[idx] - 0.5 * u_u[idx] - 0.5 * vacPermInv * b_b[idx] * rhoInv[idx];
+        eInt[idx] = rho_e[idx] * rhoInv[idx] - 0.5 * u_u[idx] - 0.5 * VACUUM_PERMITTIVITY_INV * b_b[idx] * rhoInv[idx];
     }
 
     std::vector<double> const& rhoInv;
@@ -85,7 +82,7 @@ struct CaloricallyPerfectGasPressureKernel {
         gammaMinus1(gammaMinus1), rho(rho), eInt(eInt), b_b(b_b), pres(pres) {}
 
     inline void operator()(std::size_t idx) {
-        pres[idx] = rho[idx] * gammaMinus1 * eInt[idx] + 0.5 * vacPermInv * b_b[idx];
+        pres[idx] = rho[idx] * gammaMinus1 * eInt[idx] + 0.5 * VACUUM_PERMITTIVITY_INV * b_b[idx];
     }
 
     double const gammaMinus1;

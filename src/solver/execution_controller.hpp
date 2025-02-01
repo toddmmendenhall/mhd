@@ -2,32 +2,18 @@
 
 #include <kernels.hpp>
 
-namespace MHD
-{
+namespace MHD {
 
-class ExecutionController
-{
-private:
-    /* data */
+class ExecutionController {
 public:
-    ExecutionController(/* args */);
+    ExecutionController();
     ~ExecutionController();
 
     template <typename Func> void LaunchKernel(Func& kernel, size_t const n) const;
 };
 
-ExecutionController::ExecutionController(/* args */)
-{
-}
-
-ExecutionController::~ExecutionController()
-{
-}
-
-template <typename Func> void ExecutionController::LaunchKernel(Func& kernel, size_t const n) const
-{
-    for (size_t i = 0; i < n; ++i)
-    {
+template <typename Func> void ExecutionController::LaunchKernel(Func& kernel, size_t const n) const {
+    for (size_t i = 0; i < n; ++i) {
         kernel(i);
     }
 }

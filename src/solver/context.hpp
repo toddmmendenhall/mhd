@@ -5,13 +5,15 @@
 namespace MHD {
 
 struct FluxContext {
+    FluxContext();
+
     // properties of the face
     std::vector<double> const& faceArea;
     std::vector<double> const& faceNormalX;
     std::vector<double> const& faceNormalY;
     std::vector<double> const& faceNormalZ;
 
-    // primitive variables on the left of the face
+    // primitive variables on the left of the face, i.e. inside the cell
     std::vector<double> const& rhoLeft;
     std::vector<double> const& uLeft;
     std::vector<double> const& vLeft;
@@ -22,7 +24,7 @@ struct FluxContext {
     std::vector<double> const& bYLeft;
     std::vector<double> const& bZLeft;
 
-    // primitive variables on the right of the face
+    // primitive variables on the right of the face, i.e. outside the cell
     std::vector<double> const& rhoRight;
     std::vector<double> const& uRight;
     std::vector<double> const& vRight;
@@ -33,14 +35,15 @@ struct FluxContext {
     std::vector<double> const& bYRight;
     std::vector<double> const& bZRight;
 
-    // auxiliary variables on the left of the face
+    // auxiliary variables on the left of the face, i.e. inside the cell
     std::vector<double> const& uuLeft;
+    std::vector<double> const& bbLeft;
 
-
-    // auxiliary variables on the right of the face
+    // auxiliary variables on the right of the face, i.e. outside the cell
     std::vector<double> const& uuRight;
+    std::vector<double> const& bbRight;
 
-    // fluxes on the face
+    // fluxes on the face, i.e. between the cells
     std::vector<double>& rhoFlux;
     std::vector<double>& rhoUFlux;
     std::vector<double>& rhoVFlux;

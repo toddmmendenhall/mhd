@@ -36,6 +36,7 @@ enum class FluxScheme {
     HLLC = 0,
     KT = 1,
     HOG = 2,    // High Order Goduov
+    LOG = 3,    // Low Order Godunov
 };
 
 } // namespace MHD

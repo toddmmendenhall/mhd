@@ -51,8 +51,8 @@ void Solver::UpdateConservedFromPrimitives()
 }
 
 void Solver::ComputeFluxes() {
-    // FluxContext fluxContext;
-    // m_fluxScheme->computeInterfaceFluxes(fluxContext);
+    FluxContext fluxContext;
+    m_fluxScheme->computeInterfaceFluxes(fluxContext);
 }
 
 } // namespace MHD

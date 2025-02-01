@@ -18,9 +18,9 @@ struct VariableStore {
     std::vector<double> rhoV;       // y momentum density
     std::vector<double> rhoW;       // z momentum density
     std::vector<double> rhoE;       // total energy density
-    std::vector<double> phix;       // x magnetic flux
-    std::vector<double> phiy;       // y magnetic flux
-    std::vector<double> phiz;       // z magnetic flux
+    std::vector<double> phiX;       // x magnetic flux
+    std::vector<double> phiY;       // y magnetic flux
+    std::vector<double> phiZ;       // z magnetic flux
 
     // Primitive
     std::vector<double> u;          // x velocity

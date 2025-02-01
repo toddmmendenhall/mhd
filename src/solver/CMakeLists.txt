@@ -14,6 +14,7 @@ set(includes context.hpp
 add_library(solver ${sources} ${includes})
 
 target_link_libraries(solver PUBLIC grid)
+target_link_libraries(solver PUBLIC utilities)
 
 target_include_directories(solver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(solver PUBLIC ${CMAKE_SOURCE_DIR}/include)
