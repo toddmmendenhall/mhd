@@ -1,7 +1,6 @@
 #include <context.hpp>
 #include <execution_controller.hpp>
 #include <flux_scheme.hpp>
-#include <grid.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
 #include <reconstruction.hpp>
@@ -12,8 +11,7 @@
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile, IGrid const& grid) :
-    m_grid(grid) {
+Solver::Solver(Profile const& profile) {
     varStore = std::make_unique<VariableStore>();
     execCtrl = std::make_unique<ExecutionController>();
     m_fluxScheme = flux_scheme_factory(profile, *execCtrl);

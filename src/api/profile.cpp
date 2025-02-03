@@ -8,8 +8,8 @@ namespace MHD {
 Profile::Profile() {
     m_gridDimension = Dimension::ONE;
     m_gridGeometry = Geometry::CARTESIAN;
-    m_gridBounds = {-1.0, 1.0};
-    m_gridSpacing = {0.2};
+    m_gridBounds = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    m_gridSpacing = {0.1, 0.1, 0.1};
     m_gridBoundaryConditions = BoundaryCondition::DIRICHLET;
     m_spatialDerivativeMethod = SpatialDerivativeMethod::FINITE_DIFFERENCE;
     m_temporalIntegrationMethod = TemporalIntegrationMethod::FORWARD_EULER;
