@@ -8,8 +8,8 @@
 namespace MHD {
 
 Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
-    auto& bounds = profile.GetGridBounds();
-    auto& spacing = profile.GetGridSpacing();
+    auto& bounds = profile.m_gridBoundsOption;
+    auto& spacing = profile.m_gridSpacingsOption;
 
     auto numInteriorNodes = (bounds[1] - bounds[0]) / spacing[0];
 

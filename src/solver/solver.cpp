@@ -14,11 +14,13 @@ namespace MHD {
 Solver::Solver(Profile const& profile) {
     varStore = std::make_unique<VariableStore>();
     execCtrl = std::make_unique<ExecutionController>();
-    m_fluxScheme = flux_scheme_factory(profile, *execCtrl);
+    m_fluxScheme = fluxSchemeFactory(profile, *execCtrl);
     m_reconstruction = reconstructionFactory(profile, *execCtrl);
 }
 
-Solver::~Solver() = default;
+Error Solver::PerformTimeStep() {
+    return Error::SUCCESS;
+}
 
 void Solver::ComputePrimitivesFromConserved()
 {
@@ -52,12 +54,19 @@ void Solver::UpdateConservedFromPrimitives()
 
 void Solver::ComputeFluxes() {
     FluxContext fluxContext;
-    m_fluxScheme->computeInterfaceFluxes(fluxContext);
+    m_fluxScheme->ComputeInterfaceFluxes(fluxContext);
 }
 
 void Solver::ReconstructVariables() {
     ReconstructionContext context;
     m_reconstruction->compute(context);
+}
+
+std::unique_ptr<ISolver> solverFactory(Profile const& profile) {
+    if (profile.m_compressibleOption == CompressibleOption::COMPRESSIBLE) {
+        return std::make_unique<Solver>(profile);
+    }
+    return nullptr;
 }
 
 } // namespace MHD

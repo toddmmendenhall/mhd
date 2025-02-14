@@ -1,6 +1,5 @@
 # Accumulate sources
-set(sources calc.cpp
-            profile.cpp)
+set(sources calc.cpp)
 
 # Accumulate includes
 set(includes exception.hpp

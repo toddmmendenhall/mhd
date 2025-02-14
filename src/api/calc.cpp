@@ -9,7 +9,7 @@ namespace MHD {
 
 Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_grid = GridFactory(m_profile);
-    m_solver = std::make_unique<Solver>(m_profile);
+    m_solver = solverFactory(m_profile);
 }
 
 void Calc::Run() {}

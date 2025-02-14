@@ -6,41 +6,23 @@
 
 namespace MHD {
 
-class Profile {
-public:
-    Profile();
-    ~Profile() = default;
+struct Profile {
+    // Grid options
+    Dimension m_gridDimensionOption = Dimension::THREE;
+    Geometry m_gridGeometryOption = Geometry::CARTESIAN;
+    std::vector<double> m_gridBoundsOption = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
+    std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
 
-    Dimension const GetGridDimension() const;
-    Geometry const GetGridGeometry() const;
-    std::vector<double> const& GetGridBounds() const;
-    std::vector<double> const& GetGridSpacing() const;
-    BoundaryCondition const& GetGridBoundaryConditions() const;
-    SpatialDerivativeMethod const GetSpatialDerivativeMethod() const;
-    TemporalIntegrationMethod const GetTemporalIntegrationMethod() const;
-    FluxScheme const GetFluxScheme() const {return m_fluxScheme;}
-    ReconstructionOption const GetReconstructionOption() const { return m_reconstructionOption; }
+    // Solver options
+    BoundaryCondition m_gridBoundaryConditionOption = BoundaryCondition::DIRICHLET;
+    SpatialDerivativeMethod m_spatialDerivativeOption = SpatialDerivativeMethod::FINITE_DIFFERENCE;
+    TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
+    FluxScheme m_fluxOption = FluxScheme::HLLC;
+    ReconstructionOption m_reconstructionOption = ReconstructionOption::LINEAR;
 
-    void SetGridDimension(Dimension const dimension);
-    void SetGridGeometry(Geometry const geometry);
-    void SetGridBounds(std::vector<double> const& bounds);
-    void SetGridSpacing(std::vector<double> const& spacing);
-    void SetGridBoundaryConditions(BoundaryCondition const& boundaryConditions);
-    void SetSpatialDerivativeMethod(SpatialDerivativeMethod const method);
-    void SetTemporalIntegrationMethod(TemporalIntegrationMethod const method);
-    void SetFluxScheme(FluxScheme const value) {m_fluxScheme = value;}
-    void SetReconstructionOption(ReconstructionOption const option) { m_reconstructionOption = option; }
-
-private:
-    Dimension m_gridDimension;
-    Geometry m_gridGeometry;
-    std::vector<double> m_gridBounds;
-    std::vector<double> m_gridSpacing;
-    BoundaryCondition m_gridBoundaryConditions;
-    SpatialDerivativeMethod m_spatialDerivativeMethod;
-    TemporalIntegrationMethod m_temporalIntegrationMethod;
-    FluxScheme m_fluxScheme;
-    ReconstructionOption m_reconstructionOption;
+    // Phenomenon options
+    CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
+    ViscousOption m_viscousOption = ViscousOption::INVISCID;
 };
 
 } // namespace MHD

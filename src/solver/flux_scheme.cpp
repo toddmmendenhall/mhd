@@ -176,14 +176,14 @@ struct LowOrderGodunovKernel {
 
 class HLLC : public IFluxScheme {
 public:
-    void computeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
         HLLCKernel kern(fluxContext);
     }
 };
 
 class KT : public IFluxScheme {
 public:
-    void computeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
         KTKernel kern(fluxContext);
     }
 };
@@ -191,7 +191,7 @@ public:
 class HighOrderGodunov : public IFluxScheme {
 public:
     HighOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
-    void computeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
         HighOrderGodunovKernel kern(fluxContext);
         execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
@@ -201,15 +201,15 @@ public:
 class LowOrderGodunov : public IFluxScheme {
 public:
     LowOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
-    void computeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
         LowOrderGodunovKernel kern(fluxContext);
         execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
     ExecutionController const& execCtrl;
 };
 
-std::unique_ptr<IFluxScheme> flux_scheme_factory(Profile const& profile, ExecutionController const& execCtrl) {
-    auto fluxSchemeName = profile.GetFluxScheme();
+std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile, ExecutionController const& execCtrl) {
+    auto fluxSchemeName = profile.m_fluxOption;
     switch (fluxSchemeName) {
     case FluxScheme::HLLC:
         return std::make_unique<HLLC>();

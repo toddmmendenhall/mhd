@@ -6,7 +6,7 @@ namespace MHD {
 
 class IGrid;
 class Profile;
-class Solver;
+class ISolver;
 
 class Calc {
 public:
@@ -18,7 +18,7 @@ public:
 private:
     Profile const& m_profile;
     std::unique_ptr<IGrid> m_grid;
-    std::unique_ptr<Solver> m_solver;
+    std::unique_ptr<ISolver> m_solver;
 };
 
 } // namespace MHD

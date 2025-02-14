@@ -8,8 +8,8 @@
 namespace MHD {
 
 std::unique_ptr<IGrid> GridFactory(Profile const& profile) {
-    auto geometry = profile.GetGridGeometry();
-    auto dimension = profile.GetGridDimension();
+    auto geometry = profile.m_gridGeometryOption;
+    auto dimension = profile.m_gridDimensionOption;
 
     if (geometry == Geometry::CARTESIAN) {
         if (dimension == Dimension::ONE) {

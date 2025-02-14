@@ -43,4 +43,14 @@ enum class ReconstructionOption {
     LINEAR = 0,
 };
 
+enum class CompressibleOption {
+    COMPRESSIBLE = 0,
+    INCOMPRESSIBLE = 1,
+};
+
+enum class ViscousOption {
+    VISCOUS = 0,
+    INVISCID = 1,
+};
+
 } // namespace MHD

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <error.hpp>
+
 #include <memory>
 
 namespace MHD {
@@ -10,10 +12,17 @@ class VariableStore;
 class IFluxScheme;
 class IReconstruction;
 
-class Solver {
+class ISolver {
+public:
+    virtual ~ISolver() = default;
+    virtual Error PerformTimeStep() = 0;
+};
+
+class Solver : public ISolver {
 public:
     Solver(Profile const& profile);
-    ~Solver();
+    
+    Error PerformTimeStep();
 
     void ComputePrimitivesFromConserved();
 
@@ -29,5 +38,7 @@ private:
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<IReconstruction> m_reconstruction;
 };
+
+std::unique_ptr<ISolver> solverFactory(Profile const& profile);
 
 } // namespace MHD
