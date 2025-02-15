@@ -176,52 +176,50 @@ struct LowOrderGodunovKernel {
 
 class HLLC : public IFluxScheme {
 public:
-    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(ExecutionController const& execCtrl, FluxContext& fluxContext) const {
         HLLCKernel kern(fluxContext);
+        execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
 };
 
 class KT : public IFluxScheme {
 public:
-    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(ExecutionController const& execCtrl, FluxContext& fluxContext) const {
         KTKernel kern(fluxContext);
+        execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
 };
 
 class HighOrderGodunov : public IFluxScheme {
 public:
-    HighOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
-    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(ExecutionController const& execCtrl, FluxContext& fluxContext) const {
         HighOrderGodunovKernel kern(fluxContext);
         execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
-    ExecutionController const& execCtrl;
 };
 
 class LowOrderGodunov : public IFluxScheme {
 public:
-    LowOrderGodunov(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
-    void ComputeInterfaceFluxes(FluxContext& fluxContext) const {
+    void ComputeInterfaceFluxes(ExecutionController const& execCtrl, FluxContext& fluxContext) const {
         LowOrderGodunovKernel kern(fluxContext);
         execCtrl.LaunchKernel(kern, fluxContext.faceArea.size());
     }
-    ExecutionController const& execCtrl;
 };
 
-std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile, ExecutionController const& execCtrl) {
-    auto fluxSchemeName = profile.m_fluxOption;
-    switch (fluxSchemeName) {
-    case FluxScheme::HLLC:
+std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile) {
+    if (FluxScheme::HLLC == profile.m_fluxOption) {
         return std::make_unique<HLLC>();
-    case FluxScheme::KT:
-        return std::make_unique<KT>();
-    case FluxScheme::HOG:
-        return std::make_unique<HighOrderGodunov>(execCtrl);
-    case FluxScheme::LOG:
-        return std::make_unique<LowOrderGodunov>(execCtrl);
-    default:
-        throw Error::INVALID_FLUX_SCHEME;
     }
+    if (FluxScheme::KT == profile.m_fluxOption) {
+        return std::make_unique<KT>();
+    }
+    if (FluxScheme::HOG == profile.m_fluxOption) {
+        return std::make_unique<HighOrderGodunov>();
+    }
+    if (FluxScheme::LOG == profile.m_fluxOption) {
+        return std::make_unique<LowOrderGodunov>();
+    }
+    throw Error::INVALID_FLUX_SCHEME;
 }
 
 } // namespace MHD

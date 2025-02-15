@@ -7,10 +7,10 @@
 namespace MHD {
 
 class ExecutionController;
-class Profile;
-class VariableStore;
 class IFluxScheme;
 class IReconstruction;
+class Profile;
+class VariableStore;
 
 class ISolver {
 public:
@@ -20,7 +20,8 @@ public:
 
 class Solver : public ISolver {
 public:
-    Solver(Profile const& profile);
+    Solver(Profile const& profile, ExecutionController const& execCtrl,
+           VariableStore& varStore);
     
     Error PerformTimeStep();
 
@@ -33,12 +34,13 @@ public:
     void ReconstructVariables();
 
 private:
-    std::unique_ptr<VariableStore> varStore;
-    std::unique_ptr<ExecutionController> execCtrl;
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<IReconstruction> m_reconstruction;
+    ExecutionController const& m_execCtrl;
+    VariableStore& m_varStore;
 };
 
-std::unique_ptr<ISolver> solverFactory(Profile const& profile);
+std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
+                                       VariableStore& varStore);
 
 } // namespace MHD

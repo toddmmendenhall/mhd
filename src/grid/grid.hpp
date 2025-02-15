@@ -28,6 +28,6 @@ protected:
     std::vector<double> m_faceNormalsZ;
 };
 
-std::unique_ptr<IGrid> GridFactory(Profile const& profile);
+std::unique_ptr<IGrid> gridFactory(Profile const& profile);
 
 } // namespace MHD

@@ -4,9 +4,11 @@
 
 namespace MHD {
 
+class ExecutionController;
 class IGrid;
-class Profile;
 class ISolver;
+class Profile;
+class VariableStore;
 
 class Calc {
 public:
@@ -16,9 +18,11 @@ public:
     void Run();
     
 private:
-    Profile const& m_profile;
+    std::unique_ptr<ExecutionController> m_executionController;
     std::unique_ptr<IGrid> m_grid;
+    Profile const& m_profile;
     std::unique_ptr<ISolver> m_solver;
+    std::unique_ptr<VariableStore> m_variableStore;
 };
 
 } // namespace MHD

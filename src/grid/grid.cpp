@@ -7,19 +7,11 @@
 
 namespace MHD {
 
-std::unique_ptr<IGrid> GridFactory(Profile const& profile) {
-    auto geometry = profile.m_gridGeometryOption;
-    auto dimension = profile.m_gridDimensionOption;
-
-    if (geometry == Geometry::CARTESIAN) {
-        if (dimension == Dimension::ONE) {
-            return std::make_unique<Cartesian1DGrid>(profile);
-        } else {
-            throw Error::INVALID_GRID_DIMENSION;
-        }
-    } else {
-        throw Error::INVALID_GRID_GEOMETRY;
+std::unique_ptr<IGrid> gridFactory(Profile const& profile) {
+    if (Geometry::CARTESIAN == profile.m_gridGeometryOption && Dimension::ONE == profile.m_gridDimensionOption) {
+        return std::make_unique<Cartesian1DGrid>(profile);
     }
+    return nullptr;
 }
 
 } // namespace MHD

@@ -28,22 +28,17 @@ struct LinearReconstructionKernel {
 
 class LinearReconstruction : public IReconstruction {
 public:
-    LinearReconstruction(ExecutionController const& execCtrl) : execCtrl(execCtrl) {}
-    virtual void compute(ReconstructionContext& ctx) const {
-        LinearReconstructionKernel kernel(ctx);
-        execCtrl.LaunchKernel(kernel, ctx.rho.size(), ctx.dimension);
+    virtual void ComputeReconstructedVariables(ExecutionController const& execCtrl, ReconstructionContext& context) const {
+        LinearReconstructionKernel kernel(context);
+        execCtrl.LaunchKernel(kernel, context.rho.size(), context.dimension);
     }
-private:
-    ExecutionController const& execCtrl;
 };
 
-std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile, ExecutionController const& execCtrl) {
-    switch (profile.GetReconstructionOption()) {
-        case ReconstructionOption::LINEAR:
-            return std::make_unique<LinearReconstruction>(execCtrl);
-        default:
-            throw Error::INVALID_RECONSTRUCTION_OPTION;
+std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile) {
+    if (ReconstructionOption::LINEAR == profile.m_reconstructionOption) {
+        return std::make_unique<LinearReconstruction>();
     }
+    throw Error::INVALID_RECONSTRUCTION_OPTION;
 }
     
 } // namespace MHD

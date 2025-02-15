@@ -11,11 +11,10 @@
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile) {
-    varStore = std::make_unique<VariableStore>();
-    execCtrl = std::make_unique<ExecutionController>();
-    m_fluxScheme = fluxSchemeFactory(profile, *execCtrl);
-    m_reconstruction = reconstructionFactory(profile, *execCtrl);
+Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
+               VariableStore& varStore) : m_execCtrl(execCtrl), m_varStore(varStore) {
+    m_fluxScheme = fluxSchemeFactory(profile);
+    m_reconstruction = reconstructionFactory(profile);
 }
 
 Error Solver::PerformTimeStep() {
@@ -24,47 +23,46 @@ Error Solver::PerformTimeStep() {
 
 void Solver::ComputePrimitivesFromConserved()
 {
-    SpecificVolumeKernel rhoInvKern(varStore->rho, varStore->rhoInv);
-    execCtrl->LaunchKernel(rhoInvKern, varStore->rho.size());
+    SpecificVolumeKernel rhoInvKern(m_varStore.rho, m_varStore.rhoInv);
+    m_execCtrl.LaunchKernel(rhoInvKern, m_varStore.rho.size());
 
-    VelocityKernel velKern(varStore->rhoInv, varStore->rhoU, varStore->rhoV, varStore->rhoW,
-                           varStore->u, varStore->v, varStore->w, varStore->uu);
-    execCtrl->LaunchKernel(velKern, varStore->rho.size());
+    VelocityKernel velKern(m_varStore.rhoInv, m_varStore.rhoU, m_varStore.rhoV, m_varStore.rhoW,
+                           m_varStore.u, m_varStore.v, m_varStore.w, m_varStore.uu);
+    m_execCtrl.LaunchKernel(velKern, m_varStore.rho.size());
 
-    MagneticFieldSquaredKernel bSquaredKern(varStore->bX, varStore->bY, varStore->bZ,
-                                            varStore->bb);
-    execCtrl->LaunchKernel(bSquaredKern, varStore->rho.size());
+    MagneticFieldSquaredKernel bSquaredKern(m_varStore.bX, m_varStore.bY, m_varStore.bZ,
+                                            m_varStore.bb);
+    m_execCtrl.LaunchKernel(bSquaredKern, m_varStore.rho.size());
 
-    SpecificInternalEnergyKernel eKern(varStore->rhoInv, varStore->rhoE, varStore->uu, varStore->bb,
-                                          varStore->e);
-    execCtrl->LaunchKernel(eKern, varStore->rho.size());
+    SpecificInternalEnergyKernel eKern(m_varStore.rhoInv, m_varStore.rhoE, m_varStore.uu, m_varStore.bb,
+                                          m_varStore.e);
+    m_execCtrl.LaunchKernel(eKern, m_varStore.rho.size());
 
-    CaloricallyPerfectGasPressureKernel pKern(varStore->gamma - 1.0, varStore->rho, varStore->e, varStore->bb,
-                                                 varStore->p);
-    execCtrl->LaunchKernel(pKern, varStore->rho.size());
+    CaloricallyPerfectGasPressureKernel pKern(m_varStore.gamma - 1.0, m_varStore.rho, m_varStore.e, m_varStore.bb,
+                                                 m_varStore.p);
+    m_execCtrl.LaunchKernel(pKern, m_varStore.rho.size());
 
-    PerfectGasTemperatureKernel tempKern(1.0 / varStore->rSpec, varStore->rhoInv,
-                                         varStore->p, varStore->t);
-    execCtrl->LaunchKernel(tempKern, varStore->rho.size());
+    PerfectGasTemperatureKernel tempKern(1.0 / m_varStore.rSpec, m_varStore.rhoInv,
+                                         m_varStore.p, m_varStore.t);
+    m_execCtrl.LaunchKernel(tempKern, m_varStore.rho.size());
 }
 
-void Solver::UpdateConservedFromPrimitives()
-{
-}
+void Solver::UpdateConservedFromPrimitives() {}
 
 void Solver::ComputeFluxes() {
-    FluxContext fluxContext;
-    m_fluxScheme->ComputeInterfaceFluxes(fluxContext);
+    FluxContext context;
+    m_fluxScheme->ComputeInterfaceFluxes(m_execCtrl, context);
 }
 
 void Solver::ReconstructVariables() {
     ReconstructionContext context;
-    m_reconstruction->compute(context);
+    m_reconstruction->ComputeReconstructedVariables(m_execCtrl, context);
 }
 
-std::unique_ptr<ISolver> solverFactory(Profile const& profile) {
+std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
+                                       VariableStore& varStore) {
     if (profile.m_compressibleOption == CompressibleOption::COMPRESSIBLE) {
-        return std::make_unique<Solver>(profile);
+        return std::make_unique<Solver>(profile, execCtrl, varStore);
     }
     return nullptr;
 }
