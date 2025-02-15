@@ -23,6 +23,7 @@ struct Profile {
     // Phenomenon options
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
     ViscousOption m_viscousOption = ViscousOption::INVISCID;
+    HydroOption m_hydroOption = HydroOption::MAGNETO_HYDRO;
 };
 
 } // namespace MHD

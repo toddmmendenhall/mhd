@@ -60,51 +60,51 @@ struct MagneticFieldSquaredKernel {
 };
 
 struct SpecificInternalEnergyKernel {
-    SpecificInternalEnergyKernel(std::vector<double> const& rhoInv, std::vector<double> const& rho_e, std::vector<double> const& u_u,
-                                 std::vector<double> const& b_b, std::vector<double>& eInt) :
-        rhoInv(rhoInv), rho_e(rho_e), u_u(u_u), b_b(b_b), eInt(eInt) {}
+    SpecificInternalEnergyKernel(std::vector<double> const& rhoInv, std::vector<double> const& rhoE, std::vector<double> const& uu,
+                                 std::vector<double> const& bb, std::vector<double>& e) :
+        m_rhoInv(rhoInv), m_rhoE(rhoE), m_uu(uu), m_bb(bb), m_e(e) {}
 
     inline void operator()(std::size_t idx) {
-        eInt[idx] = rho_e[idx] * rhoInv[idx] - 0.5 * u_u[idx] - 0.5 * VACUUM_PERMITTIVITY_INV * b_b[idx] * rhoInv[idx];
+        m_e[idx] = m_rhoE[idx] * m_rhoInv[idx] - 0.5 * m_uu[idx] - 0.5 * VACUUM_PERMEABILITY_INV * m_bb[idx] * m_rhoInv[idx];
     }
 
-    std::vector<double> const& rhoInv;
-    std::vector<double> const& rho_e;
-    std::vector<double> const& u_u;
-    std::vector<double> const& b_b;
-    std::vector<double>& eInt;
+    std::vector<double> const& m_rhoInv;
+    std::vector<double> const& m_rhoE;
+    std::vector<double> const& m_uu;
+    std::vector<double> const& m_bb;
+    std::vector<double>& m_e;
 };
 
 struct CaloricallyPerfectGasPressureKernel {
-    CaloricallyPerfectGasPressureKernel(double const gammaMinus1,
-                                        std::vector<double> const& rho, std::vector<double> const& eInt, std::vector<double> const& b_b,
-                                        std::vector<double>& pres) :
-        gammaMinus1(gammaMinus1), rho(rho), eInt(eInt), b_b(b_b), pres(pres) {}
+    CaloricallyPerfectGasPressureKernel(double const gamma,
+                                        std::vector<double> const& rho, std::vector<double> const& e, std::vector<double> const& bb,
+                                        std::vector<double>& p) :
+        m_gammaMinus1(gamma - 1.0), m_rho(rho), m_e(e), m_bb(bb), m_p(p) {}
 
     inline void operator()(std::size_t idx) {
-        pres[idx] = rho[idx] * gammaMinus1 * eInt[idx] + 0.5 * VACUUM_PERMITTIVITY_INV * b_b[idx];
+        m_p[idx] = m_rho[idx] * m_gammaMinus1 * m_e[idx] + 0.5 * VACUUM_PERMEABILITY_INV * m_bb[idx];
     }
 
-    double const gammaMinus1;
-    std::vector<double> const& rho;
-    std::vector<double> const& eInt;
-    std::vector<double> const& b_b;
-    std::vector<double>& pres;
+    double const m_gammaMinus1;
+    std::vector<double> const& m_rho;
+    std::vector<double> const& m_e;
+    std::vector<double> const& m_bb;
+    std::vector<double>& m_p;
 };
 
 struct PerfectGasTemperatureKernel {
-    PerfectGasTemperatureKernel(double const rSpecInv, std::vector<double> const& rhoInv,
-                                std::vector<double> const& pres, std::vector<double>& temp) :
-        rSpecInv(rSpecInv), rhoInv(rhoInv), pres(pres), temp(temp) {}
+    PerfectGasTemperatureKernel(double const r, std::vector<double> const& rhoInv,
+                                std::vector<double> const& p, std::vector<double>& t) :
+        m_rInv(1.0 / r), m_rhoInv(rhoInv), m_p(p), m_t(t) {}
 
     inline void operator()(std::size_t idx) {
-        temp[idx] = pres[idx] * rhoInv[idx] * rSpecInv;
+        m_t[idx] = m_p[idx] * m_rhoInv[idx] * m_rInv;
     }
 
-    double const rSpecInv;
-    std::vector<double> const& rhoInv;
-    std::vector<double> const& pres;
-    std::vector<double>& temp;
+    double const m_rInv;
+    std::vector<double> const& m_rhoInv;
+    std::vector<double> const& m_p;
+    std::vector<double>& m_t;
 };
 
 double inline CpOverR(std::vector<double> const& a, double const T) {
@@ -124,14 +124,14 @@ double inline SOverR(std::vector<double> const& a, double const T) {
 
 struct ThermallyPerfectGasPressureKernel {
     ThermallyPerfectGasPressureKernel(std::vector<double> const& rho, std::vector<double>& p) :
-        rho(rho), p(p) {}
+        m_rho(rho), m_p(p) {}
 
     void operator()(std::size_t idx) {
-        p[idx] = rho[idx];
+        m_p[idx] = m_rho[idx];
     }
 
-    std::vector<double> const& rho;
-    std::vector<double>& p;
+    std::vector<double> const& m_rho;
+    std::vector<double>& m_p;
 };
 
 } // namespace MHD

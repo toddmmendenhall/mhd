@@ -53,4 +53,9 @@ enum class ViscousOption {
     INVISCID = 1,
 };
 
+enum class HydroOption {
+    MAGNETO_HYDRO = 0,
+    PURE_HYDRO = 1,
+};
+
 } // namespace MHD

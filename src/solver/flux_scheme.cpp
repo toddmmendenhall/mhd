@@ -60,10 +60,10 @@ struct HighOrderGodunovKernel {
         auto rhoWRight = ctx.rhoRight[faceIdx] * ctx.wRight[faceIdx];
 
         // cell-centered total energy density on the left of the face
-        auto rhoELeft = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMITTIVITY_INV * ctx.bbLeft[faceIdx];
+        auto rhoELeft = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbLeft[faceIdx];
 
         // cell-centered total energy density on the right of the face
-        auto rhoERight = ctx.rhoRight[faceIdx] * (ctx.eRight[faceIdx] + 0.5 * ctx.uuRight[faceIdx]) + 0.5 * VACUUM_PERMITTIVITY_INV * ctx.bbRight[faceIdx];
+        auto rhoERight = ctx.rhoRight[faceIdx] * (ctx.eRight[faceIdx] + 0.5 * ctx.uuRight[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbRight[faceIdx];
 
         // cell-centered dot(u,B) on the left of the face
         auto uDotBLeft = ctx.uLeft[faceIdx] * ctx.bXLeft[faceIdx] +
@@ -139,7 +139,7 @@ struct LowOrderGodunovKernel {
         auto rhoW = ctx.rhoLeft[faceIdx] * ctx.wLeft[faceIdx];
 
         // cell-centered total energy density
-        auto rhoE = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMITTIVITY_INV * ctx.bbLeft[faceIdx];
+        auto rhoE = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbLeft[faceIdx];
 
         // cell-centered dot(u,B)
         auto uDotB = ctx.uLeft[faceIdx] * ctx.bXLeft[faceIdx] +
