@@ -155,4 +155,22 @@ struct MomentumDensityKernel {
     std::vector<double>& m_rhoW;
 };
 
+struct TotalEnergyDensityKernel {
+    TotalEnergyDensityKernel(std::vector<double> const& rho, std::vector<double> const& rhoInv,
+                             std::vector<double> const& uu, std::vector<double> const& e,
+                             std::vector<double> const& bb, std::vector<double>& rhoE) :
+        m_rho(rho), m_rhoInv(rhoInv), m_uu(uu), m_e(e), m_bb(bb), m_rhoE(rhoE) {}
+
+    void operator()(std::size_t idx) {
+        m_rhoE[idx] = m_rho[idx] * m_e[idx] + 0.5 * m_uu[idx] + 0.5 * VACUUM_PERMEABILITY_INV * m_bb[idx] * m_rhoInv[idx];
+    }
+
+    std::vector<double> const& m_rho;
+    std::vector<double> const& m_rhoInv;
+    std::vector<double> const& m_uu;
+    std::vector<double> const& m_e;
+    std::vector<double> const& m_bb;
+    std::vector<double>& m_rhoE;
+};
+
 } // namespace MHD

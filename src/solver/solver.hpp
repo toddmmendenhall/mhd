@@ -8,6 +8,7 @@ namespace MHD {
 
 class ElectricFieldCalculator;
 class ExecutionController;
+class IBoundaryCondition;
 class IFluxScheme;
 class IReconstruction;
 class MagneticFieldCalculator;
@@ -39,9 +40,12 @@ public:
 
     void ComputeMagneticFields();
 
+    void ApplyBoundaryConditions();
+
 private:
     std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
     std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
+    std::unique_ptr<IBoundaryCondition> m_boundCon;
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<IReconstruction> m_reconstruction;
     ExecutionController const& m_execCtrl;

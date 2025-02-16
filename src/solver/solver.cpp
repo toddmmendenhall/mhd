@@ -1,3 +1,4 @@
+#include <boundary_condition.hpp>
 #include <context.hpp>
 #include <electric_field.hpp>
 #include <execution_controller.hpp>
@@ -18,10 +19,12 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
     m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
     m_fluxScheme = fluxSchemeFactory(profile);
     m_reconstruction = reconstructionFactory(profile);
+    m_boundCon = boundaryConditionFactory(profile);
 }
 
 Error Solver::PerformTimeStep() {
     ComputePrimitivesFromConserved();
+    ApplyBoundaryConditions();
     ComputeFluxes();
     ComputeElectricFields();
     ComputeMagneticFields();
@@ -60,6 +63,11 @@ void Solver::UpdateConservedFromPrimitives() {
     MomentumDensityKernel momentumDensityKern(m_varStore.m_rho, m_varStore.m_u, m_varStore.m_v, m_varStore.m_w,
                                               m_varStore.m_rhoU, m_varStore.m_rhoV, m_varStore.m_rhoW);
     m_execCtrl.LaunchKernel(momentumDensityKern, m_varStore.m_rho.size());
+
+    TotalEnergyDensityKernel totalEnergyDensityKern(m_varStore.m_rho, m_varStore.m_rhoInv,
+                                                    m_varStore.m_uu, m_varStore.m_e,
+                                                    m_varStore.m_bb, m_varStore.m_rhoE);
+    m_execCtrl.LaunchKernel(totalEnergyDensityKern, m_varStore.m_rho.size());
 }
 
 void Solver::ComputeFluxes() {
@@ -80,6 +88,11 @@ void Solver::ComputeElectricFields() {
 void Solver::ComputeMagneticFields() {
     MagneticFieldContext context;
     m_bFieldCalc->Compute(m_execCtrl, context);
+}
+
+void Solver::ApplyBoundaryConditions() {
+    BoundaryConditionContext context;
+    m_boundCon->Compute(m_execCtrl, context);
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,

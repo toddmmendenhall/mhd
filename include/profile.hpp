@@ -14,7 +14,7 @@ struct Profile {
     std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
 
     // Solver options
-    BoundaryCondition m_gridBoundaryConditionOption = BoundaryCondition::DIRICHLET;
+    BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::OUTFLOW;
     SpatialDerivativeMethod m_spatialDerivativeOption = SpatialDerivativeMethod::FINITE_DIFFERENCE;
     TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
     FluxScheme m_fluxOption = FluxScheme::HLLC;

@@ -129,4 +129,29 @@ struct MagneticFieldContext {
     std::vector<double>& m_bZ;
 };
 
+struct BoundaryConditionContext {
+    BoundaryConditionContext();
+
+    std::vector<std::size_t> const& m_boundaryNodeIndices;
+
+    // properties of the face
+    std::vector<double> const& faceNormalX;
+    std::vector<double> const& faceNormalY;
+    std::vector<double> const& faceNormalZ;
+
+    // Primitives on the boundary
+    std::vector<double>& u;
+    std::vector<double>& v;
+    std::vector<double>& w;
+    std::vector<double>& p;
+
+    // Primitives inside the boundary
+    std::vector<double> const& uIn;
+    std::vector<double> const& vIn;
+    std::vector<double> const& wIn;
+
+    // Primitives outide the boundary
+    double const pOut;
+};
+
 } // namespace MHD

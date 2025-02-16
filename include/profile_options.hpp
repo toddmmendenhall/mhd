@@ -12,10 +12,8 @@ enum class Geometry {
     CARTESIAN = 0,
 };
 
-enum class BoundaryCondition {
-    NOT_A_BOUNDARY = 0,
-    DIRICHLET = 1,
-    NEUMANN = 2,
+enum class BoundaryConditionOption {
+    OUTFLOW = 0,
 };
 
 enum class SpatialDerivativeMethod {
