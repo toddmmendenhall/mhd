@@ -56,4 +56,9 @@ enum class HydroOption {
     PURE_HYDRO = 1,
 };
 
+enum class OutputDataOption {
+    NO = 0,
+    YES = 1,
+};
+
 } // namespace MHD

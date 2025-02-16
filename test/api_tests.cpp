@@ -1,3 +1,4 @@
+#include <calc.hpp>
 #include <profile.hpp>
 #include <profile_options.hpp>
 
@@ -8,4 +9,9 @@
 TEST(APITests, CanCreateProfile) {
     MHD::Profile profile;
     EXPECT_EQ(MHD::Dimension::ONE, profile.m_gridDimensionOption);
+}
+
+TEST(APITests, CanCreateCalc) {
+    MHD::Profile profile;
+    MHD::Calc calc(profile);
 }

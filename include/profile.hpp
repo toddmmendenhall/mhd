@@ -24,6 +24,9 @@ struct Profile {
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
     ViscousOption m_viscousOption = ViscousOption::INVISCID;
     HydroOption m_hydroOption = HydroOption::MAGNETO_HYDRO;
+
+    // Generic options
+    OutputDataOption m_outputDataOption = OutputDataOption::NO;
 };
 
 } // namespace MHD

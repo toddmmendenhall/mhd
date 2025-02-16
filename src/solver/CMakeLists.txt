@@ -1,5 +1,6 @@
 # Accumulate sources
 set(sources flux_scheme.cpp
+            execution_controller.cpp
             solver.cpp)
 
 # Accumulate includes
