@@ -12,6 +12,7 @@ struct VariableStore {
     double const r = 8.314 / 0.0280134; // specific gas constant for N2
     double const gamma = 1.4;           // ratio of C_p to C_v for N2 at 298 K and 1 atm
 
+    // Cell-centered
     // Conserved
     std::vector<double> m_rho;      // mass density
     std::vector<double> m_rhoU;     // x momentum density
@@ -34,9 +35,18 @@ struct VariableStore {
     std::vector<double> m_uu;       // velocity squared
     std::vector<double> m_t;        // temperature
     std::vector<double> m_bb;       // magnetic field squared
-    std::vector<double> m_eX;       // x electric field
-    std::vector<double> m_eY;       // y electric field
-    std::vector<double> m_eZ;       // z electric field
+
+    // Face-centered
+    // Primitive
+    std::vector<double> m_faceBX;       // x magnetic field
+    std::vector<double> m_faceBY;       // y magnetic field
+    std::vector<double> m_faceBZ;       // z magnetic field
+
+    // Edge-centered
+    // Auxiliary
+    std::vector<double> m_edgeEX;       // x electric field
+    std::vector<double> m_edgeEY;       // y electric field
+    std::vector<double> m_edgeEZ;       // z electric field
 };
 
 } // namespace MHD

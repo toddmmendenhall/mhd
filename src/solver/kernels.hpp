@@ -134,4 +134,25 @@ struct ThermallyPerfectGasPressureKernel {
     std::vector<double>& m_p;
 };
 
+struct MomentumDensityKernel {
+    MomentumDensityKernel(std::vector<double> const& rho,
+                          std::vector<double> const& u, std::vector<double> const& v, std::vector<double> const& w,
+                          std::vector<double>& rhoU, std::vector<double>& rhoV, std::vector<double>& rhoW) :
+        m_rho(rho), m_u(u), m_v(v), m_w(w), m_rhoU(rhoU), m_rhoV(rhoV), m_rhoW(rhoW) {}
+    
+    void operator()(std::size_t idx) {
+        m_rhoU[idx] = m_rho[idx] * m_u[idx];
+        m_rhoV[idx] = m_rho[idx] * m_v[idx];
+        m_rhoW[idx] = m_rho[idx] * m_w[idx];
+    }
+
+    std::vector<double> const& m_rho;
+    std::vector<double> const& m_u;
+    std::vector<double> const& m_v;
+    std::vector<double> const& m_w;
+    std::vector<double>& m_rhoU;
+    std::vector<double>& m_rhoV;
+    std::vector<double>& m_rhoW;
+};
+
 } // namespace MHD

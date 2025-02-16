@@ -6,9 +6,11 @@
 
 namespace MHD {
 
+class ElectricFieldCalculator;
 class ExecutionController;
 class IFluxScheme;
 class IReconstruction;
+class MagneticFieldCalculator;
 class Profile;
 class VariableStore;
 
@@ -33,7 +35,13 @@ public:
 
     void ReconstructVariables();
 
+    void ComputeElectricFields();
+
+    void ComputeMagneticFields();
+
 private:
+    std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
+    std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<IReconstruction> m_reconstruction;
     ExecutionController const& m_execCtrl;

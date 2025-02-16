@@ -92,4 +92,41 @@ struct ReconstructionContext {
     std::vector<double>& bZ;
 };
 
+struct ElectricFieldContext {
+    ElectricFieldContext();
+
+    // Edge variables
+    std::vector<std::vector<std::size_t>> const& m_edgeToFaceIdx;
+
+    // Face-centered
+    std::vector<double> const& m_fluxBX;
+    std::vector<double> const& m_fluxBY;
+    std::vector<double> const& m_fluxBZ;
+
+    // Edge-centered
+    std::vector<double>& m_eX;
+    std::vector<double>& m_eY;
+    std::vector<double>& m_eZ;
+};
+
+struct MagneticFieldContext {
+    MagneticFieldContext();
+
+    double const m_timeStep;
+    std::vector<double> const& m_cellSize;
+
+    // Face variables
+    std::vector<std::vector<std::size_t>> const& m_faceToEdgeIdx;
+
+    // Edge-centered
+    std::vector<double> const& m_eX;
+    std::vector<double> const& m_eY;
+    std::vector<double> const& m_eZ;
+
+    // Face-centered
+    std::vector<double>& m_bX;
+    std::vector<double>& m_bY;
+    std::vector<double>& m_bZ;
+};
+
 } // namespace MHD

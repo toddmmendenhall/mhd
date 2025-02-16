@@ -4,6 +4,7 @@ set(sources flux_scheme.cpp
 
 # Accumulate includes
 set(includes context.hpp
+             electric_field.hpp
              execution_controller.hpp
              flux_scheme.hpp
              kernels.hpp

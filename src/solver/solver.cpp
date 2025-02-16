@@ -1,4 +1,5 @@
 #include <context.hpp>
+#include <electric_field.hpp>
 #include <execution_controller.hpp>
 #include <flux_scheme.hpp>
 #include <kernels.hpp>
@@ -13,11 +14,19 @@ namespace MHD {
 
 Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
                VariableStore& varStore) : m_execCtrl(execCtrl), m_varStore(varStore) {
+    m_bFieldCalc = std::make_unique<MagneticFieldCalculator>();
+    m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
     m_fluxScheme = fluxSchemeFactory(profile);
     m_reconstruction = reconstructionFactory(profile);
 }
 
 Error Solver::PerformTimeStep() {
+    ComputePrimitivesFromConserved();
+    ComputeFluxes();
+    ComputeElectricFields();
+    ComputeMagneticFields();
+    ReconstructVariables();
+    UpdateConservedFromPrimitives();
     return Error::SUCCESS;
 }
 
@@ -47,7 +56,11 @@ void Solver::ComputePrimitivesFromConserved()
     m_execCtrl.LaunchKernel(tempKern, m_varStore.m_rho.size());
 }
 
-void Solver::UpdateConservedFromPrimitives() {}
+void Solver::UpdateConservedFromPrimitives() {
+    MomentumDensityKernel momentumDensityKern(m_varStore.m_rho, m_varStore.m_u, m_varStore.m_v, m_varStore.m_w,
+                                              m_varStore.m_rhoU, m_varStore.m_rhoV, m_varStore.m_rhoW);
+    m_execCtrl.LaunchKernel(momentumDensityKern, m_varStore.m_rho.size());
+}
 
 void Solver::ComputeFluxes() {
     FluxContext context;
@@ -57,6 +70,16 @@ void Solver::ComputeFluxes() {
 void Solver::ReconstructVariables() {
     ReconstructionContext context;
     m_reconstruction->ComputeReconstructedVariables(m_execCtrl, context);
+}
+
+void Solver::ComputeElectricFields() {
+    ElectricFieldContext context;
+    m_eFieldCalc->Compute(m_execCtrl, context);
+}
+
+void Solver::ComputeMagneticFields() {
+    MagneticFieldContext context;
+    m_bFieldCalc->Compute(m_execCtrl, context);
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
