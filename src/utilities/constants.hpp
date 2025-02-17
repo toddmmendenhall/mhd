@@ -2,6 +2,7 @@
 
 namespace MHD {
 
+double constexpr ATMOSPHERIC_STANDARD_TEMPERATURE = 288.15;             // K
 double constexpr ATMOSPHERIC_DENSITY_STP = 1.204;                       // kg / m^3
 double constexpr ATMOSPHERIC_PRESSURE_STP = 101325;                     // Pa
 

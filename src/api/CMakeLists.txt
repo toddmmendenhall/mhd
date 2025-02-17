@@ -12,7 +12,7 @@ set(public_includes ${public_include_dir}/calc.hpp
                     ${public_include_dir}/profile_options.hpp)
 
 # Setup library
-add_library(api ${sources} ${includes} ${public_includes})
+add_library(api SHARED ${sources} ${includes} ${public_includes})
 
 target_include_directories(api PUBLIC ${public_include_dir})
 target_include_directories(api PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

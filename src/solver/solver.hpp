@@ -10,6 +10,7 @@ class ElectricFieldCalculator;
 class ExecutionController;
 class IBoundaryCondition;
 class IFluxScheme;
+class IGrid;
 class IReconstruction;
 class MagneticFieldCalculator;
 class Profile;
@@ -18,7 +19,7 @@ class VariableStore;
 class ISolver {
 public:
     virtual ~ISolver() = default;
-    virtual Error PerformTimeStep() = 0;
+    virtual Error PerformTimeStep(IGrid const& grid) = 0;
 };
 
 class Solver : public ISolver {
@@ -26,13 +27,13 @@ public:
     Solver(Profile const& profile, ExecutionController const& execCtrl,
            VariableStore& varStore);
     
-    Error PerformTimeStep();
+    Error PerformTimeStep(IGrid const& grid);
 
     void ComputePrimitivesFromConserved();
 
     void UpdateConservedFromPrimitives();
 
-    void ComputeFluxes();
+    void ComputeFluxes(IGrid const& grid);
 
     void ReconstructVariables();
 

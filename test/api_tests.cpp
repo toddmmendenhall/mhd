@@ -13,5 +13,8 @@ TEST(APITests, CanCreateProfile) {
 
 TEST(APITests, CanCreateCalc) {
     MHD::Profile profile;
+    profile.m_outputDataOption = MHD::OutputDataOption::YES;
     MHD::Calc calc(profile);
+    calc.SetInitialConditions();
+    calc.Run();
 }

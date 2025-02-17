@@ -34,7 +34,7 @@ namespace MHD {
 
 class OutflowBoundaryCondition : public IBoundaryCondition {
 public:
-    OutflowBoundaryCondition();
+    OutflowBoundaryCondition() = default;
 
     void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
         OutflowBoundaryConditionKernel kern(context);

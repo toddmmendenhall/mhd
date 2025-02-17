@@ -1,14 +1,17 @@
 # Accumulate sources
 set(sources flux_scheme.cpp
-            execution_controller.cpp
+            boundary_condition.cpp
+            reconstruction.cpp
             solver.cpp)
 
 # Accumulate includes
 set(includes context.hpp
              electric_field.hpp
+             boundary_condition.hpp
              execution_controller.hpp
              flux_scheme.hpp
              kernels.hpp
+             reconstruction.hpp
              solver.hpp
              variable_store.hpp)
 

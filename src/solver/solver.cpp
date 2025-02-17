@@ -3,6 +3,7 @@
 #include <electric_field.hpp>
 #include <execution_controller.hpp>
 #include <flux_scheme.hpp>
+#include <grid.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
 #include <reconstruction.hpp>
@@ -22,10 +23,10 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
     m_boundCon = boundaryConditionFactory(profile);
 }
 
-Error Solver::PerformTimeStep() {
+Error Solver::PerformTimeStep(IGrid const& grid) {
     ComputePrimitivesFromConserved();
     ApplyBoundaryConditions();
-    ComputeFluxes();
+    ComputeFluxes(grid);
     ComputeElectricFields();
     ComputeMagneticFields();
     ReconstructVariables();
@@ -70,8 +71,8 @@ void Solver::UpdateConservedFromPrimitives() {
     m_execCtrl.LaunchKernel(totalEnergyDensityKern, m_varStore.m_rho.size());
 }
 
-void Solver::ComputeFluxes() {
-    FluxContext context;
+void Solver::ComputeFluxes(IGrid const& grid) {
+    FluxContext context(m_varStore, grid);
     m_fluxScheme->ComputeInterfaceFluxes(m_execCtrl, context);
 }
 

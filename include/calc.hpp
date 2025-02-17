@@ -15,6 +15,7 @@ public:
     Calc(Profile const& profile);
     ~Calc();
 
+    void SetInitialConditions();
     void Run();
     
 private:
