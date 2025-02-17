@@ -16,5 +16,6 @@ TEST(APITests, CanCreateCalc) {
     profile.m_outputDataOption = MHD::OutputDataOption::YES;
     MHD::Calc calc(profile);
     calc.SetInitialConditions();
+    calc.SetSodShockTube();
     calc.Run();
 }

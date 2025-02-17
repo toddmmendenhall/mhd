@@ -10,6 +10,7 @@ set(includes context.hpp
              boundary_condition.hpp
              execution_controller.hpp
              flux_scheme.hpp
+             integration.hpp
              kernels.hpp
              reconstruction.hpp
              solver.hpp

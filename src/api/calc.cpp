@@ -2,6 +2,7 @@
 #include <constants.hpp>
 #include <execution_controller.hpp>
 #include <grid.hpp>
+#include <integration.hpp>
 #include <profile.hpp>
 #include <solver.hpp>
 #include <variable_store.hpp>
@@ -18,6 +19,7 @@ Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_variableStore = std::make_unique<VariableStore>();
     m_grid = gridFactory(m_profile);
     m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore);
+    m_integrator = integratorFactor();
 }
 
 Calc::~Calc() = default;
@@ -49,12 +51,27 @@ void Calc::SetInitialConditions() {
     m_variableStore->m_edgeEZ.resize(size, 0.0);
 }
 
-void Calc::Run()
-{
-    if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-        WriteData(*m_variableStore);
+void Calc::SetSodShockTube() {
+    std::size_t const size = m_variableStore->m_rho.size();
+    for (std::size_t i = 0; i < size; ++i) {
+        if (i >= size / 2) {
+            m_variableStore->m_rho[i] *= 0.125;
+            m_variableStore->m_p[i] *= 0.1;
+        }
     }
-    m_solver->PerformTimeStep(*m_grid);
+}
+
+void Calc::Run() {
+    while (m_currentTime < m_duration) {
+        std::cout << m_currentTime;
+        if (OutputDataOption::YES == m_profile.m_outputDataOption) {
+            WriteData(*m_variableStore);
+        }
+        m_solver->PerformTimeStep(*m_grid);
+        m_integrator->Solve(*m_executionController, *m_variableStore);
+        m_currentTime += 0.01;
+        m_currentStep++;
+    }
 }
 
 void Calc::WriteData(VariableStore const& varStore) {
