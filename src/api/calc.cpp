@@ -24,37 +24,37 @@ Calc::~Calc() = default;
 
 void Calc::SetInitialConditions() {
     std::size_t const size = 10;
-    m_variableStore->m_rho.resize(size, ATMOSPHERIC_DENSITY_STP);
-    m_variableStore->m_rhoU.resize(size, 0.0);
-    m_variableStore->m_rhoV.resize(size, 0.0);
-    m_variableStore->m_rhoW.resize(size, 0.0);
-    m_variableStore->m_rhoE.resize(size, 0.0);
-    m_variableStore->m_u.resize(size, 0.0);
-    m_variableStore->m_v.resize(size, 0.0);
-    m_variableStore->m_w.resize(size, 0.0);
-    m_variableStore->m_p.resize(size, ATMOSPHERIC_PRESSURE_STP);
-    m_variableStore->m_e.resize(size, ATMOSPHERIC_PRESSURE_STP);
-    m_variableStore->m_bX.resize(size, 0.0);
-    m_variableStore->m_bY.resize(size, 0.0);
-    m_variableStore->m_bZ.resize(size, 0.0);
-    m_variableStore->m_rhoInv.resize(size,0.0);
-    m_variableStore->m_uu.resize(size, 0.0);
-    m_variableStore->m_t.resize(size, ATMOSPHERIC_STANDARD_TEMPERATURE);
-    m_variableStore->m_bb.resize(size, 0.0);
-    m_variableStore->m_faceBX.resize(size, 0.0);
-    m_variableStore->m_faceBY.resize(size, 0.0);
-    m_variableStore->m_faceBZ.resize(size, 0.0);
-    m_variableStore->m_edgeEX.resize(size, 0.0);
-    m_variableStore->m_edgeEY.resize(size, 0.0);
-    m_variableStore->m_edgeEZ.resize(size, 0.0);
+    m_variableStore->rho.resize(size, ATMOSPHERIC_DENSITY_STP);
+    m_variableStore->rhoU.resize(size, 0.0);
+    m_variableStore->rhoV.resize(size, 0.0);
+    m_variableStore->rhoW.resize(size, 0.0);
+    m_variableStore->rhoE.resize(size, 0.0);
+    m_variableStore->u.resize(size, 0.0);
+    m_variableStore->v.resize(size, 0.0);
+    m_variableStore->w.resize(size, 0.0);
+    m_variableStore->p.resize(size, ATMOSPHERIC_PRESSURE_STP);
+    m_variableStore->e.resize(size, ATMOSPHERIC_PRESSURE_STP);
+    m_variableStore->bX.resize(size, 0.0);
+    m_variableStore->bY.resize(size, 0.0);
+    m_variableStore->bZ.resize(size, 0.0);
+    m_variableStore->rhoInv.resize(size,0.0);
+    m_variableStore->uu.resize(size, 0.0);
+    m_variableStore->t.resize(size, ATMOSPHERIC_STANDARD_TEMPERATURE);
+    m_variableStore->bb.resize(size, 0.0);
+    m_variableStore->faceBX.resize(size, 0.0);
+    m_variableStore->faceBY.resize(size, 0.0);
+    m_variableStore->faceBZ.resize(size, 0.0);
+    m_variableStore->edgeEX.resize(size, 0.0);
+    m_variableStore->edgeEY.resize(size, 0.0);
+    m_variableStore->edgeEZ.resize(size, 0.0);
 }
 
 void Calc::SetSodShockTube() {
-    std::size_t const size = m_variableStore->m_rho.size();
+    std::size_t const size = m_variableStore->numCells;
     for (std::size_t i = 0; i < size; ++i) {
         if (i >= size / 2) {
-            m_variableStore->m_rho[i] *= 0.125;
-            m_variableStore->m_p[i] *= 0.1;
+            m_variableStore->rho[i] *= 0.125;
+            m_variableStore->p[i] *= 0.1;
         }
     }
 }
@@ -83,14 +83,14 @@ void Calc::WriteData(VariableStore const& varStore) {
         // Write data to the file
         myFile << "# rho, u, v, w, p, T" << std::endl;
 
-        for (std::size_t i = 0; i < varStore.m_rho.size(); ++i) {
+        for (std::size_t i = 0; i < varStore.numCells; ++i) {
             myFile <<
-            varStore.m_rho[i] << ", " <<
-            varStore.m_u[i] << ", " <<
-            varStore.m_v[i] << ", " <<
-            varStore.m_w[i] << ", " <<
-            varStore.m_p[i] << ", " <<
-            varStore.m_t[i] << std::endl;
+            varStore.rho[i] << ", " <<
+            varStore.u[i] << ", " <<
+            varStore.v[i] << ", " <<
+            varStore.w[i] << ", " <<
+            varStore.p[i] << ", " <<
+            varStore.t[i] << std::endl;
         }
 
         // Close the file

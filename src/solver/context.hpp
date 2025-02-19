@@ -13,29 +13,29 @@ struct FluxContext {
         faceArea(grid.FaceAreas()), faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()),
         faceNormalZ(grid.FaceNormalZ())
     {
-        rhoLeft = varStore.m_rho;
-        uLeft = varStore.m_u;
-        vLeft = varStore.m_v;
-        wLeft = varStore.m_w;
-        pLeft = varStore.m_p;
-        eLeft = varStore.m_e;
-        bXLeft = varStore.m_bX;
-        bYLeft = varStore.m_bY;
-        bZLeft = varStore.m_bZ;
-        uuLeft = varStore.m_uu;
-        bbLeft = varStore.m_bb;
+        rhoLeft = varStore.rho;
+        uLeft = varStore.u;
+        vLeft = varStore.v;
+        wLeft = varStore.w;
+        pLeft = varStore.p;
+        eLeft = varStore.e;
+        bXLeft = varStore.bX;
+        bYLeft = varStore.bY;
+        bZLeft = varStore.bZ;
+        uuLeft = varStore.uu;
+        bbLeft = varStore.bb;
 
-        rhoRight = varStore.m_rho;
-        uRight = varStore.m_u;
-        vRight = varStore.m_v;
-        wRight = varStore.m_w;
-        pRight = varStore.m_p;
-        eRight = varStore.m_e;
-        bXRight = varStore.m_bX;
-        bYRight = varStore.m_bY;
-        bZRight = varStore.m_bZ;
-        uuRight = varStore.m_uu;
-        bbRight = varStore.m_bb;
+        rhoRight = varStore.rho;
+        uRight = varStore.u;
+        vRight = varStore.v;
+        wRight = varStore.w;
+        pRight = varStore.p;
+        eRight = varStore.e;
+        bXRight = varStore.bX;
+        bYRight = varStore.bY;
+        bZRight = varStore.bZ;
+        uuRight = varStore.uu;
+        bbRight = varStore.bb;
     }
 
     // properties of the face
@@ -127,41 +127,41 @@ struct ElectricFieldContext {
     ElectricFieldContext() = default;
 
     // Edge variables
-    std::vector<std::vector<std::size_t>> const m_edgeToFaceIdx;
+    std::vector<std::vector<std::size_t>> const edgeToFaceIdx;
 
     // Face-centered
-    std::vector<double> const m_fluxBX;
-    std::vector<double> const m_fluxBY;
-    std::vector<double> const m_fluxBZ;
+    std::vector<double> const fluxBX;
+    std::vector<double> const fluxBY;
+    std::vector<double> const fluxBZ;
 
     // Edge-centered
-    std::vector<double> m_eX;
-    std::vector<double> m_eY;
-    std::vector<double> m_eZ;
+    std::vector<double> eX;
+    std::vector<double> eY;
+    std::vector<double> eZ;
 };
 
 struct MagneticFieldContext {
     MagneticFieldContext() = default;
 
-    double const m_timeStep = 0;
-    std::vector<double> const m_cellSize;
+    double const timeStep = 0;
+    std::vector<double> const cellSize;
 
     // Face variables
-    std::vector<std::vector<std::size_t>> const m_faceToEdgeIdx;
+    std::vector<std::vector<std::size_t>> const faceToEdgeIdx;
 
     // Edge-centered
-    std::vector<double> const m_eX;
-    std::vector<double> const m_eY;
-    std::vector<double> const m_eZ;
+    std::vector<double> const eX;
+    std::vector<double> const eY;
+    std::vector<double> const eZ;
 
     // Face-centered
-    std::vector<double> m_bX;
-    std::vector<double> m_bY;
-    std::vector<double> m_bZ;
+    std::vector<double> bX;
+    std::vector<double> bY;
+    std::vector<double> bZ;
 };
 
 struct BoundaryConditionContext {
-    std::vector<std::size_t> const m_boundaryNodeIndices;
+    std::vector<std::size_t> const boundaryNodeIndices;
 
     // properties of the face
     std::vector<double> const faceNormalX;
@@ -181,6 +181,19 @@ struct BoundaryConditionContext {
 
     // Primitives outide the boundary
     double const pOut = ATMOSPHERIC_PRESSURE_STP;
+};
+
+struct IntegrationContext {
+    IntegrationContext() = default;
+
+    double const timeStep = 0.0;
+
+    std::size_t const numVars = 0;
+    std::vector<double> rhoRes;     // mass density residual
+    std::vector<double> rhoURes;    // x momentum density residual
+    std::vector<double> rhoVRes;    // y momentum density residual
+    std::vector<double> rhoWRes;    // z momentum density residual
+    std::vector<double> rhoERes;    // total energy density residual
 };
 
 } // namespace MHD

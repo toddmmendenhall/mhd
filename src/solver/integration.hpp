@@ -1,5 +1,6 @@
 #pragma once
 
+#include <context.hpp>
 #include <execution_controller.hpp>
 #include <variable_store.hpp>
 
@@ -10,34 +11,31 @@ namespace MHD {
 class IIntegrator {
 public:
     virtual ~IIntegrator() = default;
-    virtual void Solve(ExecutionController const& execCtrl, VariableStore& varStore) = 0;
+    virtual void Solve(ExecutionController const& execCtrl, IntegrationContext const& context, VariableStore& varStore) = 0;
 };
 
 struct ForwardEulerKernel {
-    ForwardEulerKernel(VariableStore& varStore) : m_varStore(varStore) {}
+    ForwardEulerKernel(IntegrationContext const& context, VariableStore& varStore)
+        : m_context(context), m_varStore(varStore) {}
 
-    void operator()(std::size_t idx) {
-        double const cfl = 0.5;
-        double dRho = 1.0;
-        if (idx == 0) {
-            dRho = m_varStore.m_rho[idx] - m_varStore.m_rho[10];
-        } else if (idx == 9) {
-            dRho = m_varStore.m_rho[11] - m_varStore.m_rho[idx];
-        } else {
-            dRho = m_varStore.m_rho[idx] - m_varStore.m_rho[idx - 1];
-        }
-        m_varStore.m_rho[idx] -= cfl * dRho;
+    void operator()(std::size_t i) {
+        m_varStore.rho[i] += m_context.timeStep * m_context.rhoRes[i];
+        m_varStore.rhoU[i] += m_context.timeStep * m_context.rhoURes[i];
+        m_varStore.rhoV[i] += m_context.timeStep * m_context.rhoVRes[i];
+        m_varStore.rhoW[i] += m_context.timeStep * m_context.rhoWRes[i];
+        m_varStore.rhoE[i] += m_context.timeStep * m_context.rhoERes[i];
     }
+
+    IntegrationContext const& m_context;
     VariableStore& m_varStore;
 };
 
 class ForwardEuler : public IIntegrator {
 public:
-    void Solve(ExecutionController const& execCtrl, VariableStore& varStore) {
-        ForwardEulerKernel kern(varStore);
-        execCtrl.LaunchKernel(kern, 10);
+    void Solve(ExecutionController const& execCtrl, IntegrationContext const& context, VariableStore& varStore) override {
+        ForwardEulerKernel kern(context, varStore);
+        execCtrl.LaunchKernel(kern, varStore.numCells);
     }
-
 };
 
 std::unique_ptr<IIntegrator> integratorFactory() {

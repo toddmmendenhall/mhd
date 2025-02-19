@@ -38,7 +38,7 @@ public:
 
     void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
         OutflowBoundaryConditionKernel kern(context);
-        execCtrl.LaunchKernel(kern, context.m_boundaryNodeIndices.size());
+        execCtrl.LaunchKernel(kern, context.boundaryNodeIndices.size());
     }
 };
 

@@ -14,6 +14,7 @@
 * Classes - UpperCamelCase
 * Methods - UpperCamelCase
 * Free functions - lowerCamelCase
-* Member variables - m_lowerCamelCase
+* Member classes/structs - m_lowerCamelCase
+* Member plain old data variables - lowerCamelCase
 * Arguments - lowerCamelCase
 * Constants - ALL_CAPS_WITH_UNDERSCORES
