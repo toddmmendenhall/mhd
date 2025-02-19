@@ -4,6 +4,7 @@
 #include <execution_controller.hpp>
 #include <flux_scheme.hpp>
 #include <grid.hpp>
+#include <integration.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
 #include <reconstruction.hpp>
@@ -20,6 +21,7 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
     m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
     m_fluxScheme = fluxSchemeFactory(profile);
     m_reconstruction = reconstructionFactory(profile);
+    m_integrator = integratorFactory();
     m_boundCon = boundaryConditionFactory(profile);
 }
 
@@ -31,6 +33,7 @@ Error Solver::PerformTimeStep(IGrid const& grid) {
     ComputeMagneticFields();
     ReconstructVariables();
     UpdateConservedFromPrimitives();
+    m_integrator->Solve(m_execCtrl, m_varStore);
     return Error::SUCCESS;
 }
 

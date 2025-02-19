@@ -40,7 +40,7 @@ public:
 
 };
 
-std::unique_ptr<IIntegrator> integratorFactor() {
+std::unique_ptr<IIntegrator> integratorFactory() {
     return std::make_unique<ForwardEuler>();
 }
 

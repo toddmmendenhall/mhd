@@ -11,6 +11,7 @@ class ExecutionController;
 class IBoundaryCondition;
 class IFluxScheme;
 class IGrid;
+class IIntegrator;
 class IReconstruction;
 class MagneticFieldCalculator;
 class Profile;
@@ -47,6 +48,7 @@ private:
     std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
     std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
     std::unique_ptr<IBoundaryCondition> m_boundCon;
+    std::unique_ptr<IIntegrator> m_integrator;
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<IReconstruction> m_reconstruction;
     ExecutionController const& m_execCtrl;
