@@ -8,6 +8,13 @@
 * VariableStore - Holds all the data necessary to run a calc
 * ExecutionController - Responsible for launching and cleaning up kernels
 
+# Main private objects own by Solver
+* IReconstruction - Polymorphic class responsible for computing the left and right states of each cell
+* IFlux - Polymorphic class responsible for computing the fluxes
+* ITransport - Polymorphic class responsbile for computing the residuals for transport terms
+* ISource - Polymorphic class responsible for computing the residuals for source terms
+* IIntegrator - Polymorphic class responsible for computing the time integration
+
 # Naming conventions
 * Filenames - snake_case
 * Namespaces - ALL_CAPS_WITH_UNDERSCORES

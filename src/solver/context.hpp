@@ -88,39 +88,29 @@ struct FluxContext {
 struct ReconstructionContext {
     ReconstructionContext() = default;
 
-    std::size_t const dimension = 1;
-    std::vector<double> const gridSize;
-    double const timeStep = 1e-2;
+    std::size_t numCells = 0;
+    std::size_t numInteriorCells = 0;
 
-    // fluxes 
-    std::vector<double> const rhoFluxLeft;
-    std::vector<double> const rhoUFluxLeft;
-    std::vector<double> const rhoVFluxLeft;
-    std::vector<double> const rhoWFluxLeft;
-    std::vector<double> const rhoEFluxLeft;
-    std::vector<double> const bXFluxLeft;
-    std::vector<double> const bYFluxLeft;
-    std::vector<double> const bZFluxLeft;
+    // Left states
+    std::vector<double> rhoLeft;
+    std::vector<double> rhoULeft;
+    std::vector<double> rhoVLeft;
+    std::vector<double> rhoWLeft;
+    std::vector<double> rhoELeft;
 
-    // fluxes 
-    std::vector<double> const rhoFluxRight;
-    std::vector<double> const rhoUFluxRight;
-    std::vector<double> const rhoVFluxRight;
-    std::vector<double> const rhoWFluxRight;
-    std::vector<double> const rhoEFluxRight;
-    std::vector<double> const bXFluxRight;
-    std::vector<double> const bYFluxRight;
-    std::vector<double> const bZFluxRight;
+    // Right states
+    std::vector<double> rhoRight;
+    std::vector<double> rhoURight;
+    std::vector<double> rhoVRight;
+    std::vector<double> rhoWRight;
+    std::vector<double> rhoERight;
 
-    // cell-centered conserved variables
-    std::vector<double> rho;
-    std::vector<double> rhoU;
-    std::vector<double> rhoV;
-    std::vector<double> rhoW;
-    std::vector<double> rhoE;
-    std::vector<double> bX;
-    std::vector<double> bY;
-    std::vector<double> bZ;
+    // Cell-centered states
+    std::vector<double> const rho;
+    std::vector<double> const rhoU;
+    std::vector<double> const rhoV;
+    std::vector<double> const rhoW;
+    std::vector<double> const rhoE;
 };
 
 struct ElectricFieldContext {

@@ -15,27 +15,25 @@
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile, ExecutionController const& m_execCtrl,
-               VariableStore& m_varStore) : m_execCtrl(m_execCtrl), m_varStore(m_varStore) {
+Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore)
+    : m_execCtrl(execCtrl), m_varStore(varStore)
+{
     m_bFieldCalc = std::make_unique<MagneticFieldCalculator>();
     m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
+    m_reconstructionContext = std::make_unique<ReconstructionContext>();
+    m_reconstruction = reconstructionFactory(profile, *m_reconstructionContext);
     m_fluxScheme = fluxSchemeFactory(profile);
-    m_reconstruction = reconstructionFactory(profile);
     m_integrator = integratorFactory();
     m_boundCon = boundaryConditionFactory(profile);
 }
 
-Error Solver::PerformTimeStep(IGrid const& grid) {
-    ComputePrimitivesFromConserved();
-    ApplyBoundaryConditions();
-    ComputeFluxes(grid);
-    ComputeElectricFields();
-    ComputeMagneticFields();
+void Solver::PerformTimeStep(IGrid const& grid) {
+    // Compute the left and right states for each cell
     ReconstructVariables();
-    UpdateConservedFromPrimitives();
+    ComputeFluxes(grid);
+    ApplyBoundaryConditions();
     IntegrationContext integrationContext;
     m_integrator->Solve(m_execCtrl, integrationContext, m_varStore);
-    return Error::SUCCESS;
 }
 
 void Solver::ComputePrimitivesFromConserved()
@@ -81,8 +79,7 @@ void Solver::ComputeFluxes(IGrid const& grid) {
 }
 
 void Solver::ReconstructVariables() {
-    ReconstructionContext context;
-    m_reconstruction->ComputeReconstructedVariables(m_execCtrl, context);
+    m_reconstruction->Compute(m_execCtrl);
 }
 
 void Solver::ComputeElectricFields() {
@@ -98,6 +95,10 @@ void Solver::ComputeMagneticFields() {
 void Solver::ApplyBoundaryConditions() {
     BoundaryConditionContext context;
     m_boundCon->Compute(m_execCtrl, context);
+}
+
+void Solver::ComputeResiduals() {
+    IntegrationContext integrationContext;
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,

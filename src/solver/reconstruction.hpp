@@ -11,9 +11,9 @@ struct ReconstructionContext;
 class IReconstruction {
 public:
     virtual ~IReconstruction() = default;
-    virtual void ComputeReconstructedVariables(ExecutionController const& execCtrl, ReconstructionContext& context) const = 0;
+    virtual void Compute(ExecutionController const& execCtrl) = 0;
 };
 
-std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile);
+std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile, ReconstructionContext& context);
 
 } // namespace MHD

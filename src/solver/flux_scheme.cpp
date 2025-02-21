@@ -26,152 +26,152 @@ struct KTKernel {
 };
 
 struct HighOrderGodunovKernel {
-    HighOrderGodunovKernel(FluxContext& fluxContext) : ctx(fluxContext) {}
+    HighOrderGodunovKernel(FluxContext& fluxContext) : m_context(fluxContext) {}
 
     inline void operator()(std::size_t const faceIdx) {
         // normal component of the velocity on the left of the face
-        auto uBarLeft = ctx.uLeft[faceIdx] * ctx.faceNormalX[faceIdx] +
-                        ctx.vLeft[faceIdx] * ctx.faceNormalY[faceIdx] +
-                        ctx.wLeft[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto uBarLeft = m_context.uLeft[faceIdx] * m_context.faceNormalX[faceIdx] +
+                        m_context.vLeft[faceIdx] * m_context.faceNormalY[faceIdx] +
+                        m_context.wLeft[faceIdx] * m_context.faceNormalZ[faceIdx];
 
         // normal component of the velocity on the right of the face
-        auto uBarRight = ctx.uRight[faceIdx] * ctx.faceNormalX[faceIdx] +
-                         ctx.vRight[faceIdx] * ctx.faceNormalY[faceIdx] +
-                         ctx.wRight[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto uBarRight = m_context.uRight[faceIdx] * m_context.faceNormalX[faceIdx] +
+                         m_context.vRight[faceIdx] * m_context.faceNormalY[faceIdx] +
+                         m_context.wRight[faceIdx] * m_context.faceNormalZ[faceIdx];
 
         // normal component of the magnetic field on the left of the face
-        auto bBarLeft = ctx.bXLeft[faceIdx] * ctx.faceNormalX[faceIdx] +
-                        ctx.bYLeft[faceIdx] * ctx.faceNormalY[faceIdx] +
-                        ctx.bZLeft[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto bBarLeft = m_context.bXLeft[faceIdx] * m_context.faceNormalX[faceIdx] +
+                        m_context.bYLeft[faceIdx] * m_context.faceNormalY[faceIdx] +
+                        m_context.bZLeft[faceIdx] * m_context.faceNormalZ[faceIdx];
 
         // normal component of the magnetic field on the right of the face
-        auto bBarRight = ctx.bXRight[faceIdx] * ctx.faceNormalX[faceIdx] +
-                         ctx.bYRight[faceIdx] * ctx.faceNormalY[faceIdx] +
-                         ctx.bZRight[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto bBarRight = m_context.bXRight[faceIdx] * m_context.faceNormalX[faceIdx] +
+                         m_context.bYRight[faceIdx] * m_context.faceNormalY[faceIdx] +
+                         m_context.bZRight[faceIdx] * m_context.faceNormalZ[faceIdx];
         
         // cell-centered momentum densities on the left of the face
-        auto rhoULeft = ctx.rhoLeft[faceIdx] * ctx.uLeft[faceIdx];
-        auto rhoVLeft = ctx.rhoLeft[faceIdx] * ctx.vLeft[faceIdx];
-        auto rhoWLeft = ctx.rhoLeft[faceIdx] * ctx.wLeft[faceIdx];
+        auto rhoULeft = m_context.rhoLeft[faceIdx] * m_context.uLeft[faceIdx];
+        auto rhoVLeft = m_context.rhoLeft[faceIdx] * m_context.vLeft[faceIdx];
+        auto rhoWLeft = m_context.rhoLeft[faceIdx] * m_context.wLeft[faceIdx];
         
         // cell-centered momentum densities on the right of the face
-        auto rhoURight = ctx.rhoRight[faceIdx] * ctx.uRight[faceIdx];
-        auto rhoVRight = ctx.rhoRight[faceIdx] * ctx.vRight[faceIdx];
-        auto rhoWRight = ctx.rhoRight[faceIdx] * ctx.wRight[faceIdx];
+        auto rhoURight = m_context.rhoRight[faceIdx] * m_context.uRight[faceIdx];
+        auto rhoVRight = m_context.rhoRight[faceIdx] * m_context.vRight[faceIdx];
+        auto rhoWRight = m_context.rhoRight[faceIdx] * m_context.wRight[faceIdx];
 
         // cell-centered total energy density on the left of the face
-        auto rhoELeft = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbLeft[faceIdx];
+        auto rhoELeft = m_context.rhoLeft[faceIdx] * (m_context.eLeft[faceIdx] + 0.5 * m_context.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * m_context.bbLeft[faceIdx];
 
         // cell-centered total energy density on the right of the face
-        auto rhoERight = ctx.rhoRight[faceIdx] * (ctx.eRight[faceIdx] + 0.5 * ctx.uuRight[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbRight[faceIdx];
+        auto rhoERight = m_context.rhoRight[faceIdx] * (m_context.eRight[faceIdx] + 0.5 * m_context.uuRight[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * m_context.bbRight[faceIdx];
 
         // cell-centered dot(u,B) on the left of the face
-        auto uDotBLeft = ctx.uLeft[faceIdx] * ctx.bXLeft[faceIdx] +
-                         ctx.vLeft[faceIdx] * ctx.bYLeft[faceIdx] +
-                         ctx.wLeft[faceIdx] * ctx.bZLeft[faceIdx];
+        auto uDotBLeft = m_context.uLeft[faceIdx] * m_context.bXLeft[faceIdx] +
+                         m_context.vLeft[faceIdx] * m_context.bYLeft[faceIdx] +
+                         m_context.wLeft[faceIdx] * m_context.bZLeft[faceIdx];
         
         // cell-centered dot(u,B) on the right of the face
-        auto uDotBRight = ctx.uRight[faceIdx] * ctx.bXRight[faceIdx] +
-                          ctx.vRight[faceIdx] * ctx.bYRight[faceIdx] +
-                          ctx.wRight[faceIdx] * ctx.bZRight[faceIdx];
+        auto uDotBRight = m_context.uRight[faceIdx] * m_context.bXRight[faceIdx] +
+                          m_context.vRight[faceIdx] * m_context.bYRight[faceIdx] +
+                          m_context.wRight[faceIdx] * m_context.bZRight[faceIdx];
         
         // face-centered mass density flux
-        ctx.rhoFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                               (ctx.rhoLeft[faceIdx] * uBarLeft +
-                               ctx.rhoRight[faceIdx] * uBarRight);
+        m_context.rhoFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                     (m_context.rhoLeft[faceIdx] * uBarLeft +
+                                     m_context.rhoRight[faceIdx] * uBarRight);
 
         // face-centered x-momentum density flux
-        ctx.rhoUFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                                (rhoULeft * uBarLeft + ctx.pLeft[faceIdx] * ctx.faceNormalX[faceIdx] - ctx.bXLeft[faceIdx] * bBarLeft +
-                                rhoURight * uBarRight + ctx.pRight[faceIdx] * ctx.faceNormalX[faceIdx] - ctx.bXRight[faceIdx] * bBarRight);
+        m_context.rhoUFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                      (rhoULeft * uBarLeft + m_context.pLeft[faceIdx] * m_context.faceNormalX[faceIdx] - m_context.bXLeft[faceIdx] * bBarLeft +
+                                      rhoURight * uBarRight + m_context.pRight[faceIdx] * m_context.faceNormalX[faceIdx] - m_context.bXRight[faceIdx] * bBarRight);
                                                              
         // face-centered y-momentum density flux
-        ctx.rhoVFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                                (rhoVLeft * uBarLeft + ctx.pLeft[faceIdx] * ctx.faceNormalY[faceIdx] - ctx.bYLeft[faceIdx] * bBarLeft +
-                                rhoVRight * uBarRight + ctx.pRight[faceIdx] * ctx.faceNormalY[faceIdx] - ctx.bYRight[faceIdx] * bBarRight);
+        m_context.rhoVFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                      (rhoVLeft * uBarLeft + m_context.pLeft[faceIdx] * m_context.faceNormalY[faceIdx] - m_context.bYLeft[faceIdx] * bBarLeft +
+                                      rhoVRight * uBarRight + m_context.pRight[faceIdx] * m_context.faceNormalY[faceIdx] - m_context.bYRight[faceIdx] * bBarRight);
         
         // face-centered z-momentum density flux
-        ctx.rhoWFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                                (rhoWLeft * uBarLeft + ctx.pLeft[faceIdx] * ctx.faceNormalZ[faceIdx] - ctx.bZLeft[faceIdx] * bBarLeft +
-                                rhoWRight * uBarRight + ctx.pRight[faceIdx] * ctx.faceNormalZ[faceIdx] - ctx.bZRight[faceIdx] * bBarRight);
+        m_context.rhoWFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                      (rhoWLeft * uBarLeft + m_context.pLeft[faceIdx] * m_context.faceNormalZ[faceIdx] - m_context.bZLeft[faceIdx] * bBarLeft +
+                                      rhoWRight * uBarRight + m_context.pRight[faceIdx] * m_context.faceNormalZ[faceIdx] - m_context.bZRight[faceIdx] * bBarRight);
         
         // face-centered total energy density flux
-        ctx.rhoEFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                                ((rhoELeft + ctx.pLeft[faceIdx]) * uBarLeft - uDotBLeft * bBarLeft +
-                                (rhoERight + ctx.pRight[faceIdx]) * uBarRight - uDotBRight * bBarRight);
+        m_context.rhoEFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                      ((rhoELeft + m_context.pLeft[faceIdx]) * uBarLeft - uDotBLeft * bBarLeft +
+                                      (rhoERight + m_context.pRight[faceIdx]) * uBarRight - uDotBRight * bBarRight);
         
         // face-centered x-magnetic flux
-        ctx.bXFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                              (ctx.uLeft[faceIdx] * bBarLeft - ctx.bXLeft[faceIdx] * uBarLeft +
-                               ctx.uRight[faceIdx] * bBarRight - ctx.bXRight[faceIdx] * uBarRight);
+        m_context.bXFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                    (m_context.uLeft[faceIdx] * bBarLeft - m_context.bXLeft[faceIdx] * uBarLeft +
+                                    m_context.uRight[faceIdx] * bBarRight - m_context.bXRight[faceIdx] * uBarRight);
 
         // face-centered y-magnetic flux
-        ctx.bYFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                              (ctx.vLeft[faceIdx] * bBarLeft - ctx.bYLeft[faceIdx] * uBarLeft +
-                               ctx.vRight[faceIdx] * bBarRight - ctx.bYRight[faceIdx] * uBarRight);
+        m_context.bYFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                    (m_context.vLeft[faceIdx] * bBarLeft - m_context.bYLeft[faceIdx] * uBarLeft +
+                                    m_context.vRight[faceIdx] * bBarRight - m_context.bYRight[faceIdx] * uBarRight);
 
         // face-centered z-magnetic flux
-        ctx.bZFlux[faceIdx] = 0.5 * ctx.faceArea[faceIdx] *
-                              (ctx.wLeft[faceIdx] * bBarLeft - ctx.bZLeft[faceIdx] * uBarLeft +
-                               ctx.wRight[faceIdx] * bBarRight - ctx.bZRight[faceIdx] * uBarRight);
+        m_context.bZFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
+                                    (m_context.wLeft[faceIdx] * bBarLeft - m_context.bZLeft[faceIdx] * uBarLeft +
+                                    m_context.wRight[faceIdx] * bBarRight - m_context.bZRight[faceIdx] * uBarRight);
     }
 
-    FluxContext& ctx;
+    FluxContext& m_context;
 };
 
 struct LowOrderGodunovKernel {
-    LowOrderGodunovKernel(FluxContext& fluxContext) : ctx(fluxContext) {}
+    LowOrderGodunovKernel(FluxContext& context) : m_context(context) {}
 
-    inline void operator()(std::size_t const faceIdx) {
+    inline void operator()(std::size_t const i) {
         // normal component of the velocity inside the cell
-        auto uBar = ctx.uLeft[faceIdx] * ctx.faceNormalX[faceIdx] +
-                    ctx.vLeft[faceIdx] * ctx.faceNormalY[faceIdx] +
-                    ctx.wLeft[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto uBar = m_context.uLeft[i] * m_context.faceNormalX[i] +
+                    m_context.vLeft[i] * m_context.faceNormalY[i] +
+                    m_context.wLeft[i] * m_context.faceNormalZ[i];
 
         // normal component of the magnetic field inside the cell
-        auto bBar = ctx.bXLeft[faceIdx] * ctx.faceNormalX[faceIdx] +
-                    ctx.bYLeft[faceIdx] * ctx.faceNormalY[faceIdx] +
-                    ctx.bZLeft[faceIdx] * ctx.faceNormalZ[faceIdx];
+        auto bBar = m_context.bXLeft[i] * m_context.faceNormalX[i] +
+                    m_context.bYLeft[i] * m_context.faceNormalY[i] +
+                    m_context.bZLeft[i] * m_context.faceNormalZ[i];
         
         // cell-centered momentum densities inside the cell
-        auto rhoU = ctx.rhoLeft[faceIdx] * ctx.uLeft[faceIdx];
-        auto rhoV = ctx.rhoLeft[faceIdx] * ctx.vLeft[faceIdx];
-        auto rhoW = ctx.rhoLeft[faceIdx] * ctx.wLeft[faceIdx];
+        auto rhoU = m_context.rhoLeft[i] * m_context.uLeft[i];
+        auto rhoV = m_context.rhoLeft[i] * m_context.vLeft[i];
+        auto rhoW = m_context.rhoLeft[i] * m_context.wLeft[i];
 
         // cell-centered total energy density
-        auto rhoE = ctx.rhoLeft[faceIdx] * (ctx.eLeft[faceIdx] + 0.5 * ctx.uuLeft[faceIdx]) + 0.5 * VACUUM_PERMEABILITY_INV * ctx.bbLeft[faceIdx];
+        auto rhoE = m_context.rhoLeft[i] * (m_context.eLeft[i] + 0.5 * m_context.uuLeft[i]) + 0.5 * VACUUM_PERMEABILITY_INV * m_context.bbLeft[i];
 
         // cell-centered dot(u,B)
-        auto uDotB = ctx.uLeft[faceIdx] * ctx.bXLeft[faceIdx] +
-                     ctx.vLeft[faceIdx] * ctx.bYLeft[faceIdx] +
-                     ctx.wLeft[faceIdx] * ctx.bZLeft[faceIdx];
+        auto uDotB = m_context.uLeft[i] * m_context.bXLeft[i] +
+                     m_context.vLeft[i] * m_context.bYLeft[i] +
+                     m_context.wLeft[i] * m_context.bZLeft[i];
 
         // cell-centered mass density flux
-        ctx.rhoFlux[faceIdx] = ctx.faceArea[faceIdx] * ctx.rhoLeft[faceIdx] * uBar;
+        m_context.rhoFlux[i] = m_context.faceArea[i] * m_context.rhoLeft[i] * uBar;
 
         // cell-centered x-momentum density flux
-        ctx.rhoUFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoU * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalX[faceIdx] - ctx.bXLeft[faceIdx] * bBar);
+        m_context.rhoUFlux[i] = m_context.faceArea[i] * (rhoU * uBar + m_context.pLeft[i] * m_context.faceNormalX[i] - m_context.bXLeft[i] * bBar);
                                                              
         // cell-centered y-momentum density flux
-        ctx.rhoVFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoV * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalY[faceIdx] - ctx.bYLeft[faceIdx] * bBar);
+        m_context.rhoVFlux[i] = m_context.faceArea[i] * (rhoV * uBar + m_context.pLeft[i] * m_context.faceNormalY[i] - m_context.bYLeft[i] * bBar);
 
         // cell-centered z-momentum density flux
-        ctx.rhoWFlux[faceIdx] = ctx.faceArea[faceIdx] * (rhoW * uBar + ctx.pLeft[faceIdx] * ctx.faceNormalZ[faceIdx] - ctx.bZLeft[faceIdx] * bBar);
+        m_context.rhoWFlux[i] = m_context.faceArea[i] * (rhoW * uBar + m_context.pLeft[i] * m_context.faceNormalZ[i] - m_context.bZLeft[i] * bBar);
 
         // cell-centered total energy density flux
-        ctx.rhoEFlux[faceIdx] = ctx.faceArea[faceIdx] * ((rhoE + ctx.pLeft[faceIdx]) * uBar - uDotB * bBar);
+        m_context.rhoEFlux[i] = m_context.faceArea[i] * ((rhoE + m_context.pLeft[i]) * uBar - uDotB * bBar);
         
         // cell-centered x-magnetic flux
-        ctx.bXFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.uLeft[faceIdx] * bBar - ctx.bXLeft[faceIdx] * uBar);
+        m_context.bXFlux[i] = m_context.faceArea[i] * (m_context.uLeft[i] * bBar - m_context.bXLeft[i] * uBar);
 
         // cell-centered y-magnetic flux
-        ctx.bYFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.vLeft[faceIdx] * bBar - ctx.bYLeft[faceIdx] * uBar);
+        m_context.bYFlux[i] = m_context.faceArea[i] * (m_context.vLeft[i] * bBar - m_context.bYLeft[i] * uBar);
 
         // cell-centered z-magnetic flux
-        ctx.bZFlux[faceIdx] = ctx.faceArea[faceIdx] * (ctx.wLeft[faceIdx] * bBar - ctx.bZLeft[faceIdx] * uBar);
+        m_context.bZFlux[i] = m_context.faceArea[i] * (m_context.wLeft[i] * bBar - m_context.bZLeft[i] * uBar);
     }
 
-    FluxContext& ctx;
+    FluxContext& m_context;
 };
 
 class HLLC : public IFluxScheme {

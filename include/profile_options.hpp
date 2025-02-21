@@ -38,7 +38,8 @@ enum class FluxScheme {
 };
 
 enum class ReconstructionOption {
-    LINEAR = 0,
+    CONSTANT = 0,
+    LINEAR = 1,
 };
 
 enum class CompressibleOption {
