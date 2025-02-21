@@ -17,7 +17,7 @@ Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_executionController = std::make_unique<ExecutionController>();
     m_variableStore = std::make_unique<VariableStore>();
     m_grid = gridFactory(m_profile);
-    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore);
+    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore, *m_grid);
 }
 
 Calc::~Calc() = default;
@@ -65,7 +65,7 @@ void Calc::Run() {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
             WriteData(*m_variableStore);
         }
-        m_solver->PerformTimeStep(*m_grid);
+        m_solver->PerformTimeStep();
         m_currentTime += 0.01;
         m_currentStep++;
     }

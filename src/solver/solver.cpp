@@ -15,23 +15,29 @@
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore)
-    : m_execCtrl(execCtrl), m_varStore(varStore)
+Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
+               VariableStore& varStore, IGrid const& grid)
+    : m_execCtrl(execCtrl), m_varStore(varStore), m_grid(grid)
 {
     m_bFieldCalc = std::make_unique<MagneticFieldCalculator>();
     m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
     m_reconstructionContext = std::make_unique<ReconstructionContext>();
     m_reconstruction = reconstructionFactory(profile, *m_reconstructionContext);
-    m_fluxScheme = fluxSchemeFactory(profile);
+    m_fluxContext = std::make_unique<FluxContext>(m_grid, *m_reconstructionContext);
+    m_fluxScheme = fluxSchemeFactory(profile, *m_fluxContext);
     m_integrator = integratorFactory();
     m_boundCon = boundaryConditionFactory(profile);
 }
 
-void Solver::PerformTimeStep(IGrid const& grid) {
-    // Compute the left and right states for each cell
+void Solver::PerformTimeStep() {
+    // Compute the left and right states for each face
     ReconstructVariables();
-    ComputeFluxes(grid);
+
+    // Compute the fluxes for each face
+    ComputeFluxes();
+
     ApplyBoundaryConditions();
+
     IntegrationContext integrationContext;
     m_integrator->Solve(m_execCtrl, integrationContext, m_varStore);
 }
@@ -73,9 +79,8 @@ void Solver::UpdateConservedFromPrimitives() {
     m_execCtrl.LaunchKernel(totalEnergyDensityKern, m_varStore.rho.size());
 }
 
-void Solver::ComputeFluxes(IGrid const& grid) {
-    FluxContext context(m_varStore, grid);
-    m_fluxScheme->ComputeInterfaceFluxes(m_execCtrl, context);
+void Solver::ComputeFluxes() {
+    m_fluxScheme->ComputeInterfaceFluxes(m_execCtrl);
 }
 
 void Solver::ReconstructVariables() {
@@ -102,9 +107,9 @@ void Solver::ComputeResiduals() {
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
-                                       VariableStore& varStore) {
+                                       VariableStore& varStore, IGrid const& grid) {
     if (profile.m_compressibleOption == CompressibleOption::COMPRESSIBLE) {
-        return std::make_unique<Solver>(profile, execCtrl, varStore);
+        return std::make_unique<Solver>(profile, execCtrl, varStore, grid);
     }
     return nullptr;
 }

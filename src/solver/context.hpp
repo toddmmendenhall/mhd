@@ -8,71 +8,68 @@
 
 namespace MHD {
 
-struct FluxContext {
-    FluxContext(VariableStore const& varStore, IGrid const& grid) : 
-        faceArea(grid.FaceAreas()), faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()),
-        faceNormalZ(grid.FaceNormalZ())
-    {
-        rhoLeft = varStore.rho;
-        uLeft = varStore.u;
-        vLeft = varStore.v;
-        wLeft = varStore.w;
-        pLeft = varStore.p;
-        eLeft = varStore.e;
-        bXLeft = varStore.bX;
-        bYLeft = varStore.bY;
-        bZLeft = varStore.bZ;
-        uuLeft = varStore.uu;
-        bbLeft = varStore.bb;
+struct ReconstructionContext {
+    ReconstructionContext() = default;
 
-        rhoRight = varStore.rho;
-        uRight = varStore.u;
-        vRight = varStore.v;
-        wRight = varStore.w;
-        pRight = varStore.p;
-        eRight = varStore.e;
-        bXRight = varStore.bX;
-        bYRight = varStore.bY;
-        bZRight = varStore.bZ;
-        uuRight = varStore.uu;
-        bbRight = varStore.bb;
-    }
+    std::size_t numFaces = 0;
+    std::vector<std::array<std::size_t, 2>> faceToNodeIndices;
 
-    // properties of the face
-    std::vector<double> const faceArea;
-    std::vector<double> const faceNormalX;
-    std::vector<double> const faceNormalY;
-    std::vector<double> const faceNormalZ;
-
-    // primitive variables on the left of the face, i.e. inside the cell
+    // Left states
     std::vector<double> rhoLeft;
     std::vector<double> uLeft;
     std::vector<double> vLeft;
     std::vector<double> wLeft;
     std::vector<double> pLeft;
     std::vector<double> eLeft;
-    std::vector<double> bXLeft;
-    std::vector<double> bYLeft;
-    std::vector<double> bZLeft;
 
-    // primitive variables on the right of the face, i.e. outside the cell
+    // Right states
     std::vector<double> rhoRight;
     std::vector<double> uRight;
     std::vector<double> vRight;
     std::vector<double> wRight;
     std::vector<double> pRight;
     std::vector<double> eRight;
-    std::vector<double> bXRight;
-    std::vector<double> bYRight;
-    std::vector<double> bZRight;
 
-    // auxiliary variables on the left of the face, i.e. inside the cell
-    std::vector<double> uuLeft;
-    std::vector<double> bbLeft;
+    // Cell-centered states
+    std::vector<double> const rho;
+    std::vector<double> const u;
+    std::vector<double> const v;
+    std::vector<double> const w;
+    std::vector<double> const p;
+    std::vector<double> const e;
+};
 
-    // auxiliary variables on the right of the face, i.e. outside the cell
-    std::vector<double> uuRight;
-    std::vector<double> bbRight;
+struct FluxContext {
+    FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
+        numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
+        faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
+        rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft),
+        rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight) {}
+
+    std::size_t numFaces;
+    std::vector<std::array<std::size_t, 2>> faceToNodeIndices;
+
+    // properties of the faces
+    std::vector<double> faceArea;
+    std::vector<double> faceNormalX;
+    std::vector<double> faceNormalY;
+    std::vector<double> faceNormalZ;
+
+    // left of the face, i.e. inside the cell
+    std::vector<double> rhoLeft;
+    std::vector<double> uLeft;
+    std::vector<double> vLeft;
+    std::vector<double> wLeft;
+    std::vector<double> pLeft;
+    std::vector<double> eLeft;
+
+    // right of the face, i.e. outside the cell
+    std::vector<double> rhoRight;
+    std::vector<double> uRight;
+    std::vector<double> vRight;
+    std::vector<double> wRight;
+    std::vector<double> pRight;
+    std::vector<double> eRight;
 
     // fluxes on the face, i.e. between the cells
     std::vector<double> rhoFlux;
@@ -80,38 +77,8 @@ struct FluxContext {
     std::vector<double> rhoVFlux;
     std::vector<double> rhoWFlux;
     std::vector<double> rhoEFlux;
-    std::vector<double> bXFlux;
-    std::vector<double> bYFlux;
-    std::vector<double> bZFlux;
 };
 
-struct ReconstructionContext {
-    ReconstructionContext() = default;
-
-    std::size_t numCells = 0;
-    std::size_t numInteriorCells = 0;
-
-    // Left states
-    std::vector<double> rhoLeft;
-    std::vector<double> rhoULeft;
-    std::vector<double> rhoVLeft;
-    std::vector<double> rhoWLeft;
-    std::vector<double> rhoELeft;
-
-    // Right states
-    std::vector<double> rhoRight;
-    std::vector<double> rhoURight;
-    std::vector<double> rhoVRight;
-    std::vector<double> rhoWRight;
-    std::vector<double> rhoERight;
-
-    // Cell-centered states
-    std::vector<double> const rho;
-    std::vector<double> const rhoU;
-    std::vector<double> const rhoV;
-    std::vector<double> const rhoW;
-    std::vector<double> const rhoE;
-};
 
 struct ElectricFieldContext {
     ElectricFieldContext() = default;

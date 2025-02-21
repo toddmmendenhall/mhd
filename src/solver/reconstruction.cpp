@@ -4,7 +4,9 @@
 #include <profile.hpp>
 #include <reconstruction.hpp>
 
+#include <array>
 #include <cstddef>
+#include <vector>
 
 namespace MHD {
 
@@ -13,19 +15,23 @@ struct ConstantReconstructionKernel {
         : m_context(context) {}
 
     void operator()(std::size_t const i) {
-        // Get the left boundary cell
-        std::size_t iLeft = i == 0 ? m_context.numInteriorCells : i - 1;
-        std::size_t iRight = i;
+        // Get the left and right cell indices for this face
+        std::size_t iLeft = m_context.faceToNodeIndices[i][0];
+        std::size_t iRight = m_context.faceToNodeIndices[i][0];
+
         m_context.rhoLeft[i] = m_context.rho[iLeft];
-        m_context.rhoULeft[i] = m_context.rhoU[iLeft];
-        m_context.rhoVLeft[i] = m_context.rhoV[iLeft];
-        m_context.rhoWLeft[i] = m_context.rhoW[iLeft];
-        m_context.rhoELeft[i] = m_context.rhoE[iLeft];
+        m_context.uLeft[i] = m_context.u[iLeft];
+        m_context.vLeft[i] = m_context.v[iLeft];
+        m_context.wLeft[i] = m_context.w[iLeft];
+        m_context.pLeft[i] = m_context.p[iLeft];
+        m_context.eLeft[i] = m_context.e[iLeft];
+
         m_context.rhoRight[i] = m_context.rho[iRight];
-        m_context.rhoURight[i] = m_context.rhoU[iRight];
-        m_context.rhoVRight[i] = m_context.rhoV[iRight];
-        m_context.rhoWRight[i] = m_context.rhoW[iRight];
-        m_context.rhoERight[i] = m_context.rhoE[iRight];
+        m_context.uRight[i] = m_context.u[iRight];
+        m_context.vRight[i] = m_context.v[iRight];
+        m_context.wRight[i] = m_context.w[iRight];
+        m_context.pRight[i] = m_context.p[iRight];
+        m_context.eRight[i] = m_context.e[iRight];
     }
 
     ReconstructionContext& m_context;
@@ -38,7 +44,7 @@ public:
     
     void Compute(ExecutionController const& execCtrl) {
         ConstantReconstructionKernel kernel(m_context);
-        execCtrl.LaunchKernel(kernel, m_context.numCells);
+        execCtrl.LaunchKernel(kernel, m_context.numFaces);
     }
     
     ReconstructionContext& m_context;

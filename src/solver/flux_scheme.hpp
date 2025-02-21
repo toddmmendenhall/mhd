@@ -12,9 +12,9 @@ class ExecutionController;
 class IFluxScheme {
 public:
     virtual ~IFluxScheme() = default;
-    virtual void ComputeInterfaceFluxes(ExecutionController const& execCtrl, FluxContext& fluxContext) const = 0;
+    virtual void ComputeInterfaceFluxes(ExecutionController const& execCtrl) const = 0;
 };
 
-std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile);
+std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile, FluxContext& context);
 
 } // namespace MHD
