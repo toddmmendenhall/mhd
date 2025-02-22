@@ -11,30 +11,28 @@ namespace MHD {
 class IIntegrator {
 public:
     virtual ~IIntegrator() = default;
-    virtual void Solve(ExecutionController const& execCtrl, IntegrationContext const& context, VariableStore& varStore) = 0;
+    virtual void Compute(ExecutionController const& execCtrl, IntegrationContext const& context) = 0;
 };
 
 struct ForwardEulerKernel {
-    ForwardEulerKernel(IntegrationContext const& context, VariableStore& varStore)
-        : m_context(context), m_varStore(varStore) {}
+    ForwardEulerKernel(IntegrationContext const& context) : m_context(context) {}
 
     void operator()(std::size_t i) {
-        m_varStore.rho[i] += m_context.timeStep * m_context.rhoRes[i];
-        m_varStore.rhoU[i] += m_context.timeStep * m_context.rhoURes[i];
-        m_varStore.rhoV[i] += m_context.timeStep * m_context.rhoVRes[i];
-        m_varStore.rhoW[i] += m_context.timeStep * m_context.rhoWRes[i];
-        m_varStore.rhoE[i] += m_context.timeStep * m_context.rhoERes[i];
+        m_context.rho[i] += m_context.tStep * m_context.rhoRes[i];
+        m_context.rhoU[i] += m_context.tStep * m_context.rhoURes[i];
+        m_context.rhoV[i] += m_context.tStep * m_context.rhoVRes[i];
+        m_context.rhoW[i] += m_context.tStep * m_context.rhoWRes[i];
+        m_context.rhoE[i] += m_context.tStep * m_context.rhoERes[i];
     }
 
     IntegrationContext const& m_context;
-    VariableStore& m_varStore;
 };
 
 class ForwardEuler : public IIntegrator {
 public:
-    void Solve(ExecutionController const& execCtrl, IntegrationContext const& context, VariableStore& varStore) override {
-        ForwardEulerKernel kern(context, varStore);
-        execCtrl.LaunchKernel(kern, varStore.numCells);
+    void Compute(ExecutionController const& execCtrl, IntegrationContext const& context) {
+        ForwardEulerKernel kern(context);
+        execCtrl.LaunchKernel(kern, context.numCells);
     }
 };
 

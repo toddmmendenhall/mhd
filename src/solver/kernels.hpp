@@ -24,14 +24,14 @@ struct SpecificVolumeKernel {
 struct VelocityKernel {
     VelocityKernel(std::vector<double> const& rhoInv,
                    std::vector<double> const& rho_u, std::vector<double> const& rho_v, std::vector<double> const& rho_w,
-                   std::vector<double>& u, std::vector<double>& v, std::vector<double>& w, std::vector<double>& u_u) :
-        rhoInv(rhoInv), rho_u(rho_u), rho_v(rho_v), rho_w(rho_w), u(u), v(v), w(w), u_u(u_u) {}
+                   std::vector<double>& u, std::vector<double>& v, std::vector<double>& w, std::vector<double>& uu) :
+        rhoInv(rhoInv), rho_u(rho_u), rho_v(rho_v), rho_w(rho_w), u(u), v(v), w(w), uu(uu) {}
     
     inline void operator()(std::size_t idx) {
         u[idx] = rho_u[idx] * rhoInv[idx];
         v[idx] = rho_v[idx] * rhoInv[idx];
         w[idx] = rho_w[idx] * rhoInv[idx];
-        u_u[idx] = u[idx] * u[idx] + v[idx] * v[idx] + w[idx] * w[idx];
+        uu[idx] = u[idx] * u[idx] + v[idx] * v[idx] + w[idx] * w[idx];
     }
 
     std::vector<double> const& rhoInv;
@@ -41,7 +41,7 @@ struct VelocityKernel {
     std::vector<double>& u;
     std::vector<double>& v;
     std::vector<double>& w;
-    std::vector<double>& u_u;
+    std::vector<double>& uu;
 };
 
 struct MagneticFieldSquaredKernel {
@@ -65,7 +65,7 @@ struct SpecificInternalEnergyKernel {
         m_rhoInv(rhoInv), m_rhoE(rhoE), m_uu(uu), m_bb(bb), m_e(e) {}
 
     inline void operator()(std::size_t idx) {
-        m_e[idx] = m_rhoE[idx] * m_rhoInv[idx] - 0.5 * m_uu[idx] - 0.5 * VACUUM_PERMEABILITY_INV * m_bb[idx] * m_rhoInv[idx];
+        m_e[idx] = m_rhoE[idx] * m_rhoInv[idx] - 0.5 * m_uu[idx];
     }
 
     std::vector<double> const& m_rhoInv;
@@ -82,7 +82,7 @@ struct CaloricallyPerfectGasPressureKernel {
         m_gammaMinus1(gamma - 1.0), m_rho(rho), m_e(e), m_bb(bb), m_p(p) {}
 
     inline void operator()(std::size_t idx) {
-        m_p[idx] = m_rho[idx] * m_gammaMinus1 * m_e[idx] + 0.5 * VACUUM_PERMEABILITY_INV * m_bb[idx];
+        m_p[idx] = m_rho[idx] * m_gammaMinus1 * m_e[idx];
     }
 
     double const m_gammaMinus1;

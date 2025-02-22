@@ -9,37 +9,41 @@
 #include <profile.hpp>
 #include <reconstruction.hpp>
 #include <solver.hpp>
+#include <residual.hpp>
 #include <variable_store.hpp>
 
 #include <memory>
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile, ExecutionController const& execCtrl,
-               VariableStore& varStore, IGrid const& grid)
-    : m_execCtrl(execCtrl), m_varStore(varStore), m_grid(grid)
+Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore, IGrid const& grid) :
+    m_execCtrl(execCtrl), m_varStore(varStore), m_grid(grid)
 {
     m_bFieldCalc = std::make_unique<MagneticFieldCalculator>();
     m_eFieldCalc = std::make_unique<ElectricFieldCalculator>();
-    m_reconstructionContext = std::make_unique<ReconstructionContext>();
+    m_reconstructionContext = std::make_unique<ReconstructionContext>(m_varStore, m_grid);
     m_reconstruction = reconstructionFactory(profile, *m_reconstructionContext);
     m_fluxContext = std::make_unique<FluxContext>(m_grid, *m_reconstructionContext);
     m_fluxScheme = fluxSchemeFactory(profile, *m_fluxContext);
+    m_residualContext = std::make_unique<ResidualContext>(m_grid, *m_fluxContext);
+    m_residual = std::make_unique<Residual>();
+    m_integrationContext = std::make_unique<IntegrationContext>(*m_residualContext, m_varStore, tStep);
     m_integrator = integratorFactory();
     m_boundCon = boundaryConditionFactory(profile);
 }
 
 void Solver::PerformTimeStep() {
-    // Compute the left and right states for each face
+    // Compute the face-centered states
     ReconstructVariables();
 
-    // Compute the fluxes for each face
+    // Compute the face-centered fluxes
     ComputeFluxes();
 
-    ApplyBoundaryConditions();
+    // Compute the cell-centered residuals
+    m_residual->Compute(m_execCtrl, *m_residualContext);
 
-    IntegrationContext integrationContext;
-    m_integrator->Solve(m_execCtrl, integrationContext, m_varStore);
+    // Integrate over the timestep
+    m_integrator->Compute(m_execCtrl, *m_integrationContext);
 }
 
 void Solver::ComputePrimitivesFromConserved()
@@ -103,7 +107,6 @@ void Solver::ApplyBoundaryConditions() {
 }
 
 void Solver::ComputeResiduals() {
-    IntegrationContext integrationContext;
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,

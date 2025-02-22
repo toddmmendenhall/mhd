@@ -13,6 +13,7 @@ set(includes context.hpp
              integration.hpp
              kernels.hpp
              reconstruction.hpp
+             residual.hpp
              solver.hpp
              variable_store.hpp)
 

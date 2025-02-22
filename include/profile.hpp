@@ -17,13 +17,13 @@ struct Profile {
     BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::OUTFLOW;
     SpatialDerivativeMethod m_spatialDerivativeOption = SpatialDerivativeMethod::FINITE_DIFFERENCE;
     TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
-    FluxScheme m_fluxOption = FluxScheme::HLLC;
-    ReconstructionOption m_reconstructionOption = ReconstructionOption::LINEAR;
+    FluxScheme m_fluxOption = FluxScheme::LOG;
+    ReconstructionOption m_reconstructionOption = ReconstructionOption::CONSTANT;
 
     // Phenomenon options
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
     ViscousOption m_viscousOption = ViscousOption::INVISCID;
-    HydroOption m_hydroOption = HydroOption::MAGNETO_HYDRO;
+    HydroOption m_hydroOption = HydroOption::PURE_HYDRO;
 
     // Generic options
     OutputDataOption m_outputDataOption = OutputDataOption::NO;

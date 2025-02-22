@@ -11,10 +11,14 @@ class IBoundaryCondition;
 class IFluxScheme;
 class IGrid;
 class IIntegrator;
+struct IntegrationContext;
 class IReconstruction;
 class MagneticFieldCalculator;
 class Profile;
 struct ReconstructionContext;
+struct ResidualContext;
+class Residual;
+struct TransportContext;
 class VariableStore;
 
 class ISolver {
@@ -47,6 +51,7 @@ public:
     void ComputeResiduals();
 
 private:
+    double tStep = 0.001;
     std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
     std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
     std::unique_ptr<FluxContext> m_fluxContext;
@@ -55,6 +60,9 @@ private:
     std::unique_ptr<IFluxScheme> m_fluxScheme;
     std::unique_ptr<ReconstructionContext> m_reconstructionContext;
     std::unique_ptr<IReconstruction> m_reconstruction;
+    std::unique_ptr<ResidualContext> m_residualContext;
+    std::unique_ptr<Residual> m_residual;
+    std::unique_ptr<IntegrationContext> m_integrationContext;
     ExecutionController const& m_execCtrl;
     IGrid const& m_grid;
     VariableStore& m_varStore;

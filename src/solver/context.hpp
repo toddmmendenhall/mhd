@@ -9,74 +9,84 @@
 namespace MHD {
 
 struct ReconstructionContext {
-    ReconstructionContext() = default;
+    ReconstructionContext(VariableStore const& vs, IGrid const& grid) : rho(vs.rho),
+        u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), faceToNodeIndices(grid.FaceToNodeIndices()),
+        numFaces(grid.NumFaces()) {}
 
-    std::size_t numFaces = 0;
-    std::vector<std::array<std::size_t, 2>> faceToNodeIndices;
-
-    // Left states
-    std::vector<double> rhoLeft;
-    std::vector<double> uLeft;
-    std::vector<double> vLeft;
-    std::vector<double> wLeft;
-    std::vector<double> pLeft;
-    std::vector<double> eLeft;
-
-    // Right states
-    std::vector<double> rhoRight;
-    std::vector<double> uRight;
-    std::vector<double> vRight;
-    std::vector<double> wRight;
-    std::vector<double> pRight;
-    std::vector<double> eRight;
+    std::size_t const numFaces;
+    std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
 
     // Cell-centered states
-    std::vector<double> const rho;
-    std::vector<double> const u;
-    std::vector<double> const v;
-    std::vector<double> const w;
-    std::vector<double> const p;
-    std::vector<double> const e;
+    std::vector<double> const& rho;
+    std::vector<double> const& u;
+    std::vector<double> const& v;
+    std::vector<double> const& w;
+    std::vector<double> const& p;
+    std::vector<double> const& e;
+
+    // Face-centered states
+    std::vector<double> rhoFace;
+    std::vector<double> uFace;
+    std::vector<double> vFace;
+    std::vector<double> wFace;
+    std::vector<double> pFace;
+    std::vector<double> eFace;
 };
 
 struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
         numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft),
-        rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight) {}
+        rhoFace(rc.rhoFace), uFace(rc.uFace), vFace(rc.vFace), wFace(rc.wFace), pFace(rc.pFace), eFace(rc.eFace) {}
 
-    std::size_t numFaces;
-    std::vector<std::array<std::size_t, 2>> faceToNodeIndices;
+    std::size_t const numFaces;
+    std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
 
     // properties of the faces
-    std::vector<double> faceArea;
-    std::vector<double> faceNormalX;
-    std::vector<double> faceNormalY;
-    std::vector<double> faceNormalZ;
+    std::vector<double> const& faceArea;
+    std::vector<double> const& faceNormalX;
+    std::vector<double> const& faceNormalY;
+    std::vector<double> const& faceNormalZ;
 
-    // left of the face, i.e. inside the cell
-    std::vector<double> rhoLeft;
-    std::vector<double> uLeft;
-    std::vector<double> vLeft;
-    std::vector<double> wLeft;
-    std::vector<double> pLeft;
-    std::vector<double> eLeft;
+    // Face-centered states
+    std::vector<double> const& rhoFace;
+    std::vector<double> const& uFace;
+    std::vector<double> const& vFace;
+    std::vector<double> const& wFace;
+    std::vector<double> const& pFace;
+    std::vector<double> const& eFace;
 
-    // right of the face, i.e. outside the cell
-    std::vector<double> rhoRight;
-    std::vector<double> uRight;
-    std::vector<double> vRight;
-    std::vector<double> wRight;
-    std::vector<double> pRight;
-    std::vector<double> eRight;
-
-    // fluxes on the face, i.e. between the cells
+    // Face-centered fluxes
     std::vector<double> rhoFlux;
     std::vector<double> rhoUFlux;
     std::vector<double> rhoVFlux;
     std::vector<double> rhoWFlux;
     std::vector<double> rhoEFlux;
+};
+
+struct ResidualContext {
+    ResidualContext(IGrid const& grid, FluxContext const& flux) :
+        numCells(grid.NumCells()), cellToFaceIndices(grid.CellToFaceIndices()), cellSize(grid.CellSize()),
+        rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {}
+
+    std::size_t const numCells;
+    std::vector<std::array<std::size_t, 2>> const& cellToFaceIndices;
+    std::vector<double> const& cellSize;
+
+    // Face-centered fluxes
+    std::vector<double> const& rhoFlux;
+    std::vector<double> const& rhoUFlux;
+    std::vector<double> const& rhoVFlux;
+    std::vector<double> const& rhoWFlux;
+    std::vector<double> const& rhoEFlux;
+
+    // Cell-centered residuals
+    std::vector<double> rhoRes;     // mass density residual
+    std::vector<double> rhoURes;    // x momentum density residual
+    std::vector<double> rhoVRes;    // y momentum density residual
+    std::vector<double> rhoWRes;    // z momentum density residual
+    std::vector<double> rhoERes;    // total energy density residual
 };
 
 
@@ -141,16 +151,27 @@ struct BoundaryConditionContext {
 };
 
 struct IntegrationContext {
-    IntegrationContext() = default;
+    IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const tStep) : 
+        tStep(tStep), numCells(rc.numCells), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
+        rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
+        rhoE(vs.rhoE) {}
 
-    double const timeStep = 0.0;
+    double const tStep;
+    std::size_t const numCells;
 
-    std::size_t const numVars = 0;
-    std::vector<double> rhoRes;     // mass density residual
-    std::vector<double> rhoURes;    // x momentum density residual
-    std::vector<double> rhoVRes;    // y momentum density residual
-    std::vector<double> rhoWRes;    // z momentum density residual
-    std::vector<double> rhoERes;    // total energy density residual
+    // Cell-centered residuals
+    std::vector<double> const& rhoRes;     // mass density residual
+    std::vector<double> const& rhoURes;    // x momentum density residual
+    std::vector<double> const& rhoVRes;    // y momentum density residual
+    std::vector<double> const& rhoWRes;    // z momentum density residual
+    std::vector<double> const& rhoERes;    // total energy density residual
+
+    // Cell-centered states
+    std::vector<double>& rho;
+    std::vector<double>& rhoU;
+    std::vector<double>& rhoV;
+    std::vector<double>& rhoW;
+    std::vector<double>& rhoE;
 };
 
 } // namespace MHD
