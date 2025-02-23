@@ -16,7 +16,8 @@
 
 namespace MHD {
 
-Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore, IGrid const& grid) :
+Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore, IGrid const& grid,
+    double const tStep) :
     m_execCtrl(execCtrl), m_varStore(varStore), m_grid(grid)
 {
     m_bFieldCalc = std::make_unique<MagneticFieldCalculator>();
@@ -33,6 +34,12 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, Vari
 }
 
 void Solver::PerformTimeStep() {
+    // Calculate primite state from conserved state
+    ComputePrimitivesFromConserved();
+
+    // Outflow for now
+    ApplyBoundaryConditions();
+
     // Compute the face-centered states
     ReconstructVariables();
 
@@ -46,30 +53,21 @@ void Solver::PerformTimeStep() {
     m_integrator->Compute(m_execCtrl, *m_integrationContext);
 }
 
-void Solver::ComputePrimitivesFromConserved()
-{
-    SpecificVolumeKernel rhoInvKern(m_varStore.rho, m_varStore.rhoInv);
-    m_execCtrl.LaunchKernel(rhoInvKern, m_varStore.rho.size());
+void Solver::ComputePrimitivesFromConserved() {
+    SpecificVolumeKernel rhoInvKern(m_varStore);
+    m_execCtrl.LaunchKernel(rhoInvKern, m_grid.NumInteriorCells());
 
-    VelocityKernel velKern(m_varStore.rhoInv, m_varStore.rhoU, m_varStore.rhoV, m_varStore.rhoW,
-                           m_varStore.u, m_varStore.v, m_varStore.w, m_varStore.uu);
-    m_execCtrl.LaunchKernel(velKern, m_varStore.rho.size());
+    VelocityKernel velKern(m_varStore);
+    m_execCtrl.LaunchKernel(velKern, m_grid.NumInteriorCells());
 
-    MagneticFieldSquaredKernel bSquaredKern(m_varStore.bX, m_varStore.bY, m_varStore.bZ,
-                                            m_varStore.bb);
-    m_execCtrl.LaunchKernel(bSquaredKern, m_varStore.rho.size());
+    SpecificInternalEnergyKernel eKern(m_varStore);
+    m_execCtrl.LaunchKernel(eKern, m_grid.NumInteriorCells());
 
-    SpecificInternalEnergyKernel eKern(m_varStore.rhoInv, m_varStore.rhoE, m_varStore.uu, m_varStore.bb,
-                                          m_varStore.e);
-    m_execCtrl.LaunchKernel(eKern, m_varStore.rho.size());
+    CaloricallyPerfectGasPressureKernel pKern(m_varStore);
+    m_execCtrl.LaunchKernel(pKern, m_grid.NumInteriorCells());
 
-    CaloricallyPerfectGasPressureKernel pKern(m_varStore.gamma, m_varStore.rho, m_varStore.e, m_varStore.bb,
-                                                 m_varStore.p);
-    m_execCtrl.LaunchKernel(pKern, m_varStore.rho.size());
-
-    PerfectGasTemperatureKernel tempKern(m_varStore.r, m_varStore.rhoInv,
-                                         m_varStore.p, m_varStore.t);
-    m_execCtrl.LaunchKernel(tempKern, m_varStore.rho.size());
+    PerfectGasTemperatureKernel tKern(m_varStore);
+    m_execCtrl.LaunchKernel(tKern, m_grid.NumInteriorCells());
 }
 
 void Solver::UpdateConservedFromPrimitives() {
@@ -102,7 +100,7 @@ void Solver::ComputeMagneticFields() {
 }
 
 void Solver::ApplyBoundaryConditions() {
-    BoundaryConditionContext context;
+    BoundaryConditionContext context(m_grid, m_varStore);
     m_boundCon->Compute(m_execCtrl, context);
 }
 
@@ -110,9 +108,9 @@ void Solver::ComputeResiduals() {
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
-                                       VariableStore& varStore, IGrid const& grid) {
+                                       VariableStore& varStore, IGrid const& grid, double const tStep) {
     if (profile.m_compressibleOption == CompressibleOption::COMPRESSIBLE) {
-        return std::make_unique<Solver>(profile, execCtrl, varStore, grid);
+        return std::make_unique<Solver>(profile, execCtrl, varStore, grid, tStep);
     }
     return nullptr;
 }

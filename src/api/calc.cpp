@@ -1,5 +1,6 @@
 #include <calc.hpp>
 #include <constants.hpp>
+#include <error.hpp>
 #include <execution_controller.hpp>
 #include <grid.hpp>
 #include <profile.hpp>
@@ -15,42 +16,23 @@ namespace MHD {
 
 Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_executionController = std::make_unique<ExecutionController>();
-    m_variableStore = std::make_unique<VariableStore>();
     m_grid = gridFactory(m_profile);
-    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore, *m_grid);
+    m_variableStore = std::make_unique<VariableStore>(*m_grid);
+    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore, *m_grid, tStep);
 }
 
 Calc::~Calc() = default;
 
-void Calc::SetInitialConditions() {
-    std::size_t const size = 10;
-    m_variableStore->rho.resize(size, ATMOSPHERIC_DENSITY_STP);
-    m_variableStore->rhoU.resize(size, 0.0);
-    m_variableStore->rhoV.resize(size, 0.0);
-    m_variableStore->rhoW.resize(size, 0.0);
-    m_variableStore->rhoE.resize(size, 0.0);
-    m_variableStore->u.resize(size, 0.0);
-    m_variableStore->v.resize(size, 0.0);
-    m_variableStore->w.resize(size, 0.0);
-    m_variableStore->p.resize(size, ATMOSPHERIC_PRESSURE_STP);
-    m_variableStore->e.resize(size, ATMOSPHERIC_PRESSURE_STP);
-    m_variableStore->bX.resize(size, 0.0);
-    m_variableStore->bY.resize(size, 0.0);
-    m_variableStore->bZ.resize(size, 0.0);
-    m_variableStore->rhoInv.resize(size,0.0);
-    m_variableStore->uu.resize(size, 0.0);
-    m_variableStore->t.resize(size, ATMOSPHERIC_STANDARD_TEMPERATURE);
-    m_variableStore->bb.resize(size, 0.0);
-    m_variableStore->faceBX.resize(size, 0.0);
-    m_variableStore->faceBY.resize(size, 0.0);
-    m_variableStore->faceBZ.resize(size, 0.0);
-    m_variableStore->edgeEX.resize(size, 0.0);
-    m_variableStore->edgeEY.resize(size, 0.0);
-    m_variableStore->edgeEZ.resize(size, 0.0);
+void Calc::SetInitialCondition(InitialCondition ic) {
+    if (InitialCondition::SOD_SHOCK_TUBE == ic) {
+        SetSodShockTube();
+    } else {
+        throw Error::INVALID_INITIAL_CONDITION;
+    }
 }
 
 void Calc::SetSodShockTube() {
-    std::size_t const size = m_variableStore->numCells;
+    std::size_t const size = m_grid->NumInteriorCells();
     for (std::size_t i = 0; i < size; ++i) {
         if (i >= size / 2) {
             m_variableStore->rho[i] *= 0.125;
@@ -61,19 +43,21 @@ void Calc::SetSodShockTube() {
 
 void Calc::Run() {
     while (m_currentTime < m_duration) {
-        std::cout << m_currentTime;
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-            WriteData(*m_variableStore);
+            if (m_currentStep % 1000 == 0) {
+                WriteData(*m_variableStore);
+                ++m_currentOutput;
+            }
         }
         m_solver->PerformTimeStep();
-        m_currentTime += 0.01;
+        m_currentTime += tStep;
         m_currentStep++;
     }
 }
 
 void Calc::WriteData(VariableStore const& varStore) {
     std::ofstream myFile;
-    std::string filename = "results.csv";
+    std::string filename = "results_" + std::to_string(m_currentOutput) + ".csv";
     
     // Open the file for writing
     myFile.open(filename);
@@ -83,19 +67,20 @@ void Calc::WriteData(VariableStore const& varStore) {
         // Write data to the file
         myFile << "# rho, u, v, w, p, T" << std::endl;
 
-        for (std::size_t i = 0; i < varStore.numCells; ++i) {
+        for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
             myFile <<
             varStore.rho[i] << ", " <<
             varStore.u[i] << ", " <<
             varStore.v[i] << ", " <<
             varStore.w[i] << ", " <<
             varStore.p[i] << ", " <<
+            varStore.e[i] << ", " <<
             varStore.t[i] << std::endl;
         }
 
         // Close the file
         myFile.close();
-        std::cout << "Data written to " << filename << std::endl;
+        std::cout << "Data written to " << filename.data() << std::endl;
     } else {
         std::cerr << "Unable to open file: " << filename << std::endl;
     }

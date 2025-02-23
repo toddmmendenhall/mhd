@@ -1,6 +1,6 @@
 #pragma once
 
-#include <constants.hpp>
+#include <variable_store.hpp>
 
 #include <cmath>
 #include <cstddef>
@@ -9,9 +9,8 @@
 namespace MHD {
 
 struct SpecificVolumeKernel {
-    SpecificVolumeKernel(std::vector<double> const& rho,
-                         std::vector<double>& rhoInv) :
-        rho(rho), rhoInv(rhoInv) {}
+    SpecificVolumeKernel(VariableStore& vs) :
+        rho(vs.rho), rhoInv(vs.rhoInv) {}
 
     inline void operator()(std::size_t idx) {
         rhoInv[idx] = 1.0 / rho[idx];
@@ -22,22 +21,20 @@ struct SpecificVolumeKernel {
 };
 
 struct VelocityKernel {
-    VelocityKernel(std::vector<double> const& rhoInv,
-                   std::vector<double> const& rho_u, std::vector<double> const& rho_v, std::vector<double> const& rho_w,
-                   std::vector<double>& u, std::vector<double>& v, std::vector<double>& w, std::vector<double>& uu) :
-        rhoInv(rhoInv), rho_u(rho_u), rho_v(rho_v), rho_w(rho_w), u(u), v(v), w(w), uu(uu) {}
+    VelocityKernel(VariableStore& vs) :
+        rhoInv(vs.rhoInv), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW), u(vs.u), v(vs.v), w(vs.w), uu(vs.uu) {}
     
     inline void operator()(std::size_t idx) {
-        u[idx] = rho_u[idx] * rhoInv[idx];
-        v[idx] = rho_v[idx] * rhoInv[idx];
-        w[idx] = rho_w[idx] * rhoInv[idx];
+        u[idx] = rhoU[idx] * rhoInv[idx];
+        v[idx] = rhoV[idx] * rhoInv[idx];
+        w[idx] = rhoW[idx] * rhoInv[idx];
         uu[idx] = u[idx] * u[idx] + v[idx] * v[idx] + w[idx] * w[idx];
     }
 
     std::vector<double> const& rhoInv;
-    std::vector<double> const& rho_u;
-    std::vector<double> const& rho_v;
-    std::vector<double> const& rho_w;
+    std::vector<double> const& rhoU;
+    std::vector<double> const& rhoV;
+    std::vector<double> const& rhoW;
     std::vector<double>& u;
     std::vector<double>& v;
     std::vector<double>& w;
@@ -60,51 +57,51 @@ struct MagneticFieldSquaredKernel {
 };
 
 struct SpecificInternalEnergyKernel {
-    SpecificInternalEnergyKernel(std::vector<double> const& rhoInv, std::vector<double> const& rhoE, std::vector<double> const& uu,
-                                 std::vector<double> const& bb, std::vector<double>& e) :
-        m_rhoInv(rhoInv), m_rhoE(rhoE), m_uu(uu), m_bb(bb), m_e(e) {}
+    SpecificInternalEnergyKernel(VariableStore& vs) :
+        rhoInv(vs.rhoInv), rhoE(vs.rhoE), uu(vs.uu), e(vs.e) {}
 
     inline void operator()(std::size_t idx) {
-        m_e[idx] = m_rhoE[idx] * m_rhoInv[idx] - 0.5 * m_uu[idx];
+        e[idx] = rhoE[idx] * rhoInv[idx] - 0.5 * uu[idx];
+        if (e[idx] < 0.0) {
+            e[idx] = 0.0;
+        }
     }
 
-    std::vector<double> const& m_rhoInv;
-    std::vector<double> const& m_rhoE;
-    std::vector<double> const& m_uu;
-    std::vector<double> const& m_bb;
-    std::vector<double>& m_e;
+    std::vector<double> const& rhoInv;
+    std::vector<double> const& rhoE;
+    std::vector<double> const& uu;
+    std::vector<double>& e;
 };
 
 struct CaloricallyPerfectGasPressureKernel {
-    CaloricallyPerfectGasPressureKernel(double const gamma,
-                                        std::vector<double> const& rho, std::vector<double> const& e, std::vector<double> const& bb,
-                                        std::vector<double>& p) :
-        m_gammaMinus1(gamma - 1.0), m_rho(rho), m_e(e), m_bb(bb), m_p(p) {}
+    CaloricallyPerfectGasPressureKernel(VariableStore& vs) :
+        gammaMinus1(vs.gamma - 1.0), rho(vs.rho), e(vs.e), p(vs.p) {}
 
     inline void operator()(std::size_t idx) {
-        m_p[idx] = m_rho[idx] * m_gammaMinus1 * m_e[idx];
+        if (rho[idx] < 1e-9 || e[idx] < 1e-9) {
+            p[idx] = 0.0;
+        }
+        p[idx] = gammaMinus1 * rho[idx] * e[idx];
     }
 
-    double const m_gammaMinus1;
-    std::vector<double> const& m_rho;
-    std::vector<double> const& m_e;
-    std::vector<double> const& m_bb;
-    std::vector<double>& m_p;
+    double const gammaMinus1;
+    std::vector<double> const& rho;
+    std::vector<double> const& e;
+    std::vector<double>& p;
 };
 
 struct PerfectGasTemperatureKernel {
-    PerfectGasTemperatureKernel(double const r, std::vector<double> const& rhoInv,
-                                std::vector<double> const& p, std::vector<double>& t) :
-        m_rInv(1.0 / r), m_rhoInv(rhoInv), m_p(p), m_t(t) {}
+    PerfectGasTemperatureKernel(VariableStore& vs) :
+        rInv(1.0 / vs.r), rhoInv(vs.rhoInv), p(vs.p), t(vs.t) {}
 
     inline void operator()(std::size_t idx) {
-        m_t[idx] = m_p[idx] * m_rhoInv[idx] * m_rInv;
+        t[idx] = p[idx] * rhoInv[idx] * rInv;
     }
 
-    double const m_rInv;
-    std::vector<double> const& m_rhoInv;
-    std::vector<double> const& m_p;
-    std::vector<double>& m_t;
+    double const rInv;
+    std::vector<double> const& rhoInv;
+    std::vector<double> const& p;
+    std::vector<double>& t;
 };
 
 double inline CpOverR(std::vector<double> const& a, double const T) {

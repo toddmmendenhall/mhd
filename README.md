@@ -1,3 +1,12 @@
+# Build instructions
+* Clone this repository:
+* Update submodules: `git update submodules --init`
+* Create a build directory: `mkdir build`
+* Change directories to the build directory: `cd build`
+* Run the cmake generate step: `cmake .. -DCMAKE_BUILD_TYPE=Debug`
+* Run the cmake build step: `cmake --build . --config Debug`
+* Run tests: `./test/mhd_tests`
+
 # Main user-facing objects
 * Profile - Contains all of the options for running a simulation
 * Calc - Top level calculation object for simulation control flow

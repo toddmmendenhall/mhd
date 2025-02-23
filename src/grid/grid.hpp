@@ -16,6 +16,12 @@ public:
     std::size_t const NumInteriorCells() const { return numInteriorNodes; }
     std::vector<std::array<std::size_t, 2>> const& FaceToNodeIndices() const { return m_faceToNodeIndices; }
     std::vector<std::array<std::size_t, 2>> const& CellToFaceIndices() const { return cellToFaceIndices; }
+    std::vector<std::pair<std::size_t, std::size_t>> const BoundaryToInteriorNodeIndices() const {
+        return {{numInteriorNodes, 0}, {numInteriorNodes+1, numInteriorNodes-1}};
+    }
+    std::vector<std::pair<std::size_t, std::size_t>> const BoundaryToFaceIndices() const {
+        return {{numInteriorNodes, 0}, {numInteriorNodes+1, numInteriorNodes}};
+    }
     std::vector<double> const& FaceAreas() const { return m_faceAreas; }
     std::vector<double> const& FaceNormalX() const { return m_faceNormalsX; }
     std::vector<double> const& FaceNormalY() const { return m_faceNormalsY; }

@@ -9,9 +9,16 @@
 namespace MHD {
 
 struct ReconstructionContext {
-    ReconstructionContext(VariableStore const& vs, IGrid const& grid) : rho(vs.rho),
-        u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), faceToNodeIndices(grid.FaceToNodeIndices()),
-        numFaces(grid.NumFaces()) {}
+    ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), faceToNodeIndices(grid.FaceToNodeIndices()),
+        numFaces(grid.NumFaces()) {
+            rhoFace.resize(numFaces, 0.0);
+            uFace.resize(numFaces, 0.0);
+            vFace.resize(numFaces, 0.0);
+            wFace.resize(numFaces, 0.0);
+            pFace.resize(numFaces, 0.0);
+            eFace.resize(numFaces, 0.0);
+        }
 
     std::size_t const numFaces;
     std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
@@ -37,7 +44,13 @@ struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
         numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        rhoFace(rc.rhoFace), uFace(rc.uFace), vFace(rc.vFace), wFace(rc.wFace), pFace(rc.pFace), eFace(rc.eFace) {}
+        rhoFace(rc.rhoFace), uFace(rc.uFace), vFace(rc.vFace), wFace(rc.wFace), pFace(rc.pFace), eFace(rc.eFace) {
+            rhoFlux.resize(numFaces, 0.0);
+            rhoUFlux.resize(numFaces, 0.0);
+            rhoVFlux.resize(numFaces, 0.0);
+            rhoWFlux.resize(numFaces, 0.0);
+            rhoEFlux.resize(numFaces, 0.0);
+        }
 
     std::size_t const numFaces;
     std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
@@ -68,7 +81,13 @@ struct ResidualContext {
     ResidualContext(IGrid const& grid, FluxContext const& flux) :
         numCells(grid.NumCells()), cellToFaceIndices(grid.CellToFaceIndices()), cellSize(grid.CellSize()),
         rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
-        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {}
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {
+            rhoRes.resize(numCells, 0.0);
+            rhoURes.resize(numCells, 0.0);
+            rhoVRes.resize(numCells, 0.0);
+            rhoWRes.resize(numCells, 0.0);
+            rhoERes.resize(numCells, 0.0);
+        }
 
     std::size_t const numCells;
     std::vector<std::array<std::size_t, 2>> const& cellToFaceIndices;
@@ -128,23 +147,24 @@ struct MagneticFieldContext {
 };
 
 struct BoundaryConditionContext {
-    std::vector<std::size_t> const boundaryNodeIndices;
+    BoundaryConditionContext(IGrid const& grid, VariableStore& vs) :
+        boundaryToInteriorNodeIndices(grid.BoundaryToInteriorNodeIndices()), boundaryToFaceIndices(grid.BoundaryToFaceIndices()),
+        faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
+        u(vs.u), v(vs.v), w(vs.w), p(vs.p) {}
 
-    // properties of the face
-    std::vector<double> const faceNormalX;
-    std::vector<double> const faceNormalY;
-    std::vector<double> const faceNormalZ;
+    std::vector<std::pair<std::size_t, std::size_t>> const boundaryToInteriorNodeIndices;
+    std::vector<std::pair<std::size_t, std::size_t>> const boundaryToFaceIndices;
 
-    // Primitives on the boundary
-    std::vector<double> u;
-    std::vector<double> v;
-    std::vector<double> w;
-    std::vector<double> p;
+    // Properties of the face
+    std::vector<double> const& faceNormalX;
+    std::vector<double> const& faceNormalY;
+    std::vector<double> const& faceNormalZ;
 
-    // Primitives inside the boundary
-    std::vector<double> const uIn;
-    std::vector<double> const vIn;
-    std::vector<double> const wIn;
+    // Primitive states
+    std::vector<double>& u;
+    std::vector<double>& v;
+    std::vector<double>& w;
+    std::vector<double>& p;
 
     // Primitives outide the boundary
     double const pOut = ATMOSPHERIC_PRESSURE_STP;

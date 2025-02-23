@@ -11,19 +11,23 @@ struct OutflowBoundaryConditionKernel {
     OutflowBoundaryConditionKernel(MHD::BoundaryConditionContext& context) :
         m_context(context) {}
 
-    void operator()(std::size_t idx) {
+    void operator()(std::size_t i) {
+        std::size_t const iBnd = m_context.boundaryToInteriorNodeIndices[i].first;
+        std::size_t const iInt = m_context.boundaryToInteriorNodeIndices[i].second;
+        std::size_t const iFace = m_context.boundaryToFaceIndices[i].second;
+
         // Normal component of the velocity inside the boundary
-        auto uBar = m_context.uIn[idx] * m_context.faceNormalX[idx] +
-                    m_context.vIn[idx] * m_context.faceNormalY[idx] +
-                    m_context.wIn[idx] * m_context.faceNormalZ[idx];
+        auto uBar = m_context.u[iInt] * m_context.faceNormalX[iFace] +
+                    m_context.v[iInt] * m_context.faceNormalY[iFace] +
+                    m_context.w[iInt] * m_context.faceNormalZ[iFace];
 
         // Neumann condition on the normal velocity
-        m_context.u[idx] = uBar * m_context.faceNormalX[idx];
-        m_context.v[idx] = uBar * m_context.faceNormalY[idx];
-        m_context.w[idx] = uBar * m_context.faceNormalZ[idx];
+        m_context.u[iBnd] = uBar * m_context.faceNormalX[iFace];
+        m_context.v[iBnd] = uBar * m_context.faceNormalY[iFace];
+        m_context.w[iBnd] = uBar * m_context.faceNormalZ[iFace];
 
         // Dirichlet condition on the pressure
-        m_context.p[idx] = m_context.pOut;
+        m_context.p[iBnd] = m_context.p[iInt];
     }
     MHD::BoundaryConditionContext& m_context;
 };
@@ -38,7 +42,7 @@ public:
 
     void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
         OutflowBoundaryConditionKernel kern(context);
-        execCtrl.LaunchKernel(kern, context.boundaryNodeIndices.size());
+        execCtrl.LaunchKernel(kern, context.boundaryToInteriorNodeIndices.size());
     }
 };
 

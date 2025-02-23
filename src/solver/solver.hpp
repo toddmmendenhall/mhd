@@ -30,7 +30,7 @@ public:
 class Solver : public ISolver {
 public:
     Solver(Profile const& profile, ExecutionController const& execCtrl,
-           VariableStore& varStore, IGrid const& grid);
+           VariableStore& varStore, IGrid const& grid, double const tStep);
     
     void PerformTimeStep();
 
@@ -51,7 +51,6 @@ public:
     void ComputeResiduals();
 
 private:
-    double tStep = 0.001;
     std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
     std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
     std::unique_ptr<FluxContext> m_fluxContext;
@@ -69,6 +68,6 @@ private:
 };
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
-                                       VariableStore& varStore, IGrid const& grid);
+                                       VariableStore& varStore, IGrid const& grid, double const tStep);
 
 } // namespace MHD

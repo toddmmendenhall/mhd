@@ -1,18 +1,51 @@
 #pragma once
 
+#include <grid.hpp>
+
 #include <vector>
 
 namespace MHD {
 
 struct VariableStore {
-    VariableStore() = default;
+    VariableStore(IGrid const& grid) {
+        std::size_t const numCells = grid.NumCells();
+
+        // Default conserved state
+        rho.resize(numCells, ATMOSPHERIC_DENSITY_STP);
+        rhoU.resize(numCells, 0.0);
+        rhoV.resize(numCells, 0.0);
+        rhoW.resize(numCells, 0.0);
+        rhoE.resize(numCells, ATMOSPHERIC_INTERNAL_ENERGY_STP);
+
+        // Default primitve state
+        u.resize(numCells, 0.0);
+        v.resize(numCells, 0.0);
+        w.resize(numCells, 0.0);
+        p.resize(numCells, ATMOSPHERIC_PRESSURE_STP);
+        e.resize(numCells, ATMOSPHERIC_INTERNAL_ENERGY_STP);
+        bX.resize(numCells, 0.0);
+        bY.resize(numCells, 0.0);
+        bZ.resize(numCells, 0.0);
+
+        // Default auxilliary variables
+        rhoInv.resize(numCells, 0.0);
+        uu.resize(numCells, 0.0);
+        t.resize(numCells, ATMOSPHERIC_STANDARD_TEMPERATURE);
+        bb.resize(numCells, 0.0);
+
+        // Default MHD variables
+        faceBX.resize(numCells, 0.0);
+        faceBY.resize(numCells, 0.0);
+        faceBZ.resize(numCells, 0.0);
+        edgeEX.resize(numCells, 0.0);
+        edgeEY.resize(numCells, 0.0);
+        edgeEZ.resize(numCells, 0.0);
+    }
     ~VariableStore() = default;
 
     // Constants
-    double const r = 8.314 / 0.0280134; // specific gas constant for N2
+    double const r = 8.314 / 0.0280134; // specific gas constant for N2 [J/(kg K)]
     double const gamma = 1.4;           // ratio of C_p to C_v for N2 at 298 K and 1 atm
-
-    std::size_t const numCells = 0;
 
     // Cell-centered
     // Conserved
