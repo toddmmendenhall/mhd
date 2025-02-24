@@ -24,7 +24,9 @@ Calc::Calc(Profile const& profile) : m_profile(profile) {
 Calc::~Calc() = default;
 
 void Calc::SetInitialCondition(InitialCondition ic) {
-    if (InitialCondition::SOD_SHOCK_TUBE == ic) {
+    if (InitialCondition::ATMOSPHERE == ic) {
+        return;
+    } else if (InitialCondition::SOD_SHOCK_TUBE == ic) {
         SetSodShockTube();
     } else {
         throw Error::INVALID_INITIAL_CONDITION;
@@ -44,7 +46,7 @@ void Calc::SetSodShockTube() {
 void Calc::Run() {
     while (m_currentTime < m_duration) {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-            if (m_currentStep % 1000 == 0) {
+            if (m_currentStep % 10 == 0) {
                 WriteData(*m_variableStore);
                 ++m_currentOutput;
             }

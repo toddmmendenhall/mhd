@@ -11,14 +11,14 @@ struct Profile {
     Dimension m_gridDimensionOption = Dimension::ONE;
     Geometry m_gridGeometryOption = Geometry::CARTESIAN;
     std::vector<double> m_gridBoundsOption = {0.0, 1.0, 0.0, 1.0, 0.0, 1.0};
-    std::vector<double> m_gridSpacingsOption = {0.01, 0.1, 0.1};
+    std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
 
     // Solver options
-    BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::OUTFLOW;
+    BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::REFLECTIVE;
     SpatialDerivativeMethod m_spatialDerivativeOption = SpatialDerivativeMethod::FINITE_DIFFERENCE;
     TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
     FluxScheme m_fluxOption = FluxScheme::LOG;
-    ReconstructionOption m_reconstructionOption = ReconstructionOption::LINEAR;
+    ReconstructionOption m_reconstructionOption = ReconstructionOption::CONSTANT;
 
     // Phenomenon options
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;

@@ -35,9 +35,10 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, Vari
 
 void Solver::PerformTimeStep() {
     // Calculate primite state from conserved state
-    ComputePrimitivesFromConserved();
+    // ComputePrimitivesFromConserved();
+    // UpdateConservedFromPrimitives();
 
-    // Outflow for now
+    // Apply boundary conditions to ghost cell states
     ApplyBoundaryConditions();
 
     // Compute the face-centered states
@@ -55,19 +56,19 @@ void Solver::PerformTimeStep() {
 
 void Solver::ComputePrimitivesFromConserved() {
     SpecificVolumeKernel rhoInvKern(m_varStore);
-    m_execCtrl.LaunchKernel(rhoInvKern, m_grid.NumInteriorCells());
+    m_execCtrl.LaunchKernel(rhoInvKern, m_grid.NumCells());
 
     VelocityKernel velKern(m_varStore);
-    m_execCtrl.LaunchKernel(velKern, m_grid.NumInteriorCells());
+    m_execCtrl.LaunchKernel(velKern, m_grid.NumCells());
 
     SpecificInternalEnergyKernel eKern(m_varStore);
-    m_execCtrl.LaunchKernel(eKern, m_grid.NumInteriorCells());
+    m_execCtrl.LaunchKernel(eKern, m_grid.NumCells());
 
     CaloricallyPerfectGasPressureKernel pKern(m_varStore);
-    m_execCtrl.LaunchKernel(pKern, m_grid.NumInteriorCells());
+    m_execCtrl.LaunchKernel(pKern, m_grid.NumCells());
 
     PerfectGasTemperatureKernel tKern(m_varStore);
-    m_execCtrl.LaunchKernel(tKern, m_grid.NumInteriorCells());
+    m_execCtrl.LaunchKernel(tKern, m_grid.NumCells());
 }
 
 void Solver::UpdateConservedFromPrimitives() {

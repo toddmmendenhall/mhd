@@ -12,12 +12,18 @@ struct ReconstructionContext {
     ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
         rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), faceToNodeIndices(grid.FaceToNodeIndices()),
         numFaces(grid.NumFaces()) {
-            rhoFace.resize(numFaces, 0.0);
-            uFace.resize(numFaces, 0.0);
-            vFace.resize(numFaces, 0.0);
-            wFace.resize(numFaces, 0.0);
-            pFace.resize(numFaces, 0.0);
-            eFace.resize(numFaces, 0.0);
+            rhoLeft.resize(numFaces, 0.0);
+            uLeft.resize(numFaces, 0.0);
+            vLeft.resize(numFaces, 0.0);
+            wLeft.resize(numFaces, 0.0);
+            pLeft.resize(numFaces, 0.0);
+            eLeft.resize(numFaces, 0.0);
+            rhoRight.resize(numFaces, 0.0);
+            uRight.resize(numFaces, 0.0);
+            vRight.resize(numFaces, 0.0);
+            wRight.resize(numFaces, 0.0);
+            pRight.resize(numFaces, 0.0);
+            eRight.resize(numFaces, 0.0);
         }
 
     std::size_t const numFaces;
@@ -31,20 +37,29 @@ struct ReconstructionContext {
     std::vector<double> const& p;
     std::vector<double> const& e;
 
-    // Face-centered states
-    std::vector<double> rhoFace;
-    std::vector<double> uFace;
-    std::vector<double> vFace;
-    std::vector<double> wFace;
-    std::vector<double> pFace;
-    std::vector<double> eFace;
+    // Face-centered left states
+    std::vector<double> rhoLeft;
+    std::vector<double> uLeft;
+    std::vector<double> vLeft;
+    std::vector<double> wLeft;
+    std::vector<double> pLeft;
+    std::vector<double> eLeft;
+
+    // Face-centered right states
+    std::vector<double> rhoRight;
+    std::vector<double> uRight;
+    std::vector<double> vRight;
+    std::vector<double> wRight;
+    std::vector<double> pRight;
+    std::vector<double> eRight;
 };
 
 struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
         numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        rhoFace(rc.rhoFace), uFace(rc.uFace), vFace(rc.vFace), wFace(rc.wFace), pFace(rc.pFace), eFace(rc.eFace) {
+        rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft),
+        rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight) {
             rhoFlux.resize(numFaces, 0.0);
             rhoUFlux.resize(numFaces, 0.0);
             rhoVFlux.resize(numFaces, 0.0);
@@ -61,13 +76,21 @@ struct FluxContext {
     std::vector<double> const& faceNormalY;
     std::vector<double> const& faceNormalZ;
 
-    // Face-centered states
-    std::vector<double> const& rhoFace;
-    std::vector<double> const& uFace;
-    std::vector<double> const& vFace;
-    std::vector<double> const& wFace;
-    std::vector<double> const& pFace;
-    std::vector<double> const& eFace;
+    // Face-centered left states
+    std::vector<double> const& rhoLeft;
+    std::vector<double> const& uLeft;
+    std::vector<double> const& vLeft;
+    std::vector<double> const& wLeft;
+    std::vector<double> const& pLeft;
+    std::vector<double> const& eLeft;
+
+    // Face-centered right states
+    std::vector<double> const& rhoRight;
+    std::vector<double> const& uRight;
+    std::vector<double> const& vRight;
+    std::vector<double> const& wRight;
+    std::vector<double> const& pRight;
+    std::vector<double> const& eRight;
 
     // Face-centered fluxes
     std::vector<double> rhoFlux;
@@ -148,12 +171,13 @@ struct MagneticFieldContext {
 
 struct BoundaryConditionContext {
     BoundaryConditionContext(IGrid const& grid, VariableStore& vs) :
-        boundaryToInteriorNodeIndices(grid.BoundaryToInteriorNodeIndices()), boundaryToFaceIndices(grid.BoundaryToFaceIndices()),
+        boundaryFaceToBoundaryCellIndices(grid.BoundaryFaceToBoundaryCellIndices()),
+        boundaryFaceToInteriorCellIndices(grid.BoundaryFaceToInteriorCellIndices()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        u(vs.u), v(vs.v), w(vs.w), p(vs.p) {}
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p) {}
 
-    std::vector<std::pair<std::size_t, std::size_t>> const boundaryToInteriorNodeIndices;
-    std::vector<std::pair<std::size_t, std::size_t>> const boundaryToFaceIndices;
+    std::vector<std::size_t> const boundaryFaceToBoundaryCellIndices;
+    std::vector<std::size_t> const boundaryFaceToInteriorCellIndices;
 
     // Properties of the face
     std::vector<double> const& faceNormalX;
@@ -161,13 +185,11 @@ struct BoundaryConditionContext {
     std::vector<double> const& faceNormalZ;
 
     // Primitive states
+    std::vector<double>& rho;
     std::vector<double>& u;
     std::vector<double>& v;
     std::vector<double>& w;
     std::vector<double>& p;
-
-    // Primitives outide the boundary
-    double const pOut = ATMOSPHERIC_PRESSURE_STP;
 };
 
 struct IntegrationContext {

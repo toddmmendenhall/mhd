@@ -15,15 +15,23 @@ struct ConstantReconstructionKernel {
         : m_context(context) {}
 
     void operator()(std::size_t const i) {
-        // Get the left cell index for this face
+        // Get the left and right cell indices for this face
         std::size_t iLeft = m_context.faceToNodeIndices[i][0];
+        std::size_t iRight = m_context.faceToNodeIndices[i][1];
 
-        m_context.rhoFace[i] = m_context.rho[iLeft];
-        m_context.uFace[i] = m_context.u[iLeft];
-        m_context.vFace[i] = m_context.v[iLeft];
-        m_context.wFace[i] = m_context.w[iLeft];
-        m_context.pFace[i] = m_context.p[iLeft];
-        m_context.eFace[i] = m_context.e[iLeft];
+        m_context.rhoLeft[i] = m_context.rho[iLeft];
+        m_context.uLeft[i] = m_context.u[iLeft];
+        m_context.vLeft[i] = m_context.v[iLeft];
+        m_context.wLeft[i] = m_context.w[iLeft];
+        m_context.pLeft[i] = m_context.p[iLeft];
+        m_context.eLeft[i] = m_context.e[iLeft];
+
+        m_context.rhoRight[i] = m_context.rho[iRight];
+        m_context.uRight[i] = m_context.u[iRight];
+        m_context.vRight[i] = m_context.v[iRight];
+        m_context.wRight[i] = m_context.w[iRight];
+        m_context.pRight[i] = m_context.p[iRight];
+        m_context.eRight[i] = m_context.e[iRight];
     }
 
     ReconstructionContext& m_context;
@@ -38,12 +46,19 @@ struct LinearReconstructionKernel {
         std::size_t iLeft = m_context.faceToNodeIndices[i][0];
         std::size_t iRight = m_context.faceToNodeIndices[i][1];
 
-        m_context.rhoFace[i] = 0.5 * (m_context.rho[iLeft] + m_context.rho[iRight]);
-        m_context.uFace[i] = 0.5 * (m_context.u[iLeft] + m_context.u[iRight]);
-        m_context.vFace[i] = 0.5 * (m_context.v[iLeft] + m_context.v[iRight]);
-        m_context.wFace[i] = 0.5 * (m_context.w[iLeft] + m_context.w[iRight]);
-        m_context.pFace[i] = 0.5 * (m_context.p[iLeft] + m_context.p[iRight]);
-        m_context.eFace[i] = 0.5 * (m_context.e[iLeft] + m_context.e[iRight]);
+        m_context.rhoLeft[i] = 0.5 * (m_context.rho[iLeft] + m_context.rho[iRight]);
+        m_context.uLeft[i] = 0.5 * (m_context.u[iLeft] + m_context.u[iRight]);
+        m_context.vLeft[i] = 0.5 * (m_context.v[iLeft] + m_context.v[iRight]);
+        m_context.wLeft[i] = 0.5 * (m_context.w[iLeft] + m_context.w[iRight]);
+        m_context.pLeft[i] = 0.5 * (m_context.p[iLeft] + m_context.p[iRight]);
+        m_context.eLeft[i] = 0.5 * (m_context.e[iLeft] + m_context.e[iRight]);
+        
+        m_context.rhoRight[i] = 0.5 * (m_context.rho[iLeft] + m_context.rho[iRight]);
+        m_context.uRight[i] = 0.5 * (m_context.u[iLeft] + m_context.u[iRight]);
+        m_context.vRight[i] = 0.5 * (m_context.v[iLeft] + m_context.v[iRight]);
+        m_context.wRight[i] = 0.5 * (m_context.w[iLeft] + m_context.w[iRight]);
+        m_context.pRight[i] = 0.5 * (m_context.p[iLeft] + m_context.p[iRight]);
+        m_context.eRight[i] = 0.5 * (m_context.e[iLeft] + m_context.e[iRight]);
     }
 
     ReconstructionContext& m_context;

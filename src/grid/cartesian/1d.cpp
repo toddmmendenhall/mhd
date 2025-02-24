@@ -27,9 +27,13 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
         if (i == 0) {
             // The left boundary face
             m_faceToNodeIndices.push_back({numInteriorNodes, i});
+            boundaryFaceToBoundaryCellIndices.push_back(numInteriorNodes);
+            boundaryFaceToInteriorCellIndices.push_back(i);
         } else if (i == numInteriorNodes) {
             // The right boundary face
             m_faceToNodeIndices.push_back({i - 1, numInteriorNodes + 1});
+            boundaryFaceToBoundaryCellIndices.push_back(numInteriorNodes + 1);
+            boundaryFaceToInteriorCellIndices.push_back(i - 1);
         } else {
             // Interior faces
             m_faceToNodeIndices.push_back({i - 1, i});
@@ -51,7 +55,7 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
             // The right boundary normal faces out of the domain
             m_faceNormalsX.push_back(1.0);
         } else {
-            m_faceAreas.push_back(1.0);
+            m_faceNormalsX.push_back(1.0);
         }
         m_faceNormalsY.push_back(0.0);
         m_faceNormalsZ.push_back(0.0);

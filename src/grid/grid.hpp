@@ -16,11 +16,11 @@ public:
     std::size_t const NumInteriorCells() const { return numInteriorNodes; }
     std::vector<std::array<std::size_t, 2>> const& FaceToNodeIndices() const { return m_faceToNodeIndices; }
     std::vector<std::array<std::size_t, 2>> const& CellToFaceIndices() const { return cellToFaceIndices; }
-    std::vector<std::pair<std::size_t, std::size_t>> const BoundaryToInteriorNodeIndices() const {
-        return {{numInteriorNodes, 0}, {numInteriorNodes+1, numInteriorNodes-1}};
+    std::vector<std::size_t> const& BoundaryFaceToBoundaryCellIndices() const {
+        return boundaryFaceToBoundaryCellIndices;
     }
-    std::vector<std::pair<std::size_t, std::size_t>> const BoundaryToFaceIndices() const {
-        return {{numInteriorNodes, 0}, {numInteriorNodes+1, numInteriorNodes}};
+    std::vector<std::size_t> const& BoundaryFaceToInteriorCellIndices() const {
+        return boundaryFaceToInteriorCellIndices;
     }
     std::vector<double> const& FaceAreas() const { return m_faceAreas; }
     std::vector<double> const& FaceNormalX() const { return m_faceNormalsX; }
@@ -35,6 +35,8 @@ protected:
     std::size_t numFaces;
     std::vector<std::array<std::size_t, 2>> m_faceToNodeIndices;
     std::vector<std::array<std::size_t, 2>> cellToFaceIndices;
+    std::vector<std::size_t> boundaryFaceToBoundaryCellIndices;
+    std::vector<std::size_t> boundaryFaceToInteriorCellIndices;
     std::vector<double> m_faceAreas;
     std::vector<double> m_faceNormalsX;
     std::vector<double> m_faceNormalsY;

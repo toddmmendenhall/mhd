@@ -13,7 +13,8 @@ enum class Geometry {
 };
 
 enum class BoundaryConditionOption {
-    OUTFLOW = 0,
+    REFLECTIVE = 0,
+    OUTFLOW = 1,
 };
 
 enum class SpatialDerivativeMethod {
