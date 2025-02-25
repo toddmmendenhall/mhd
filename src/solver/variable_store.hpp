@@ -11,18 +11,18 @@ struct VariableStore {
         std::size_t const numCells = grid.NumCells();
 
         // Default conserved state
-        rho.resize(numCells, ATMOSPHERIC_DENSITY_STP);
+        rho.resize(numCells, 0.9);
         rhoU.resize(numCells, 0.0);
         rhoV.resize(numCells, 0.0);
         rhoW.resize(numCells, 0.0);
-        rhoE.resize(numCells, ATMOSPHERIC_INTERNAL_ENERGY_STP);
+        rhoE.resize(numCells, 0.0);
 
         // Default primitve state
         u.resize(numCells, 0.0);
         v.resize(numCells, 0.0);
         w.resize(numCells, 0.0);
-        p.resize(numCells, ATMOSPHERIC_PRESSURE_STP);
-        e.resize(numCells, ATMOSPHERIC_INTERNAL_ENERGY_STP);
+        p.resize(numCells, 0.0);
+        e.resize(numCells, 0.0);
         bX.resize(numCells, 0.0);
         bY.resize(numCells, 0.0);
         bZ.resize(numCells, 0.0);
@@ -30,7 +30,7 @@ struct VariableStore {
         // Default auxilliary variables
         rhoInv.resize(numCells, 0.0);
         uu.resize(numCells, 0.0);
-        t.resize(numCells, ATMOSPHERIC_STANDARD_TEMPERATURE);
+        t.resize(numCells, 0.0);
         bb.resize(numCells, 0.0);
 
         // Default MHD variables

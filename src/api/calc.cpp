@@ -25,7 +25,7 @@ Calc::~Calc() = default;
 
 void Calc::SetInitialCondition(InitialCondition ic) {
     if (InitialCondition::ATMOSPHERE == ic) {
-        return;
+        SetAtmosphere();
     } else if (InitialCondition::SOD_SHOCK_TUBE == ic) {
         SetSodShockTube();
     } else {
@@ -33,17 +33,38 @@ void Calc::SetInitialCondition(InitialCondition ic) {
     }
 }
 
-void Calc::SetSodShockTube() {
-    std::size_t const size = m_grid->NumInteriorCells();
+void Calc::SetAtmosphere() {
+    std::size_t const size = m_grid->NumCells();
     for (std::size_t i = 0; i < size; ++i) {
-        if (i >= size / 2) {
-            m_variableStore->rho[i] *= 0.125;
-            m_variableStore->p[i] *= 0.1;
+        m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
+        m_variableStore->u[i] = 0.0;
+        m_variableStore->v[i] = 0.0;
+        m_variableStore->w[i] = 0.0;
+        m_variableStore->p[i] = ATMOSPHERIC_PRESSURE_STP;
+    }
+}
+
+void Calc::SetSodShockTube() {
+    std::size_t const size = m_grid->NumCells();
+    for (std::size_t i = 0; i < size; ++i) {
+        if (i <= size / 2) {
+            m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
+            m_variableStore->u[i] = 0.0;
+            m_variableStore->v[i] = 0.0;
+            m_variableStore->w[i] = 0.0;
+            m_variableStore->p[i] = ATMOSPHERIC_PRESSURE_STP;
+        } else {
+            m_variableStore->rho[i] = 0.125 * ATMOSPHERIC_DENSITY_STP;
+            m_variableStore->u[i] = 0.0;
+            m_variableStore->v[i] = 0.0;
+            m_variableStore->w[i] = 0.0;
+            m_variableStore->p[i] = 0.1 * ATMOSPHERIC_PRESSURE_STP;
         }
     }
 }
 
 void Calc::Run() {
+    m_solver->SetupConservedState();
     while (m_currentTime < m_duration) {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
             if (m_currentStep % 10 == 0) {

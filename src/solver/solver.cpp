@@ -34,10 +34,6 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, Vari
 }
 
 void Solver::PerformTimeStep() {
-    // Calculate primite state from conserved state
-    // ComputePrimitivesFromConserved();
-    // UpdateConservedFromPrimitives();
-
     // Apply boundary conditions to ghost cell states
     ApplyBoundaryConditions();
 
@@ -71,14 +67,23 @@ void Solver::ComputePrimitivesFromConserved() {
     m_execCtrl.LaunchKernel(tKern, m_grid.NumCells());
 }
 
-void Solver::UpdateConservedFromPrimitives() {
-    MomentumDensityKernel momentumDensityKern(m_varStore.rho, m_varStore.u, m_varStore.v, m_varStore.w,
-                                              m_varStore.rhoU, m_varStore.rhoV, m_varStore.rhoW);
-    m_execCtrl.LaunchKernel(momentumDensityKern, m_varStore.rho.size());
+void Solver::SetupConservedState() {
+    SpecificVolumeKernel rhoInvKern(m_varStore);
+    m_execCtrl.LaunchKernel(rhoInvKern, m_grid.NumCells());
 
-    TotalEnergyDensityKernel totalEnergyDensityKern(m_varStore.rho, m_varStore.rhoInv,
-                                                    m_varStore.uu, m_varStore.e,
-                                                    m_varStore.bb, m_varStore.rhoE);
+    VelocitySquaredKernel uuKern(m_varStore);
+    m_execCtrl.LaunchKernel(uuKern, m_grid.NumInteriorCells());
+
+    CaloricallyPerfectGasSpecificInternalEnergyKernel eKern(m_varStore);
+    m_execCtrl.LaunchKernel(eKern, m_grid.NumInteriorCells());
+
+    PerfectGasTemperatureKernel tKern(m_varStore);
+    m_execCtrl.LaunchKernel(tKern, m_grid.NumInteriorCells());
+
+    MomentumDensityKernel rhoUKern(m_varStore);
+    m_execCtrl.LaunchKernel(rhoUKern, m_grid.NumInteriorCells());
+
+    TotalEnergyDensityKernel totalEnergyDensityKern(m_varStore);
     m_execCtrl.LaunchKernel(totalEnergyDensityKern, m_varStore.rho.size());
 }
 

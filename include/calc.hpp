@@ -24,6 +24,7 @@ public:
     void Run();
     
 private:
+    void SetAtmosphere();
     void SetSodShockTube();
 
     void WriteData(VariableStore const& varStore);
