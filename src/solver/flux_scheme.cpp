@@ -7,6 +7,8 @@
 #include <profile_options.hpp>
 #include <face.hpp>
 
+#include <cstdlib>
+
 namespace MHD {
 
 // struct HighOrderGodunovKernel {
@@ -118,14 +120,14 @@ struct LowOrderGodunovKernel {
                         m_context.wRight[i] * m_context.wRight[i];
     
         // Face-centered normal velocity on the left
-        auto uBarLeft = m_context.uLeft[i] * m_context.faceNormalX[i] +
-                        m_context.vLeft[i] * m_context.faceNormalY[i] +
-                        m_context.wLeft[i] * m_context.faceNormalZ[i];
+        auto uDotNLeft = m_context.uLeft[i] * m_context.faceNormalX[i] +
+                         m_context.vLeft[i] * m_context.faceNormalY[i] +
+                         m_context.wLeft[i] * m_context.faceNormalZ[i];
 
         // Face-centered normal velocity on the right
-        auto uBarRight = m_context.uRight[i] * -m_context.faceNormalX[i] +
-                         m_context.vRight[i] * -m_context.faceNormalY[i] +
-                         m_context.wRight[i] * -m_context.faceNormalZ[i];
+        auto uDotNRight = m_context.uRight[i] * m_context.faceNormalX[i] +
+                          m_context.vRight[i] * m_context.faceNormalY[i] +
+                          m_context.wRight[i] * m_context.faceNormalZ[i];
 
         // Face-centered momentum densities on the left
         auto rhoULeft = m_context.rhoLeft[i] * m_context.uLeft[i];
@@ -143,30 +145,44 @@ struct LowOrderGodunovKernel {
         // Face-centered total energy density on the right
         auto rhoERight = m_context.rhoRight[i] * (m_context.eRight[i] + 0.5 * uuRight);
 
+        // Local propagation speed
+        double maxEigenValX = std::max(std::max(std::abs(m_context.uLeft[i] - m_context.csLeft[i]), std::abs(m_context.uLeft[i] + m_context.csLeft[i])),
+                                       std::max(std::abs(m_context.uRight[i] - m_context.csRight[i]), std::abs(m_context.uRight[i] + m_context.csRight[i])));
+        double maxEigenValY = std::max(std::max(std::abs(m_context.vLeft[i] - m_context.csLeft[i]), std::abs(m_context.vLeft[i] + m_context.csLeft[i])),
+                                       std::max(std::abs(m_context.vRight[i] - m_context.csRight[i]), std::abs(m_context.vRight[i] + m_context.csRight[i])));
+        double maxEigenValZ = std::max(std::max(std::abs(m_context.wLeft[i] - m_context.csLeft[i]), std::abs(m_context.wLeft[i] + m_context.csLeft[i])),
+                                       std::max(std::abs(m_context.wRight[i] - m_context.csRight[i]), std::abs(m_context.wRight[i] + m_context.csRight[i])));
+        double maxEigenVal = maxEigenValX + maxEigenValY + maxEigenValZ;
+
         // Mass density flux
         m_context.rhoFlux[i] = 0.5 * m_context.faceArea[i] *
-                               (m_context.rhoLeft[i] * uBarLeft +
-                                m_context.rhoRight[i] * uBarRight);
+                               (m_context.rhoLeft[i] * uDotNLeft +
+                                m_context.rhoRight[i] * uDotNRight -
+                                maxEigenVal * (m_context.rhoRight[i] - m_context.rhoLeft[i]));
 
         // x-momentum density flux
         m_context.rhoUFlux[i] = 0.5 * m_context.faceArea[i] *
-                                (rhoULeft * uBarLeft + m_context.pLeft[i] * m_context.faceNormalX[i] +
-                                rhoURight * uBarRight + m_context.pRight[i] * -m_context.faceNormalX[i]);
+                                (rhoULeft * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalX[i] +
+                                rhoURight * uDotNRight + m_context.pRight[i] * m_context.faceNormalX[i] -
+                                maxEigenVal * (rhoURight - rhoULeft));
                                                              
         // y-momentum density flux
         m_context.rhoVFlux[i] = 0.5 * m_context.faceArea[i] *
-                                (rhoVRight * uBarLeft + m_context.pLeft[i] * m_context.faceNormalY[i] +
-                                rhoVRight * uBarRight + m_context.pRight[i] * -m_context.faceNormalY[i]);
+                                (rhoVRight * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalY[i] +
+                                rhoVRight * uDotNRight + m_context.pRight[i] * m_context.faceNormalY[i] -
+                                maxEigenVal * (rhoVRight - rhoVLeft));
 
         // z-momentum density flux
         m_context.rhoWFlux[i] = 0.5 * m_context.faceArea[i] *
-                                (rhoWLeft * uBarLeft + m_context.pLeft[i] * m_context.faceNormalZ[i] +
-                                rhoWRight * uBarRight + m_context.pRight[i] * -m_context.faceNormalZ[i]);
+                                (rhoWLeft * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalZ[i] +
+                                rhoWRight * uDotNRight + m_context.pRight[i] * m_context.faceNormalZ[i] -
+                                maxEigenVal * (rhoWRight - rhoWLeft));
 
         // total energy density flux
         m_context.rhoEFlux[i] = 0.5 * m_context.faceArea[i] *
-                                ((rhoELeft + m_context.pLeft[i]) * uBarLeft +
-                                (rhoERight + m_context.pRight[i]) * uBarRight);
+                                ((rhoELeft + m_context.pLeft[i]) * uDotNLeft +
+                                (rhoERight + m_context.pRight[i]) * uDotNRight -
+                                maxEigenVal * (rhoERight - rhoELeft));
     }
 
     FluxContext& m_context;

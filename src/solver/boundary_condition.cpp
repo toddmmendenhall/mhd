@@ -37,17 +37,17 @@ struct ReflectiveBoundaryConditionKernel {
         m_context(context) {}
 
     void operator()(std::size_t i) {
-        std::size_t const iBnd = m_context.boundaryFaceToBoundaryCellIndices[i];
-        std::size_t const iInt = m_context.boundaryFaceToInteriorCellIndices[i];
+        std::size_t const iGhost = m_context.boundaryFaceToBoundaryCellIndices[i];
+        std::size_t const iBoundary = m_context.boundaryFaceToInteriorCellIndices[i];
 
-        // Copy scalars to boundary cells
-        m_context.rho[iBnd] = m_context.rho[iInt];
-        m_context.p[iBnd] = m_context.p[iInt];
+        // Copy scalars to ghost cells
+        m_context.rho[iGhost] = m_context.rho[iBoundary];
+        m_context.p[iGhost] = m_context.p[iBoundary];
 
-        // Reflect vectors in boundary cells
-        m_context.u[iBnd] = -m_context.u[iInt];
-        m_context.v[iBnd] = -m_context.v[iInt];
-        m_context.w[iBnd] = -m_context.w[iInt];
+        // Reflect vectors in ghost cells
+        m_context.u[iGhost] = -m_context.u[iBoundary];
+        m_context.v[iGhost] = -m_context.v[iBoundary];
+        m_context.w[iGhost] = -m_context.w[iBoundary];
     }
 
     MHD::BoundaryConditionContext& m_context;

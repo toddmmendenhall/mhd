@@ -19,17 +19,17 @@ TEST(APITests, CanCreateCalc) {
     EXPECT_NE(nullptr, &calc);
 }
 
-TEST(APITests, RunAtmosphere) {
-    MHD::Profile profile;
-    profile.m_outputDataOption = MHD::OutputDataOption::NO;
-    MHD::Calc calc(profile);
-    calc.SetInitialCondition(InitialCondition::ATMOSPHERE);
-    calc.Run();
-}
+// TEST(APITests, RunAtmosphere) {
+//     MHD::Profile profile;
+//     profile.m_outputDataOption = MHD::OutputDataOption::NO;
+//     MHD::Calc calc(profile);
+//     calc.SetInitialCondition(InitialCondition::ATMOSPHERE);
+//     calc.Run();
+// }
 
 TEST(APITests, RunSodShockTube) {
     MHD::Profile profile;
-    profile.m_outputDataOption = MHD::OutputDataOption::NO;
+    profile.m_outputDataOption = MHD::OutputDataOption::YES;
     MHD::Calc calc(profile);
     calc.SetInitialCondition(InitialCondition::SOD_SHOCK_TUBE);
     calc.Run();

@@ -46,19 +46,21 @@ struct LinearReconstructionKernel {
         std::size_t iLeft = m_context.faceToNodeIndices[i][0];
         std::size_t iRight = m_context.faceToNodeIndices[i][1];
 
-        m_context.rhoLeft[i] = 0.5 * (m_context.rho[iLeft] + m_context.rho[iRight]);
-        m_context.uLeft[i] = 0.5 * (m_context.u[iLeft] + m_context.u[iRight]);
-        m_context.vLeft[i] = 0.5 * (m_context.v[iLeft] + m_context.v[iRight]);
-        m_context.wLeft[i] = 0.5 * (m_context.w[iLeft] + m_context.w[iRight]);
-        m_context.pLeft[i] = 0.5 * (m_context.p[iLeft] + m_context.p[iRight]);
-        m_context.eLeft[i] = 0.5 * (m_context.e[iLeft] + m_context.e[iRight]);
+        m_context.rhoLeft[i] = 0.5 * (m_context.rho[iLeft - 1] + m_context.rho[iLeft]);
+        m_context.uLeft[i] = 0.5 * (m_context.u[iLeft - 1] + m_context.u[iLeft]);
+        m_context.vLeft[i] = 0.5 * (m_context.v[iLeft - 1] + m_context.v[iLeft]);
+        m_context.wLeft[i] = 0.5 * (m_context.w[iLeft - 1] + m_context.w[iLeft]);
+        m_context.pLeft[i] = 0.5 * (m_context.p[iLeft - 1] + m_context.p[iLeft]);
+        m_context.eLeft[i] = 0.5 * (m_context.e[iLeft - 1] + m_context.e[iLeft]);
+        m_context.csLeft[i] = 0.5 * (m_context.cs[iLeft - 1] + m_context.cs[iLeft]);
         
-        m_context.rhoRight[i] = 0.5 * (m_context.rho[iLeft] + m_context.rho[iRight]);
-        m_context.uRight[i] = 0.5 * (m_context.u[iLeft] + m_context.u[iRight]);
-        m_context.vRight[i] = 0.5 * (m_context.v[iLeft] + m_context.v[iRight]);
-        m_context.wRight[i] = 0.5 * (m_context.w[iLeft] + m_context.w[iRight]);
-        m_context.pRight[i] = 0.5 * (m_context.p[iLeft] + m_context.p[iRight]);
-        m_context.eRight[i] = 0.5 * (m_context.e[iLeft] + m_context.e[iRight]);
+        m_context.rhoRight[i] = 0.5 * (m_context.rho[iRight] + m_context.rho[iRight + 1]);
+        m_context.uRight[i] = 0.5 * (m_context.u[iRight] + m_context.u[iRight + 1]);
+        m_context.vRight[i] = 0.5 * (m_context.v[iRight] + m_context.v[iRight + 1]);
+        m_context.wRight[i] = 0.5 * (m_context.w[iRight] + m_context.w[iRight + 1]);
+        m_context.pRight[i] = 0.5 * (m_context.p[iRight] + m_context.p[iRight + 1]);
+        m_context.eRight[i] = 0.5 * (m_context.e[iRight] + m_context.e[iRight + 1]);
+        m_context.csRight[i] = 0.5 * (m_context.cs[iRight] + m_context.cs[iRight + 1]);
     }
 
     ReconstructionContext& m_context;

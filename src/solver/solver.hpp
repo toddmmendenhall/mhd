@@ -4,6 +4,7 @@
 
 namespace MHD {
 
+class BoundaryConditionContext;
 class ElectricFieldCalculator;
 class ExecutionController;
 struct FluxContext;
@@ -26,12 +27,13 @@ public:
     virtual ~ISolver() = default;
     virtual void SetupConservedState() = 0;
     virtual void PerformTimeStep() = 0;
+    virtual double const TimeStep() const = 0;
 };
 
 class Solver : public ISolver {
 public:
     Solver(Profile const& profile, ExecutionController const& execCtrl,
-           VariableStore& varStore, IGrid const& grid, double const tStep);
+           VariableStore& varStore, IGrid const& grid);
     
     void SetupConservedState();
     
@@ -43,17 +45,17 @@ public:
 
     void ReconstructVariables();
 
-    void ComputeElectricFields();
-
-    void ComputeMagneticFields();
-
     void ApplyBoundaryConditions();
 
     void ComputeResiduals();
 
+    void CalculateTimeStep();
+
+    double const TimeStep() const { return timeStep; }
+
 private:
-    std::unique_ptr<MagneticFieldCalculator> m_bFieldCalc;
-    std::unique_ptr<ElectricFieldCalculator> m_eFieldCalc;
+    double cfl = 0.5;
+    double timeStep = 1e-5;
     std::unique_ptr<FluxContext> m_fluxContext;
     std::unique_ptr<IBoundaryCondition> m_boundCon;
     std::unique_ptr<IIntegrator> m_integrator;
@@ -63,12 +65,13 @@ private:
     std::unique_ptr<ResidualContext> m_residualContext;
     std::unique_ptr<Residual> m_residual;
     std::unique_ptr<IntegrationContext> m_integrationContext;
+    std::unique_ptr<BoundaryConditionContext> m_boundaryConditionContext;
     ExecutionController const& m_execCtrl;
     IGrid const& m_grid;
     VariableStore& m_varStore;
 };
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
-                                       VariableStore& varStore, IGrid const& grid, double const tStep);
+                                       VariableStore& varStore, IGrid const& grid);
 
 } // namespace MHD

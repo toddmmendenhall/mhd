@@ -18,7 +18,7 @@ Calc::Calc(Profile const& profile) : m_profile(profile) {
     m_executionController = std::make_unique<ExecutionController>();
     m_grid = gridFactory(m_profile);
     m_variableStore = std::make_unique<VariableStore>(*m_grid);
-    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore, *m_grid, tStep);
+    m_solver = solverFactory(m_profile, *m_executionController, *m_variableStore, *m_grid);
 }
 
 Calc::~Calc() = default;
@@ -34,7 +34,7 @@ void Calc::SetInitialCondition(InitialCondition ic) {
 }
 
 void Calc::SetAtmosphere() {
-    std::size_t const size = m_grid->NumCells();
+    std::size_t const size = m_grid->NumNodes();
     for (std::size_t i = 0; i < size; ++i) {
         m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
         m_variableStore->u[i] = 0.0;
@@ -45,9 +45,9 @@ void Calc::SetAtmosphere() {
 }
 
 void Calc::SetSodShockTube() {
-    std::size_t const size = m_grid->NumCells();
-    for (std::size_t i = 0; i < size; ++i) {
-        if (i <= size / 2) {
+    std::size_t const nIntCells = m_grid->NumCells();
+    for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
+        if (i <= nIntCells / 2 || (i >= nIntCells && i < nIntCells + 3)) {
             m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
             m_variableStore->u[i] = 0.0;
             m_variableStore->v[i] = 0.0;
@@ -67,13 +67,13 @@ void Calc::Run() {
     m_solver->SetupConservedState();
     while (m_currentTime < m_duration) {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-            if (m_currentStep % 10 == 0) {
+            if (m_currentStep % 100 == 0) {
                 WriteData(*m_variableStore);
                 ++m_currentOutput;
             }
         }
         m_solver->PerformTimeStep();
-        m_currentTime += tStep;
+        m_currentTime += m_solver->TimeStep();
         m_currentStep++;
     }
 }
@@ -88,16 +88,18 @@ void Calc::WriteData(VariableStore const& varStore) {
     // Check if the file was successfully opened
     if (myFile.is_open()) {
         // Write data to the file
-        myFile << "# rho, u, v, w, p, T" << std::endl;
+        myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
 
-        for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
+        for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
             myFile <<
+            m_grid->Nodes()[i][0] << ", " <<
             varStore.rho[i] << ", " <<
             varStore.u[i] << ", " <<
             varStore.v[i] << ", " <<
             varStore.w[i] << ", " <<
             varStore.p[i] << ", " <<
             varStore.e[i] << ", " <<
+            varStore.cs[i] << ", " <<
             varStore.t[i] << std::endl;
         }
 

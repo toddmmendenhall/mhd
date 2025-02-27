@@ -8,38 +8,39 @@ namespace MHD {
 
 struct VariableStore {
     VariableStore(IGrid const& grid) {
-        std::size_t const numCells = grid.NumCells();
+        std::size_t const size = grid.NumNodes();
 
-        // Default conserved state
-        rho.resize(numCells, 0.9);
-        rhoU.resize(numCells, 0.0);
-        rhoV.resize(numCells, 0.0);
-        rhoW.resize(numCells, 0.0);
-        rhoE.resize(numCells, 0.0);
+        // Conserved variables
+        rho.resize(size, 0.0);
+        rhoU.resize(size, 0.0);
+        rhoV.resize(size, 0.0);
+        rhoW.resize(size, 0.0);
+        rhoE.resize(size, 0.0);
 
-        // Default primitve state
-        u.resize(numCells, 0.0);
-        v.resize(numCells, 0.0);
-        w.resize(numCells, 0.0);
-        p.resize(numCells, 0.0);
-        e.resize(numCells, 0.0);
-        bX.resize(numCells, 0.0);
-        bY.resize(numCells, 0.0);
-        bZ.resize(numCells, 0.0);
+        // Primitve variables
+        u.resize(size, 0.0);
+        v.resize(size, 0.0);
+        w.resize(size, 0.0);
+        p.resize(size, 0.0);
+        e.resize(size, 0.0);
+        bX.resize(size, 0.0);
+        bY.resize(size, 0.0);
+        bZ.resize(size, 0.0);
 
-        // Default auxilliary variables
-        rhoInv.resize(numCells, 0.0);
-        uu.resize(numCells, 0.0);
-        t.resize(numCells, 0.0);
-        bb.resize(numCells, 0.0);
+        // Auxilliary variables
+        rhoInv.resize(size, 0.0);
+        uu.resize(size, 0.0);
+        t.resize(size, 0.0);
+        cs.resize(size, 0.0);
+        bb.resize(size, 0.0);
 
-        // Default MHD variables
-        faceBX.resize(numCells, 0.0);
-        faceBY.resize(numCells, 0.0);
-        faceBZ.resize(numCells, 0.0);
-        edgeEX.resize(numCells, 0.0);
-        edgeEY.resize(numCells, 0.0);
-        edgeEZ.resize(numCells, 0.0);
+        // MHD variables
+        faceBX.resize(size, 0.0);
+        faceBY.resize(size, 0.0);
+        faceBZ.resize(size, 0.0);
+        edgeEX.resize(size, 0.0);
+        edgeEY.resize(size, 0.0);
+        edgeEZ.resize(size, 0.0);
     }
     ~VariableStore() = default;
 
@@ -69,7 +70,9 @@ struct VariableStore {
     std::vector<double> rhoInv;   // specific volume
     std::vector<double> uu;       // velocity squared
     std::vector<double> t;        // temperature
+    std::vector<double> cs;       // sound speed squared
     std::vector<double> bb;       // magnetic field squared
+    double sMax = 0.0;            // maximum wave speed
 
     // Face-centered
     // Primitive

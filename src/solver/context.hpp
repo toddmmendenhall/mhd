@@ -10,7 +10,7 @@ namespace MHD {
 
 struct ReconstructionContext {
     ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
-        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), faceToNodeIndices(grid.FaceToNodeIndices()),
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs), faceToNodeIndices(grid.FaceToNodeIndices()),
         numFaces(grid.NumFaces()) {
             rhoLeft.resize(numFaces, 0.0);
             uLeft.resize(numFaces, 0.0);
@@ -18,12 +18,14 @@ struct ReconstructionContext {
             wLeft.resize(numFaces, 0.0);
             pLeft.resize(numFaces, 0.0);
             eLeft.resize(numFaces, 0.0);
+            csLeft.resize(numFaces, 0.0);
             rhoRight.resize(numFaces, 0.0);
             uRight.resize(numFaces, 0.0);
             vRight.resize(numFaces, 0.0);
             wRight.resize(numFaces, 0.0);
             pRight.resize(numFaces, 0.0);
             eRight.resize(numFaces, 0.0);
+            csRight.resize(numFaces, 0.0);
         }
 
     std::size_t const numFaces;
@@ -36,6 +38,7 @@ struct ReconstructionContext {
     std::vector<double> const& w;
     std::vector<double> const& p;
     std::vector<double> const& e;
+    std::vector<double> const& cs;
 
     // Face-centered left states
     std::vector<double> rhoLeft;
@@ -44,6 +47,7 @@ struct ReconstructionContext {
     std::vector<double> wLeft;
     std::vector<double> pLeft;
     std::vector<double> eLeft;
+    std::vector<double> csLeft;
 
     // Face-centered right states
     std::vector<double> rhoRight;
@@ -52,14 +56,15 @@ struct ReconstructionContext {
     std::vector<double> wRight;
     std::vector<double> pRight;
     std::vector<double> eRight;
+    std::vector<double> csRight;
 };
 
 struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
         numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft),
-        rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight) {
+        rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft), csLeft(rc.csLeft),
+        rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight), csRight(rc.csRight) {
             rhoFlux.resize(numFaces, 0.0);
             rhoUFlux.resize(numFaces, 0.0);
             rhoVFlux.resize(numFaces, 0.0);
@@ -83,6 +88,7 @@ struct FluxContext {
     std::vector<double> const& wLeft;
     std::vector<double> const& pLeft;
     std::vector<double> const& eLeft;
+    std::vector<double> const& csLeft;
 
     // Face-centered right states
     std::vector<double> const& rhoRight;
@@ -91,6 +97,7 @@ struct FluxContext {
     std::vector<double> const& wRight;
     std::vector<double> const& pRight;
     std::vector<double> const& eRight;
+    std::vector<double> const& csRight;
 
     // Face-centered fluxes
     std::vector<double> rhoFlux;
@@ -193,12 +200,12 @@ struct BoundaryConditionContext {
 };
 
 struct IntegrationContext {
-    IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const tStep) : 
+    IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const& tStep) : 
         tStep(tStep), numCells(rc.numCells), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
         rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
         rhoE(vs.rhoE) {}
 
-    double const tStep;
+    double const& tStep;
     std::size_t const numCells;
 
     // Cell-centered residuals

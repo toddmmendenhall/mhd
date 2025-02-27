@@ -12,8 +12,8 @@ public:
     virtual ~IGrid() = default;
 
     std::vector<std::array<double, 3>> const& Nodes() const { return m_nodes; }
-    std::size_t const NumCells() const { return m_nodes.size(); }
-    std::size_t const NumInteriorCells() const { return numInteriorNodes; }
+    std::size_t const NumCells() const { return numCells; }
+    std::size_t const NumNodes() const { return m_nodes.size(); }
     std::vector<std::array<std::size_t, 2>> const& FaceToNodeIndices() const { return m_faceToNodeIndices; }
     std::vector<std::array<std::size_t, 2>> const& CellToFaceIndices() const { return cellToFaceIndices; }
     std::vector<std::size_t> const& BoundaryFaceToBoundaryCellIndices() const {
@@ -26,12 +26,12 @@ public:
     std::vector<double> const& FaceNormalX() const { return m_faceNormalsX; }
     std::vector<double> const& FaceNormalY() const { return m_faceNormalsY; }
     std::vector<double> const& FaceNormalZ() const { return m_faceNormalsZ; }
-    std::size_t const NumFaces() const { return m_faceToNodeIndices.size(); }
+    std::size_t const NumFaces() const { return numFaces; }
     std::vector<double> const& CellSize() const { return cellSize; }
 
 protected:
     std::vector<std::array<double, 3>> m_nodes;
-    std::size_t numInteriorNodes;
+    std::size_t numCells;
     std::size_t numFaces;
     std::vector<std::array<std::size_t, 2>> m_faceToNodeIndices;
     std::vector<std::array<std::size_t, 2>> cellToFaceIndices;

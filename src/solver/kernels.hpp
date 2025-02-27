@@ -132,6 +132,35 @@ struct PerfectGasTemperatureKernel {
     std::vector<double>& t;
 };
 
+struct CaloricallyPerfectGasSoundSpeedKernel {
+    CaloricallyPerfectGasSoundSpeedKernel(VariableStore& vs) :
+        r(vs.r), gamma(vs.gamma), t(vs.t), cs(vs.cs) {}
+
+    inline void operator()(std::size_t const i) {
+        cs[i] = std::sqrt(gamma * r * t[i]);
+    }
+
+    double const r;
+    double const gamma;
+    std::vector<double> const& t;
+    std::vector<double>& cs;
+};
+
+struct MaximumWaveSpeedKernel {
+    MaximumWaveSpeedKernel(VariableStore& vs) :
+        u(vs.u), cs(vs.cs), sMax(vs.sMax) {}
+
+    inline void operator()(std::size_t const i) {
+        if (std::abs(u[i]) + cs[i] > sMax) {
+            sMax = std::abs(u[i]) + cs[i];
+        }
+    }
+
+    std::vector<double> const& u;
+    std::vector<double> const& cs;
+    double& sMax;
+};
+
 double inline CpOverR(std::vector<double> const& a, double const T) {
     double const T2 = T * T;
     return a[0] / T2 + a[1] / T + a[2] + a[3] * T + a[4] * T2 + a[5] * T2 * T + a[6] * T2 * T2;
