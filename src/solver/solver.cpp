@@ -1,12 +1,12 @@
-#include <boundary_condition.hpp>
+#include <boundary_condition/boundary_condition.hpp>
 #include <context.hpp>
 #include <execution_controller.hpp>
-#include <flux_scheme.hpp>
+#include <flux/flux_scheme.hpp>
 #include <grid.hpp>
 #include <integration.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
-#include <reconstruction.hpp>
+#include <reconstruction/reconstruction.hpp>
 #include <solver.hpp>
 #include <residual.hpp>
 #include <variable_store.hpp>
@@ -117,10 +117,10 @@ void Solver::ComputeResiduals() {
 
 void Solver::CalculateTimeStep() {
     CaloricallyPerfectGasSoundSpeedKernel ccKern(m_varStore);
-    m_execCtrl.LaunchKernel(ccKern, m_grid.NumCells());
+    m_execCtrl.LaunchKernel(ccKern, m_grid.NumNodes());
 
     MaximumWaveSpeedKernel sMaxKern(m_varStore);
-    m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumCells());
+    m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumNodes());
 
     timeStep = cfl * m_grid.CellSize()[0] / m_varStore.sMax;
     m_varStore.sMax = 0.0;

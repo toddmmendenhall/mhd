@@ -10,7 +10,7 @@ namespace MHD {
 
 struct ReconstructionContext {
     ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
-        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs), faceToNodeIndices(grid.FaceToNodeIndices()),
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs), faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()),
         numFaces(grid.NumFaces()) {
             rhoLeft.resize(numFaces, 0.0);
             uLeft.resize(numFaces, 0.0);
@@ -29,7 +29,7 @@ struct ReconstructionContext {
         }
 
     std::size_t const numFaces;
-    std::vector<std::array<std::size_t, 4>> const& faceToNodeIndices;
+    FaceIdxToNodeIdxs const& faceIdxToNodeIdxs;
 
     // Cell-centered states
     std::vector<double> const& rho;
@@ -61,7 +61,7 @@ struct ReconstructionContext {
 
 struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
-        numFaces(grid.NumFaces()), faceToNodeIndices(grid.FaceToNodeIndices()), faceArea(grid.FaceAreas()),
+        numFaces(grid.NumFaces()), faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()), faceArea(grid.FaceAreas()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
         rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft), csLeft(rc.csLeft),
         rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight), csRight(rc.csRight) {
@@ -73,7 +73,7 @@ struct FluxContext {
         }
 
     std::size_t const numFaces;
-    std::vector<std::array<std::size_t, 4>> const& faceToNodeIndices;
+    FaceIdxToNodeIdxs const& faceIdxToNodeIdxs;
 
     // properties of the faces
     std::vector<double> const& faceArea;
@@ -138,53 +138,13 @@ struct ResidualContext {
     std::vector<double> rhoERes;    // total energy density residual
 };
 
-
-struct ElectricFieldContext {
-    ElectricFieldContext() = default;
-
-    // Edge variables
-    std::vector<std::vector<std::size_t>> const edgeToFaceIdx;
-
-    // Face-centered
-    std::vector<double> const fluxBX;
-    std::vector<double> const fluxBY;
-    std::vector<double> const fluxBZ;
-
-    // Edge-centered
-    std::vector<double> eX;
-    std::vector<double> eY;
-    std::vector<double> eZ;
-};
-
-struct MagneticFieldContext {
-    MagneticFieldContext() = default;
-
-    double const timeStep = 0;
-    std::vector<double> const cellSize;
-
-    // Face variables
-    std::vector<std::vector<std::size_t>> const faceToEdgeIdx;
-
-    // Edge-centered
-    std::vector<double> const eX;
-    std::vector<double> const eY;
-    std::vector<double> const eZ;
-
-    // Face-centered
-    std::vector<double> bX;
-    std::vector<double> bY;
-    std::vector<double> bZ;
-};
-
 struct BoundaryConditionContext {
     BoundaryConditionContext(IGrid const& grid, VariableStore& vs) :
-        boundaryFaceToBoundaryCellIndices(grid.BoundaryFaceToBoundaryCellIndices()),
-        boundaryFaceToInteriorCellIndices(grid.BoundaryFaceToInteriorCellIndices()),
+        faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
         rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), t(vs.t), cs(vs.cs) {}
 
-    std::vector<std::size_t> const boundaryFaceToBoundaryCellIndices;
-    std::vector<std::size_t> const boundaryFaceToInteriorCellIndices;
+    FaceIdxToNodeIdxs const& faceIdxToNodeIdxs;
 
     // Properties of the face
     std::vector<double> const& faceNormalX;

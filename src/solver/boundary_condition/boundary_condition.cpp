@@ -1,0 +1,94 @@
+#include <boundary_condition/boundary_condition.hpp>
+#include <context.hpp>
+#include <execution_controller.hpp>
+#include <profile.hpp>
+
+#include <memory>
+
+namespace {
+ 
+struct OutflowBoundaryConditionKernel {
+    OutflowBoundaryConditionKernel(MHD::BoundaryConditionContext& context) :
+        m_context(context) {}
+
+    void operator()(std::size_t i) {
+        // std::size_t const iBnd = m_context.boundaryFaceToBoundaryCellIndices[i];
+        // std::size_t const iInt = m_context.boundaryFaceToInteriorCellIndices[i];
+
+        // // Normal component of the velocity inside the boundary
+        // auto uBar = m_context.u[iInt] * m_context.faceNormalX[i] +
+        //             m_context.v[iInt] * m_context.faceNormalY[i] +
+        //             m_context.w[iInt] * m_context.faceNormalZ[i];
+
+        // // Neumann condition on the normal velocity
+        // m_context.u[iBnd] = uBar * m_context.faceNormalX[i];
+        // m_context.v[iBnd] = uBar * m_context.faceNormalY[i];
+        // m_context.w[iBnd] = uBar * m_context.faceNormalZ[i];
+
+        // // Dirichlet condition on the pressure
+        // m_context.rho[iBnd] = m_context.rho[iInt];
+        // m_context.p[iBnd] = m_context.p[iInt];
+    }
+    MHD::BoundaryConditionContext& m_context;
+};
+
+struct ReflectiveBoundaryConditionKernel {
+    ReflectiveBoundaryConditionKernel(MHD::BoundaryConditionContext& context) : m_context(context) {}
+
+    void operator()(std::size_t faceIdx) {
+        if (!m_context.faceIdxToNodeIdxs.at(faceIdx).isBoundary) {
+            return;
+        }
+
+        // Get indices of inner/outer nodes
+        std::size_t const iIn = m_context.faceIdxToNodeIdxs.at(faceIdx).inner;
+        std::size_t const iOut = m_context.faceIdxToNodeIdxs.at(faceIdx).outer;
+
+        // Copy scalars to ghost cells
+        m_context.rho[iOut] = m_context.rho[iIn];
+        m_context.p[iOut] = m_context.p[iIn];
+
+        // Reflect vectors in ghost cells
+        m_context.u[iOut] = -m_context.u[iIn];
+        m_context.v[iOut] = -m_context.v[iIn];
+        m_context.w[iOut] = -m_context.w[iIn];
+    }
+
+    MHD::BoundaryConditionContext& m_context;
+};
+
+} // namespace
+
+namespace MHD {
+
+class OutflowBoundaryCondition : public IBoundaryCondition {
+public:
+    OutflowBoundaryCondition() = default;
+
+    void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
+        OutflowBoundaryConditionKernel kern(context);
+        execCtrl.LaunchKernel(kern, context.faceIdxToNodeIdxs.size());
+    }
+};
+
+class ReflectiveBoundaryCondition : public IBoundaryCondition {
+    public:
+        ReflectiveBoundaryCondition() = default;
+    
+        void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
+            ReflectiveBoundaryConditionKernel kern(context);
+            execCtrl.LaunchKernel(kern, context.faceIdxToNodeIdxs.size());
+        }
+    };
+
+std::unique_ptr<IBoundaryCondition> boundaryConditionFactory(Profile const& profile) {
+    if (BoundaryConditionOption::REFLECTIVE == profile.m_boundaryConditionOption) {
+        return std::make_unique<ReflectiveBoundaryCondition>();
+    }
+    if (BoundaryConditionOption::OUTFLOW == profile.m_boundaryConditionOption) {
+        return std::make_unique<OutflowBoundaryCondition>();
+    }
+    return nullptr;
+}
+
+} // namespace MHD

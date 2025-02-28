@@ -12,8 +12,7 @@ class VariableStore;
 
 enum class InitialCondition {
     ATMOSPHERE = 0,
-    SINE_WAVE = 1,
-    SOD_SHOCK_TUBE = 2,
+    SOD_SHOCK_TUBE = 1,
 };
 
 class Calc {
@@ -26,7 +25,6 @@ public:
     
 private:
     void SetAtmosphere();
-    void SetSineWave();
     void SetSodShockTube();
 
     void WriteData(VariableStore const& varStore);
@@ -36,7 +34,7 @@ private:
     Profile const& m_profile;
     std::unique_ptr<ISolver> m_solver;
     std::unique_ptr<VariableStore> m_variableStore;
-    double const m_duration = 1e-1;
+    double const m_duration = 1e-2;
     double m_currentTime = 0.0;
     std::size_t m_currentStep = 0;
     std::size_t m_currentOutput = 0;

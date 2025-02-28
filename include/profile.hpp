@@ -11,7 +11,7 @@ struct Profile {
     Dimension m_gridDimensionOption = Dimension::ONE;
     Geometry m_gridGeometryOption = Geometry::CARTESIAN;
     std::vector<double> m_gridBoundsOption = {0.0, 10.0, 0.0, 1.0, 0.0, 1.0};
-    std::vector<double> m_gridSpacingsOption = {0.02, 0.1, 0.1};
+    std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
 
     // Solver options
     BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::REFLECTIVE;

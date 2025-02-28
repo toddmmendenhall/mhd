@@ -1,24 +1,26 @@
 # Accumulate sources
-set(sources flux_scheme.cpp
-            boundary_condition.cpp
-            reconstruction.cpp
-            solver.cpp)
+set(sources solver.cpp)
+
+set(reconstruction_sources reconstruction/reconstruction.hpp
+                           reconstruction/reconstruction.cpp)
+
+set(flux_sources flux/flux_scheme.hpp
+                 flux/flux_scheme.cpp)
+
+set(boundary_condition_sources boundary_condition/boundary_condition.hpp
+                               boundary_condition/boundary_condition.cpp)
 
 # Accumulate includes
 set(includes context.hpp
-             electric_field.hpp
-             boundary_condition.hpp
              execution_controller.hpp
-             flux_scheme.hpp
              integration.hpp
              kernels.hpp
-             reconstruction.hpp
              residual.hpp
              solver.hpp
              variable_store.hpp)
 
 # Setup library
-add_library(solver ${sources} ${includes})
+add_library(solver ${sources} ${reconstruction_sources} ${flux_sources} ${boundary_condition_sources} ${includes})
 
 target_link_libraries(solver PUBLIC grid)
 target_link_libraries(solver PUBLIC utilities)

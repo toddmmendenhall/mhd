@@ -13,44 +13,36 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     numCells = (bounds[1] - bounds[0]) / cellSize[0];
     numFaces = numCells + 1;
 
-    // Append cell-centered nodes for each cell
+    // Append cell-centered real nodes
     for (std::size_t i = 0; i < numCells; ++i) {
         m_nodes.push_back({bounds[0] + (i + 0.5) * cellSize[0], 0.0, 0.0});
     }
 
-    // Insert nodes for left ghost cells
-    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 0.5 * cellSize[0], 0.0, 0.0}); // 0
-    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 1.5 * cellSize[0], 0.0, 0.0}); // 1
-    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 2.5 * cellSize[0], 0.0, 0.0}); // 2
-    m_nodes.push_back({bounds[0] - 0.5 * cellSize[0], 0.0, 0.0}); // 10
-    m_nodes.push_back({bounds[0] - 1.5 * cellSize[0], 0.0, 0.0}); // 11
-    m_nodes.push_back({bounds[0] - 2.5 * cellSize[0], 0.0, 0.0}); // 12
-
-    // Append nodes for right ghost cells
-    m_nodes.push_back({bounds[1] + 0.5 * cellSize[0], 0.0, 0.0}); // 13
-    m_nodes.push_back({bounds[1] + 1.5 * cellSize[0], 0.0, 0.0}); // 14
-    m_nodes.push_back({bounds[1] + 2.5 * cellSize[0], 0.0, 0.0}); // 15
+    // Add cell-centered ghost nodes at the ends of the domain
+    m_nodes.insert(m_nodes.begin(), {bounds[0] - 0.5 * cellSize[0], 0.0, 0.0});
+    m_nodes.push_back({bounds[1] + 0.5 * cellSize[0], 0.0, 0.0});
 
     // Each face has a "left" and "right" node, so we store those indices
-    for (std::size_t i = 0; i < numFaces; ++i) {
+    for (FaceIdx i = 0; i < numFaces; ++i) {
+        NodeIdxs nodeIdxs;
+        nodeIdxs.left = i;
+        nodeIdxs.right = i + 1;
+        nodeIdxs.leftMinusOne = nodeIdxs.left - 1;
+        nodeIdxs.rightPlusOne = nodeIdxs.right + 1;
+        nodeIdxs.inner = -1;
+        nodeIdxs.outer = -1;
         if (i == 0) {
-            // The left boundary face
-            m_faceToNodeIndices.push_back({numCells+1, numCells, 0, 1});
-            boundaryFaceToBoundaryCellIndices.push_back(numCells);
-            boundaryFaceToInteriorCellIndices.push_back(i);
-        } else if (i == 1) {
-            m_faceToNodeIndices.push_back({numCells, 0, 1, 2});
-        } else if (i == numFaces - 2) {
-            m_faceToNodeIndices.push_back({i-2, i-1, i, i+4});
+            nodeIdxs.isBoundary = true;
+            nodeIdxs.inner = i + 1;
+            nodeIdxs.outer = i;
+            nodeIdxs.leftMinusOne = i;
         } else if (i == numFaces - 1) {
-            // The right boundary face
-            m_faceToNodeIndices.push_back({i-2, i-1, i+3, i+4});
-            boundaryFaceToBoundaryCellIndices.push_back(numCells + 3);
-            boundaryFaceToInteriorCellIndices.push_back(i - 1);
-        } else {
-            // Interior faces
-            m_faceToNodeIndices.push_back({i-2, i-1, i, i+1});
+            nodeIdxs.isBoundary = true;
+            nodeIdxs.inner = i;
+            nodeIdxs.outer = i + 1;
+            nodeIdxs.rightPlusOne = i;
         }
+        m_faceIdxToNodeIdxs[i] = nodeIdxs;
     }
 
     // The area of each face is determined from the other two dimensions

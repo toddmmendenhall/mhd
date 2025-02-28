@@ -27,17 +27,9 @@ TEST(APITests, RunAtmosphere) {
     calc.Run();
 }
 
-// TEST(APITests, RunSineWave) {
-//     MHD::Profile profile;
-//     profile.m_outputDataOption = MHD::OutputDataOption::NO;
-//     MHD::Calc calc(profile);
-//     calc.SetInitialCondition(InitialCondition::SINE_WAVE);
-//     calc.Run();
-// }
-
 TEST(APITests, RunSodShockTube) {
     MHD::Profile profile;
-    profile.m_outputDataOption = MHD::OutputDataOption::YES;
+    profile.m_outputDataOption = MHD::OutputDataOption::NO;
     MHD::Calc calc(profile);
     calc.SetInitialCondition(InitialCondition::SOD_SHOCK_TUBE);
     calc.Run();
