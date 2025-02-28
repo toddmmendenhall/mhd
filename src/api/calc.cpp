@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include <memory>
 #include <string>
 
@@ -26,6 +27,8 @@ Calc::~Calc() = default;
 void Calc::SetInitialCondition(InitialCondition ic) {
     if (InitialCondition::ATMOSPHERE == ic) {
         SetAtmosphere();
+    } else if (InitialCondition::SINE_WAVE == ic) {
+        SetSineWave();
     } else if (InitialCondition::SOD_SHOCK_TUBE == ic) {
         SetSodShockTube();
     } else {
@@ -34,13 +37,32 @@ void Calc::SetInitialCondition(InitialCondition ic) {
 }
 
 void Calc::SetAtmosphere() {
-    std::size_t const size = m_grid->NumNodes();
-    for (std::size_t i = 0; i < size; ++i) {
+    for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
         m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
         m_variableStore->u[i] = 0.0;
         m_variableStore->v[i] = 0.0;
         m_variableStore->w[i] = 0.0;
         m_variableStore->p[i] = ATMOSPHERIC_PRESSURE_STP;
+    }
+}
+
+void Calc::SetSineWave() {
+    auto nNodes = m_grid->NumNodes();
+    auto nCells = m_grid->NumCells();
+    auto nodes = m_grid->Nodes();
+    double x = 0.0;
+    for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
+        m_variableStore->u[i] = 0.0;
+        m_variableStore->v[i] = 0.0;
+        m_variableStore->w[i] = 0.0;
+        if (i < nCells) {
+            // x = (nodes[i][0] - 0.5) * (nodes[i][0] - 0.5) / (2 * 0.1*0.1);
+            m_variableStore->rho[i] = std::exp(-x) * ATMOSPHERIC_DENSITY_STP;
+            m_variableStore->p[i] = std::exp(-x) * ATMOSPHERIC_PRESSURE_STP;
+        } else {
+            m_variableStore->rho[i] = 0.0;
+            m_variableStore->p[i] = 0.0;
+        }
     }
 }
 
@@ -67,7 +89,7 @@ void Calc::Run() {
     m_solver->SetupConservedState();
     while (m_currentTime < m_duration) {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-            if (m_currentStep % 100 == 0) {
+            if (m_currentStep % 10 == 0) {
                 WriteData(*m_variableStore);
                 ++m_currentOutput;
             }
@@ -89,6 +111,7 @@ void Calc::WriteData(VariableStore const& varStore) {
     if (myFile.is_open()) {
         // Write data to the file
         myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
+        myFile << "time: " << m_currentTime << " s" << std::endl;
 
         for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
             myFile <<

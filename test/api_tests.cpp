@@ -19,11 +19,19 @@ TEST(APITests, CanCreateCalc) {
     EXPECT_NE(nullptr, &calc);
 }
 
-// TEST(APITests, RunAtmosphere) {
+TEST(APITests, RunAtmosphere) {
+    MHD::Profile profile;
+    profile.m_outputDataOption = MHD::OutputDataOption::NO;
+    MHD::Calc calc(profile);
+    calc.SetInitialCondition(InitialCondition::ATMOSPHERE);
+    calc.Run();
+}
+
+// TEST(APITests, RunSineWave) {
 //     MHD::Profile profile;
 //     profile.m_outputDataOption = MHD::OutputDataOption::NO;
 //     MHD::Calc calc(profile);
-//     calc.SetInitialCondition(InitialCondition::ATMOSPHERE);
+//     calc.SetInitialCondition(InitialCondition::SINE_WAVE);
 //     calc.Run();
 // }
 

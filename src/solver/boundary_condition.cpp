@@ -42,12 +42,17 @@ struct ReflectiveBoundaryConditionKernel {
 
         // Copy scalars to ghost cells
         m_context.rho[iGhost] = m_context.rho[iBoundary];
+        m_context.rho[iGhost+1] = m_context.rho[iBoundary];
         m_context.p[iGhost] = m_context.p[iBoundary];
+        m_context.p[iGhost+1] = m_context.p[iBoundary];
 
         // Reflect vectors in ghost cells
         m_context.u[iGhost] = -m_context.u[iBoundary];
         m_context.v[iGhost] = -m_context.v[iBoundary];
         m_context.w[iGhost] = -m_context.w[iBoundary];
+        m_context.u[iGhost+1] = -m_context.u[iBoundary];
+        m_context.v[iGhost+1] = -m_context.v[iBoundary];
+        m_context.w[iGhost+1] = -m_context.w[iBoundary];
     }
 
     MHD::BoundaryConditionContext& m_context;

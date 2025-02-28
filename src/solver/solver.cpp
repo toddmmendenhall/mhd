@@ -1,6 +1,5 @@
 #include <boundary_condition.hpp>
 #include <context.hpp>
-#include <electric_field.hpp>
 #include <execution_controller.hpp>
 #include <flux_scheme.hpp>
 #include <grid.hpp>
@@ -55,7 +54,7 @@ void Solver::PerformTimeStep() {
 }
 
 void Solver::ComputePrimitivesFromConserved() {
-    std::size_t const nIntCells = m_grid.NumCells();
+    std::size_t const nIntCells = m_grid.NumNodes();
 
     SpecificVolumeKernel rhoInvKern(m_varStore);
     m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);
@@ -77,7 +76,7 @@ void Solver::ComputePrimitivesFromConserved() {
 }
 
 void Solver::SetupConservedState() {
-    std::size_t const nIntCells = m_grid.NumCells();
+    std::size_t const nIntCells = m_grid.NumNodes();
 
     SpecificVolumeKernel rhoInvKern(m_varStore);
     m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);

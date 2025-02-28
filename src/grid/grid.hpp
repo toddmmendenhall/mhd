@@ -14,7 +14,7 @@ public:
     std::vector<std::array<double, 3>> const& Nodes() const { return m_nodes; }
     std::size_t const NumCells() const { return numCells; }
     std::size_t const NumNodes() const { return m_nodes.size(); }
-    std::vector<std::array<std::size_t, 2>> const& FaceToNodeIndices() const { return m_faceToNodeIndices; }
+    std::vector<std::array<std::size_t, 4>> const& FaceToNodeIndices() const { return m_faceToNodeIndices; }
     std::vector<std::array<std::size_t, 2>> const& CellToFaceIndices() const { return cellToFaceIndices; }
     std::vector<std::size_t> const& BoundaryFaceToBoundaryCellIndices() const {
         return boundaryFaceToBoundaryCellIndices;
@@ -33,7 +33,7 @@ protected:
     std::vector<std::array<double, 3>> m_nodes;
     std::size_t numCells;
     std::size_t numFaces;
-    std::vector<std::array<std::size_t, 2>> m_faceToNodeIndices;
+    std::vector<std::array<std::size_t, 4>> m_faceToNodeIndices;
     std::vector<std::array<std::size_t, 2>> cellToFaceIndices;
     std::vector<std::size_t> boundaryFaceToBoundaryCellIndices;
     std::vector<std::size_t> boundaryFaceToInteriorCellIndices;

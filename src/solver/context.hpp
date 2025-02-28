@@ -29,7 +29,7 @@ struct ReconstructionContext {
         }
 
     std::size_t const numFaces;
-    std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
+    std::vector<std::array<std::size_t, 4>> const& faceToNodeIndices;
 
     // Cell-centered states
     std::vector<double> const& rho;
@@ -73,7 +73,7 @@ struct FluxContext {
         }
 
     std::size_t const numFaces;
-    std::vector<std::array<std::size_t, 2>> const& faceToNodeIndices;
+    std::vector<std::array<std::size_t, 4>> const& faceToNodeIndices;
 
     // properties of the faces
     std::vector<double> const& faceArea;
@@ -181,7 +181,7 @@ struct BoundaryConditionContext {
         boundaryFaceToBoundaryCellIndices(grid.BoundaryFaceToBoundaryCellIndices()),
         boundaryFaceToInteriorCellIndices(grid.BoundaryFaceToInteriorCellIndices()),
         faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p) {}
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), t(vs.t), cs(vs.cs) {}
 
     std::vector<std::size_t> const boundaryFaceToBoundaryCellIndices;
     std::vector<std::size_t> const boundaryFaceToInteriorCellIndices;
@@ -197,6 +197,9 @@ struct BoundaryConditionContext {
     std::vector<double>& v;
     std::vector<double>& w;
     std::vector<double>& p;
+    std::vector<double>& e;
+    std::vector<double>& t;
+    std::vector<double>& cs;
 };
 
 struct IntegrationContext {

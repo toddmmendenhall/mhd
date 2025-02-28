@@ -163,19 +163,19 @@ struct LowOrderGodunovKernel {
         // x-momentum density flux
         m_context.rhoUFlux[i] = 0.5 * m_context.faceArea[i] *
                                 (rhoULeft * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalX[i] +
-                                rhoURight * uDotNRight + m_context.pRight[i] * m_context.faceNormalX[i] -
+                                rhoURight * uDotNRight + m_context.pRight[i] * -m_context.faceNormalX[i] -
                                 maxEigenVal * (rhoURight - rhoULeft));
                                                              
         // y-momentum density flux
         m_context.rhoVFlux[i] = 0.5 * m_context.faceArea[i] *
                                 (rhoVRight * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalY[i] +
-                                rhoVRight * uDotNRight + m_context.pRight[i] * m_context.faceNormalY[i] -
+                                rhoVRight * uDotNRight + m_context.pRight[i] * -m_context.faceNormalY[i] -
                                 maxEigenVal * (rhoVRight - rhoVLeft));
 
         // z-momentum density flux
         m_context.rhoWFlux[i] = 0.5 * m_context.faceArea[i] *
                                 (rhoWLeft * uDotNLeft + m_context.pLeft[i] * m_context.faceNormalZ[i] +
-                                rhoWRight * uDotNRight + m_context.pRight[i] * m_context.faceNormalZ[i] -
+                                rhoWRight * uDotNRight + m_context.pRight[i] * -m_context.faceNormalZ[i] -
                                 maxEigenVal * (rhoWRight - rhoWLeft));
 
         // total energy density flux

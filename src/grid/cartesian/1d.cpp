@@ -18,7 +18,10 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
         m_nodes.push_back({bounds[0] + (i + 0.5) * cellSize[0], 0.0, 0.0});
     }
 
-    // Append nodes for left ghost cells
+    // Insert nodes for left ghost cells
+    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 0.5 * cellSize[0], 0.0, 0.0}); // 0
+    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 1.5 * cellSize[0], 0.0, 0.0}); // 1
+    // m_nodes.insert(m_nodes.begin(), {bounds[0] - 2.5 * cellSize[0], 0.0, 0.0}); // 2
     m_nodes.push_back({bounds[0] - 0.5 * cellSize[0], 0.0, 0.0}); // 10
     m_nodes.push_back({bounds[0] - 1.5 * cellSize[0], 0.0, 0.0}); // 11
     m_nodes.push_back({bounds[0] - 2.5 * cellSize[0], 0.0, 0.0}); // 12
@@ -32,17 +35,21 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     for (std::size_t i = 0; i < numFaces; ++i) {
         if (i == 0) {
             // The left boundary face
-            m_faceToNodeIndices.push_back({numCells, i});
+            m_faceToNodeIndices.push_back({numCells+1, numCells, 0, 1});
             boundaryFaceToBoundaryCellIndices.push_back(numCells);
             boundaryFaceToInteriorCellIndices.push_back(i);
+        } else if (i == 1) {
+            m_faceToNodeIndices.push_back({numCells, 0, 1, 2});
+        } else if (i == numFaces - 2) {
+            m_faceToNodeIndices.push_back({i-2, i-1, i, i+4});
         } else if (i == numFaces - 1) {
             // The right boundary face
-            m_faceToNodeIndices.push_back({i - 1, numCells + 3});
+            m_faceToNodeIndices.push_back({i-2, i-1, i+3, i+4});
             boundaryFaceToBoundaryCellIndices.push_back(numCells + 3);
             boundaryFaceToInteriorCellIndices.push_back(i - 1);
         } else {
             // Interior faces
-            m_faceToNodeIndices.push_back({i - 1, i});
+            m_faceToNodeIndices.push_back({i-2, i-1, i, i+1});
         }
     }
 
