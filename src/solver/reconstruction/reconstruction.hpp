@@ -6,7 +6,6 @@
 namespace MHD {
 
 class ExecutionController;
-class IGrid;
 class Profile;
 class VariableStore;
 
@@ -25,7 +24,7 @@ struct ReconstructionContext {
     std::vector<double> const& e;
     std::vector<double> const& cs;
 
-    // Face-centered left states
+    // Left states
     std::vector<double> rhoLeft;
     std::vector<double> uLeft;
     std::vector<double> vLeft;
@@ -34,7 +33,7 @@ struct ReconstructionContext {
     std::vector<double> eLeft;
     std::vector<double> csLeft;
 
-    // Face-centered right states
+    // Right states
     std::vector<double> rhoRight;
     std::vector<double> uRight;
     std::vector<double> vRight;
@@ -47,7 +46,7 @@ struct ReconstructionContext {
 class IReconstruction {
 public:
     virtual ~IReconstruction() = default;
-    virtual void Compute(ExecutionController const& execCtrl) = 0;
+    virtual void ComputeLeftRightStates(ExecutionController const& execCtrl) = 0;
     ReconstructionContext const& GetContext() const { return *m_context; }
 
 protected:

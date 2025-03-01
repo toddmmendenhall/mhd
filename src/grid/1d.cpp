@@ -22,6 +22,8 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     m_nodes.insert(m_nodes.begin(), {bounds[0] - 0.5 * cellSize[0], 0.0, 0.0});
     m_nodes.push_back({bounds[1] + 0.5 * cellSize[0], 0.0, 0.0});
 
+    startIdx = 1;
+
     // Each face has a "left" and "right" node, so we store those indices
     for (FaceIdx i = 0; i < numFaces; ++i) {
         NodeIdxs nodeIdxs;

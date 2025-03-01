@@ -89,7 +89,7 @@ void Calc::WriteData(VariableStore const& varStore) {
     if (myFile.is_open()) {
         // Write data to the file
         myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
-        myFile << "time: " << m_currentTime << " s" << std::endl;
+        myFile << "# time: " << m_currentTime << " s" << std::endl;
 
         for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
             myFile <<

@@ -8,7 +8,7 @@ struct ResidualContext {
     ResidualContext(IGrid const& grid, FluxContext const& flux) :
         numCells(grid.NumCells()), cellToFaceIndices(grid.CellToFaceIndices()), cellSize(grid.CellSize()),
         rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
-        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux), startIdx(grid.GetStartIdx()) {
             rhoRes.resize(numCells, 0.0);
             rhoURes.resize(numCells, 0.0);
             rhoVRes.resize(numCells, 0.0);
@@ -16,6 +16,7 @@ struct ResidualContext {
             rhoERes.resize(numCells, 0.0);
         }
 
+    std::size_t const startIdx;
     std::size_t const numCells;
     std::vector<std::array<std::size_t, 2>> const& cellToFaceIndices;
     std::vector<double> const& cellSize;

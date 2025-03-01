@@ -31,6 +31,7 @@ public:
     std::size_t const NumNodes() const { return m_nodes.size(); }
     FaceIdxToNodeIdxs const& GetFaceIdxToNodeIdxs() const { return m_faceIdxToNodeIdxs; }
     std::vector<std::array<std::size_t, 2>> const& CellToFaceIndices() const { return cellToFaceIndices; }
+    std::size_t const GetStartIdx() const { return startIdx; }
 
     std::vector<double> const& FaceAreas() const { return m_faceAreas; }
     std::vector<double> const& FaceNormalX() const { return m_faceNormalsX; }
@@ -40,6 +41,7 @@ public:
     std::vector<double> const& CellSize() const { return cellSize; }
 
 protected:
+    std::size_t startIdx;
     std::vector<std::array<double, 3>> m_nodes;
     std::size_t numCells;
     std::size_t numFaces;

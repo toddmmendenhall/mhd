@@ -46,11 +46,11 @@ struct ForwardEulerKernel {
     ForwardEulerKernel(IntegrationContext const& context) : m_context(context) {}
 
     void operator()(std::size_t i) {
-        m_context.rho[i] += m_context.tStep * m_context.rhoRes[i];
-        m_context.rhoU[i] += m_context.tStep * m_context.rhoURes[i];
-        m_context.rhoV[i] += m_context.tStep * m_context.rhoVRes[i];
-        m_context.rhoW[i] += m_context.tStep * m_context.rhoWRes[i];
-        m_context.rhoE[i] += m_context.tStep * m_context.rhoERes[i];
+        m_context.rho[i+1] += m_context.tStep * m_context.rhoRes[i];
+        m_context.rhoU[i+1] += m_context.tStep * m_context.rhoURes[i];
+        m_context.rhoV[i+1] += m_context.tStep * m_context.rhoVRes[i];
+        m_context.rhoW[i+1] += m_context.tStep * m_context.rhoWRes[i];
+        m_context.rhoE[i+1] += m_context.tStep * m_context.rhoERes[i];
     }
 
     IntegrationContext const& m_context;
@@ -63,7 +63,7 @@ public:
     }
     void Compute(ExecutionController const& execCtrl) {
         ForwardEulerKernel kern(*m_context);
-        execCtrl.LaunchKernel(kern, m_context->numCells);
+        execCtrl.LaunchKernel(kern, m_context->numCells + 1);
     }
 };
 

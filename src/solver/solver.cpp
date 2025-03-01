@@ -29,13 +29,13 @@ void Solver::PerformTimeStep() {
     CalculateTimeStep();
 
     // Apply boundary conditions to ghost cell states
-    ApplyBoundaryConditions();
+    m_boundCon->Compute(m_execCtrl);
 
     // Compute the face-centered states
-    ReconstructVariables();
+    m_reconstruction->ComputeLeftRightStates(m_execCtrl);
 
     // Compute the face-centered fluxes
-    ComputeFluxes();
+    m_flux->ComputeInterfaceFluxes(m_execCtrl);
 
     // Compute the cell-centered residuals
     m_residual->ComputeResidual(m_execCtrl);
@@ -92,21 +92,6 @@ void Solver::SetupConservedState() {
 
     TotalEnergyDensityKernel totalEnergyDensityKern(m_varStore);
     m_execCtrl.LaunchKernel(totalEnergyDensityKern, nIntCells);
-}
-
-void Solver::ComputeFluxes() {
-    m_flux->ComputeInterfaceFluxes(m_execCtrl);
-}
-
-void Solver::ReconstructVariables() {
-    m_reconstruction->Compute(m_execCtrl);
-}
-
-void Solver::ApplyBoundaryConditions() {
-    m_boundCon->Compute(m_execCtrl);
-}
-
-void Solver::ComputeResiduals() {
 }
 
 void Solver::CalculateTimeStep() {

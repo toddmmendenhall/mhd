@@ -33,14 +33,6 @@ public:
 
     void ComputePrimitivesFromConserved();
 
-    void ComputeFluxes();
-
-    void ReconstructVariables();
-
-    void ApplyBoundaryConditions();
-
-    void ComputeResiduals();
-
     void CalculateTimeStep();
 
     double const TimeStep() const { return timeStep; }

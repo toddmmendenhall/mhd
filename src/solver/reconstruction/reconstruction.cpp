@@ -89,7 +89,7 @@ public:
         m_context = std::make_unique<ReconstructionContext>(varStore, grid);
     }
     
-    void Compute(ExecutionController const& execCtrl) {
+    void ComputeLeftRightStates(ExecutionController const& execCtrl) {
         ConstantReconstructionKernel kernel(*m_context);
         execCtrl.LaunchKernel(kernel, m_context->numFaces);
     }
@@ -101,7 +101,7 @@ public:
         m_context = std::make_unique<ReconstructionContext>(varStore, grid);
     }
     
-    void Compute(ExecutionController const& execCtrl) {
+    void ComputeLeftRightStates(ExecutionController const& execCtrl) {
         LinearReconstructionKernel kernel(*m_context);
         execCtrl.LaunchKernel(kernel, m_context->numFaces);
     }
