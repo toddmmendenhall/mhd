@@ -1,8 +1,8 @@
-#include <context.hpp>
 #include <error.hpp>
 #include <execution_controller.hpp>
 #include <profile.hpp>
 #include <reconstruction/reconstruction.hpp>
+#include <variable_store.hpp>
 
 #include <array>
 #include <cstddef>
@@ -64,36 +64,55 @@ struct LinearReconstructionKernel {
     ReconstructionContext& m_context;
 };
 
+ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
+    rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs),
+    faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()), numFaces(grid.NumFaces()) {
+    rhoLeft.resize(numFaces, 0.0);
+    uLeft.resize(numFaces, 0.0);
+    vLeft.resize(numFaces, 0.0);
+    wLeft.resize(numFaces, 0.0);
+    pLeft.resize(numFaces, 0.0);
+    eLeft.resize(numFaces, 0.0);
+    csLeft.resize(numFaces, 0.0);
+    rhoRight.resize(numFaces, 0.0);
+    uRight.resize(numFaces, 0.0);
+    vRight.resize(numFaces, 0.0);
+    wRight.resize(numFaces, 0.0);
+    pRight.resize(numFaces, 0.0);
+    eRight.resize(numFaces, 0.0);
+    csRight.resize(numFaces, 0.0);
+}
+
 class ConstantReconstruction : public IReconstruction {
 public:
-    ConstantReconstruction(ReconstructionContext& context) : m_context(context) {}
-    
-    void Compute(ExecutionController const& execCtrl) {
-        ConstantReconstructionKernel kernel(m_context);
-        execCtrl.LaunchKernel(kernel, m_context.numFaces);
+    ConstantReconstruction(VariableStore const& varStore, IGrid const& grid) {
+        m_context = std::make_unique<ReconstructionContext>(varStore, grid);
     }
     
-    ReconstructionContext& m_context;
+    void Compute(ExecutionController const& execCtrl) {
+        ConstantReconstructionKernel kernel(*m_context);
+        execCtrl.LaunchKernel(kernel, m_context->numFaces);
+    }
 };
 
 class LinearReconstruction : public IReconstruction {
 public:
-    LinearReconstruction(ReconstructionContext& context) : m_context(context) {}
+    LinearReconstruction(VariableStore const& varStore, IGrid const& grid) {
+        m_context = std::make_unique<ReconstructionContext>(varStore, grid);
+    }
     
     void Compute(ExecutionController const& execCtrl) {
-        LinearReconstructionKernel kernel(m_context);
-        execCtrl.LaunchKernel(kernel, m_context.numFaces);
+        LinearReconstructionKernel kernel(*m_context);
+        execCtrl.LaunchKernel(kernel, m_context->numFaces);
     }
-    
-    ReconstructionContext& m_context;
 };
 
-std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile, ReconstructionContext& context) {
+std::unique_ptr<IReconstruction> reconstructionFactory(Profile const& profile, VariableStore const& varStore, IGrid const& grid) {
     if (ReconstructionOption::CONSTANT == profile.m_reconstructionOption) {
-        return std::make_unique<ConstantReconstruction>(context);
+        return std::make_unique<ConstantReconstruction>(varStore, grid);
     }
     if (ReconstructionOption::LINEAR == profile.m_reconstructionOption) {
-        return std::make_unique<LinearReconstruction>(context);
+        return std::make_unique<LinearReconstruction>(varStore, grid);
     }
     throw Error::INVALID_RECONSTRUCTION_OPTION;
 }

@@ -1,9 +1,39 @@
 #pragma once
 
-#include <context.hpp>
 #include <execution_controller.hpp>
 
 namespace MHD {
+
+struct ResidualContext {
+    ResidualContext(IGrid const& grid, FluxContext const& flux) :
+        numCells(grid.NumCells()), cellToFaceIndices(grid.CellToFaceIndices()), cellSize(grid.CellSize()),
+        rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {
+            rhoRes.resize(numCells, 0.0);
+            rhoURes.resize(numCells, 0.0);
+            rhoVRes.resize(numCells, 0.0);
+            rhoWRes.resize(numCells, 0.0);
+            rhoERes.resize(numCells, 0.0);
+        }
+
+    std::size_t const numCells;
+    std::vector<std::array<std::size_t, 2>> const& cellToFaceIndices;
+    std::vector<double> const& cellSize;
+
+    // Face-centered fluxes
+    std::vector<double> const& rhoFlux;
+    std::vector<double> const& rhoUFlux;
+    std::vector<double> const& rhoVFlux;
+    std::vector<double> const& rhoWFlux;
+    std::vector<double> const& rhoEFlux;
+
+    // Cell-centered residuals
+    std::vector<double> rhoRes;     // mass density residual
+    std::vector<double> rhoURes;    // x momentum density residual
+    std::vector<double> rhoVRes;    // y momentum density residual
+    std::vector<double> rhoWRes;    // z momentum density residual
+    std::vector<double> rhoERes;    // total energy density residual
+};
 
 struct TransportKernel {
 public:
@@ -27,11 +57,18 @@ public:
 
 class Residual {
 public:
-    ~Residual() = default;
-    void Compute(ExecutionController const& execCtrl, ResidualContext& context) {
-        TransportKernel kernel(context);
-        execCtrl.LaunchKernel(kernel, context.numCells);
+    Residual(IGrid const& grid, FluxContext const& fc) {
+        m_context = std::make_unique<ResidualContext>(grid, fc);
     }
+    ~Residual() = default;
+    void ComputeResidual(ExecutionController const& execCtrl) {
+        TransportKernel kernel(*m_context);
+        execCtrl.LaunchKernel(kernel, m_context->numCells);
+    }
+    ResidualContext const& GetContext() const { return *m_context; }
+
+private:
+    std::unique_ptr<ResidualContext> m_context;
 };
 
 } // namespace MHD

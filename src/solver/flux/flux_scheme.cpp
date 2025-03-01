@@ -1,10 +1,11 @@
-#include <context.hpp>
 #include <constants.hpp>
 #include <error.hpp>
 #include <execution_controller.hpp>
 #include <flux/flux_scheme.hpp>
+#include <grid.hpp>
 #include <profile.hpp>
 #include <profile_options.hpp>
+#include <reconstruction/reconstruction.hpp>
 
 #include <cstdlib>
 
@@ -93,21 +94,33 @@ struct KTFluxKernel {
     FluxContext& m_context;
 };
 
-class KTFlux : public IFluxScheme {
-public:
-    KTFlux(FluxContext& context) : m_context(context) {}
+FluxContext::FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
+    numFaces(grid.NumFaces()), faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()), faceArea(grid.FaceAreas()),
+    faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
+    rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft), csLeft(rc.csLeft),
+    rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight), csRight(rc.csRight) {
+    rhoFlux.resize(numFaces, 0.0);
+    rhoUFlux.resize(numFaces, 0.0);
+    rhoVFlux.resize(numFaces, 0.0);
+    rhoWFlux.resize(numFaces, 0.0);
+    rhoEFlux.resize(numFaces, 0.0);
+}
 
-    void ComputeInterfaceFluxes(ExecutionController const& execCtrl) const {
-        KTFluxKernel kern(m_context);
-        execCtrl.LaunchKernel(kern, m_context.numFaces);
+class KTFlux : public IFlux {
+public:
+    KTFlux(IGrid const& grid, ReconstructionContext const& rc) {
+        m_context = std::make_unique<FluxContext>(grid, rc);
     }
 
-    FluxContext& m_context;
+    void ComputeInterfaceFluxes(ExecutionController const& execCtrl) const {
+        KTFluxKernel kern(*m_context);
+        execCtrl.LaunchKernel(kern, m_context->numFaces);
+    }
 };
 
-std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile, FluxContext& context) {
+std::unique_ptr<IFlux> fluxFactory(Profile const& profile, IGrid const& grid, ReconstructionContext const& rc) {
     if (FluxScheme::KT == profile.m_fluxOption) {
-        return std::make_unique<KTFlux>(context);
+        return std::make_unique<KTFlux>(grid, rc);
     }
     throw Error::INVALID_FLUX_SCHEME;
 }

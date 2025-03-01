@@ -1,14 +1,15 @@
 #include <boundary_condition/boundary_condition.hpp>
-#include <context.hpp>
 #include <execution_controller.hpp>
+#include <grid.hpp>
 #include <profile.hpp>
+#include <variable_store.hpp>
 
 #include <memory>
 
-namespace {
- 
+namespace MHD {
+
 struct OutflowBoundaryConditionKernel {
-    OutflowBoundaryConditionKernel(MHD::BoundaryConditionContext& context) :
+    OutflowBoundaryConditionKernel(BoundaryConditionContext& context) :
         m_context(context) {}
 
     void operator()(std::size_t i) {
@@ -29,11 +30,11 @@ struct OutflowBoundaryConditionKernel {
         // m_context.rho[iBnd] = m_context.rho[iInt];
         // m_context.p[iBnd] = m_context.p[iInt];
     }
-    MHD::BoundaryConditionContext& m_context;
+    BoundaryConditionContext& m_context;
 };
 
 struct ReflectiveBoundaryConditionKernel {
-    ReflectiveBoundaryConditionKernel(MHD::BoundaryConditionContext& context) : m_context(context) {}
+    ReflectiveBoundaryConditionKernel(BoundaryConditionContext& context) : m_context(context) {}
 
     void operator()(std::size_t faceIdx) {
         if (!m_context.faceIdxToNodeIdxs.at(faceIdx).isBoundary) {
@@ -54,39 +55,44 @@ struct ReflectiveBoundaryConditionKernel {
         m_context.w[iOut] = -m_context.w[iIn];
     }
 
-    MHD::BoundaryConditionContext& m_context;
+    BoundaryConditionContext& m_context;
 };
 
-} // namespace
-
-namespace MHD {
+BoundaryConditionContext::BoundaryConditionContext(IGrid const& grid, VariableStore& vs) :
+    faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()),
+    faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
+    rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), t(vs.t), cs(vs.cs) {}
 
 class OutflowBoundaryCondition : public IBoundaryCondition {
 public:
-    OutflowBoundaryCondition() = default;
+    OutflowBoundaryCondition(IGrid const& grid, VariableStore& vs) {
+        m_context = std::make_unique<BoundaryConditionContext>(grid, vs);
+    };
 
-    void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
-        OutflowBoundaryConditionKernel kern(context);
-        execCtrl.LaunchKernel(kern, context.faceIdxToNodeIdxs.size());
+    void Compute(ExecutionController const& execCtrl) {
+        OutflowBoundaryConditionKernel kern(*m_context);
+        execCtrl.LaunchKernel(kern, m_context->faceIdxToNodeIdxs.size());
     }
 };
 
 class ReflectiveBoundaryCondition : public IBoundaryCondition {
-    public:
-        ReflectiveBoundaryCondition() = default;
-    
-        void Compute(ExecutionController const& execCtrl, BoundaryConditionContext& context) {
-            ReflectiveBoundaryConditionKernel kern(context);
-            execCtrl.LaunchKernel(kern, context.faceIdxToNodeIdxs.size());
-        }
+public:
+    ReflectiveBoundaryCondition(IGrid const& grid, VariableStore& vs) {
+        m_context = std::make_unique<BoundaryConditionContext>(grid, vs);
     };
 
-std::unique_ptr<IBoundaryCondition> boundaryConditionFactory(Profile const& profile) {
+    void Compute(ExecutionController const& execCtrl) {
+        ReflectiveBoundaryConditionKernel kern(*m_context);
+        execCtrl.LaunchKernel(kern, m_context->faceIdxToNodeIdxs.size());
+    }
+};
+
+std::unique_ptr<IBoundaryCondition> boundaryConditionFactory(Profile const& profile, IGrid const& grid, VariableStore& vs) {
     if (BoundaryConditionOption::REFLECTIVE == profile.m_boundaryConditionOption) {
-        return std::make_unique<ReflectiveBoundaryCondition>();
+        return std::make_unique<ReflectiveBoundaryCondition>(grid, vs);
     }
     if (BoundaryConditionOption::OUTFLOW == profile.m_boundaryConditionOption) {
-        return std::make_unique<OutflowBoundaryCondition>();
+        return std::make_unique<OutflowBoundaryCondition>(grid, vs);
     }
     return nullptr;
 }

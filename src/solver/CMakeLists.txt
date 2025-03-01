@@ -13,8 +13,7 @@ set(boundary_condition_sources boundary_condition/boundary_condition.hpp
 set(integration_sources integration/integration.hpp)
 
 # Accumulate includes
-set(includes context.hpp
-             execution_controller.hpp
+set(includes execution_controller.hpp
              kernels.hpp
              residual.hpp
              solver.hpp

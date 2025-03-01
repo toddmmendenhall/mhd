@@ -4,22 +4,14 @@
 
 namespace MHD {
 
-class BoundaryConditionContext;
-class ElectricFieldCalculator;
 class ExecutionController;
-struct FluxContext;
 class IBoundaryCondition;
-class IFluxScheme;
+class IFlux;
 class IGrid;
 class IIntegrator;
-struct IntegrationContext;
 class IReconstruction;
-class MagneticFieldCalculator;
 class Profile;
-struct ReconstructionContext;
-struct ResidualContext;
 class Residual;
-struct TransportContext;
 class VariableStore;
 
 class ISolver {
@@ -56,16 +48,11 @@ public:
 private:
     double cfl = 0.5;
     double timeStep = 1e-5;
-    std::unique_ptr<FluxContext> m_fluxContext;
     std::unique_ptr<IBoundaryCondition> m_boundCon;
     std::unique_ptr<IIntegrator> m_integrator;
-    std::unique_ptr<IFluxScheme> m_fluxScheme;
-    std::unique_ptr<ReconstructionContext> m_reconstructionContext;
+    std::unique_ptr<IFlux> m_flux;
     std::unique_ptr<IReconstruction> m_reconstruction;
-    std::unique_ptr<ResidualContext> m_residualContext;
     std::unique_ptr<Residual> m_residual;
-    std::unique_ptr<IntegrationContext> m_integrationContext;
-    std::unique_ptr<BoundaryConditionContext> m_boundaryConditionContext;
     ExecutionController const& m_execCtrl;
     IGrid const& m_grid;
     VariableStore& m_varStore;
