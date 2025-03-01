@@ -5,7 +5,6 @@
 #include <flux/flux_scheme.hpp>
 #include <profile.hpp>
 #include <profile_options.hpp>
-#include <face.hpp>
 
 #include <cstdlib>
 

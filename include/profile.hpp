@@ -9,7 +9,6 @@ namespace MHD {
 struct Profile {
     // Grid options
     Dimension m_gridDimensionOption = Dimension::ONE;
-    Geometry m_gridGeometryOption = Geometry::CARTESIAN;
     std::vector<double> m_gridBoundsOption = {0.0, 10.0, 0.0, 1.0, 0.0, 1.0};
     std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
 

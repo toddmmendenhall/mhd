@@ -8,10 +8,6 @@ enum class Dimension {
     THREE = 2,
 };
 
-enum class Geometry {
-    CARTESIAN = 0,
-};
-
 enum class BoundaryConditionOption {
     REFLECTIVE = 0,
     OUTFLOW = 1,
