@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
 namespace MHD {
 
@@ -17,6 +18,12 @@ public:
             for (std::size_t j = 0; j < n; ++j) {
                 kernel(i, j);
             }
+        }
+    }
+
+    template <typename Kernel> void LaunchKernel(Kernel& kernel, std::vector<std::size_t> const& idxs) const {
+        for (std::size_t i : idxs) {
+            kernel(i);
         }
     }
 };

@@ -10,12 +10,12 @@ namespace MHD {
 
 struct IntegrationContext {
     IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const& tStep) : 
-        tStep(tStep), numCells(rc.numCells), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
+        tStep(tStep), cellIdxs(rc.cellIdxs), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
         rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
         rhoE(vs.rhoE) {}
 
     double const& tStep;
-    std::size_t const numCells;
+    std::vector<std::size_t> const& cellIdxs;
 
     // Cell-centered residuals
     std::vector<double> const& rhoRes;     // mass density residual
@@ -45,12 +45,12 @@ protected:
 struct ForwardEulerKernel {
     ForwardEulerKernel(IntegrationContext const& context) : m_context(context) {}
 
-    void operator()(std::size_t i) {
-        m_context.rho[i+1] += m_context.tStep * m_context.rhoRes[i];
-        m_context.rhoU[i+1] += m_context.tStep * m_context.rhoURes[i];
-        m_context.rhoV[i+1] += m_context.tStep * m_context.rhoVRes[i];
-        m_context.rhoW[i+1] += m_context.tStep * m_context.rhoWRes[i];
-        m_context.rhoE[i+1] += m_context.tStep * m_context.rhoERes[i];
+    void operator()(std::size_t const i) {
+        m_context.rho[i] += m_context.tStep * m_context.rhoRes[i];
+        m_context.rhoU[i] += m_context.tStep * m_context.rhoURes[i];
+        m_context.rhoV[i] += m_context.tStep * m_context.rhoVRes[i];
+        m_context.rhoW[i] += m_context.tStep * m_context.rhoWRes[i];
+        m_context.rhoE[i] += m_context.tStep * m_context.rhoERes[i];
     }
 
     IntegrationContext const& m_context;
@@ -61,9 +61,10 @@ public:
     ForwardEuler(ResidualContext const& rc, VariableStore& vs, double const& tStep) {
         m_context = std::make_unique<IntegrationContext>(rc, vs, tStep);
     }
+
     void Compute(ExecutionController const& execCtrl) {
         ForwardEulerKernel kern(*m_context);
-        execCtrl.LaunchKernel(kern, m_context->numCells + 1);
+        execCtrl.LaunchKernel(kern, m_context->cellIdxs);
     }
 };
 

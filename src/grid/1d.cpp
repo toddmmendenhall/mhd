@@ -22,7 +22,14 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     m_nodes.insert(m_nodes.begin(), {bounds[0] - 0.5 * cellSize[0], 0.0, 0.0});
     m_nodes.push_back({bounds[1] + 0.5 * cellSize[0], 0.0, 0.0});
 
-    startIdx = 1;
+    // Create list of cell indices
+    for (std::size_t i = 0; i < numCells; ++i) {
+        cellIdxs.push_back(i + 1);
+        FaceIdxs faceIdxs;
+        faceIdxs.left = i;
+        faceIdxs.right = i + 2;
+        cellIdxToFaceIdxs[i + 1] = faceIdxs;
+    }
 
     // Each face has a "left" and "right" node, so we store those indices
     for (FaceIdx i = 0; i < numFaces; ++i) {
@@ -66,10 +73,6 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
         }
         m_faceNormalsY.push_back(0.0);
         m_faceNormalsZ.push_back(0.0);
-    }
-
-    for (std::size_t i = 0; i < numCells; ++i) {
-        cellToFaceIndices.push_back({i, i + 1});
     }
 }
 

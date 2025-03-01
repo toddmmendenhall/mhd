@@ -6,9 +6,9 @@ namespace MHD {
 
 struct ResidualContext {
     ResidualContext(IGrid const& grid, FluxContext const& flux) :
-        numCells(grid.NumCells()), cellToFaceIndices(grid.CellToFaceIndices()), cellSize(grid.CellSize()),
+        numCells(grid.NumCells()), cellToFaceIndices(grid.GetCellIdxToFaceIdxs()), cellSize(grid.CellSize()),
         rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
-        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux), startIdx(grid.GetStartIdx()) {
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux), cellIdxs(grid.GetCellIdxs()) {
             rhoRes.resize(numCells, 0.0);
             rhoURes.resize(numCells, 0.0);
             rhoVRes.resize(numCells, 0.0);
@@ -16,9 +16,9 @@ struct ResidualContext {
             rhoERes.resize(numCells, 0.0);
         }
 
-    std::size_t const startIdx;
+    std::vector<std::size_t> const& cellIdxs;
     std::size_t const numCells;
-    std::vector<std::array<std::size_t, 2>> const& cellToFaceIndices;
+    std::map<CellIdx, FaceIdxs> const& cellToFaceIndices;
     std::vector<double> const& cellSize;
 
     // Face-centered fluxes
@@ -40,10 +40,10 @@ struct TransportKernel {
 public:
     TransportKernel(ResidualContext& context) : m_context(context) {}
 
-    void operator()(std::size_t i) {
+    void operator()(std::size_t const i) {
         // Get the left and right face indices for this cell
-        std::size_t iLeft = m_context.cellToFaceIndices[i][0];
-        std::size_t iRight = m_context.cellToFaceIndices[i][1];
+        std::size_t iLeft = m_context.cellToFaceIndices.at(i).left;
+        std::size_t iRight = m_context.cellToFaceIndices.at(i).right;
         double c = -1.0 / m_context.cellSize[0];
 
         m_context.rhoRes[i] = c * (m_context.rhoFlux[iRight] - m_context.rhoFlux[iLeft]);
@@ -64,7 +64,7 @@ public:
     ~Residual() = default;
     void ComputeResidual(ExecutionController const& execCtrl) {
         TransportKernel kernel(*m_context);
-        execCtrl.LaunchKernel(kernel, m_context->numCells);
+        execCtrl.LaunchKernel(kernel, m_context->cellIdxs);
     }
     ResidualContext const& GetContext() const { return *m_context; }
 
