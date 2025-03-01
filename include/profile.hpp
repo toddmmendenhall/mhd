@@ -15,13 +15,11 @@ struct Profile {
     // Solver options
     BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::REFLECTIVE;
     TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
-    FluxScheme m_fluxOption = FluxScheme::LOG;
+    FluxScheme m_fluxOption = FluxScheme::KT;
     ReconstructionOption m_reconstructionOption = ReconstructionOption::LINEAR;
 
     // Phenomenon options
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
-    ViscousOption m_viscousOption = ViscousOption::INVISCID;
-    HydroOption m_hydroOption = HydroOption::PURE_HYDRO;
 
     // Generic options
     OutputDataOption m_outputDataOption = OutputDataOption::NO;

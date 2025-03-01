@@ -10,8 +10,8 @@
 
 namespace MHD {
 
-struct LowOrderGodunovKernel {
-    LowOrderGodunovKernel(FluxContext& context) : m_context(context) {}
+struct KTFluxKernel {
+    KTFluxKernel(FluxContext& context) : m_context(context) {}
 
     inline void operator()(std::size_t const faceIdx) {
         // Face-centered magnitude of the velocity on the left
@@ -93,13 +93,12 @@ struct LowOrderGodunovKernel {
     FluxContext& m_context;
 };
 
-class LowOrderGodunov : public IFluxScheme {
+class KTFlux : public IFluxScheme {
 public:
-    LowOrderGodunov(FluxContext& context) :
-        m_context(context) {}
+    KTFlux(FluxContext& context) : m_context(context) {}
 
     void ComputeInterfaceFluxes(ExecutionController const& execCtrl) const {
-        LowOrderGodunovKernel kern(m_context);
+        KTFluxKernel kern(m_context);
         execCtrl.LaunchKernel(kern, m_context.numFaces);
     }
 
@@ -107,8 +106,8 @@ public:
 };
 
 std::unique_ptr<IFluxScheme> fluxSchemeFactory(Profile const& profile, FluxContext& context) {
-    if (FluxScheme::LOG == profile.m_fluxOption) {
-        return std::make_unique<LowOrderGodunov>(context);
+    if (FluxScheme::KT == profile.m_fluxOption) {
+        return std::make_unique<KTFlux>(context);
     }
     throw Error::INVALID_FLUX_SCHEME;
 }

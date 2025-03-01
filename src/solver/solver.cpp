@@ -3,7 +3,7 @@
 #include <execution_controller.hpp>
 #include <flux/flux_scheme.hpp>
 #include <grid.hpp>
-#include <integration.hpp>
+#include <integration/integration.hpp>
 #include <kernels.hpp>
 #include <profile.hpp>
 #include <reconstruction/reconstruction.hpp>

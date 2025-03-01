@@ -10,17 +10,18 @@ set(flux_sources flux/flux_scheme.hpp
 set(boundary_condition_sources boundary_condition/boundary_condition.hpp
                                boundary_condition/boundary_condition.cpp)
 
+set(integration_sources integration/integration.hpp)
+
 # Accumulate includes
 set(includes context.hpp
              execution_controller.hpp
-             integration.hpp
              kernels.hpp
              residual.hpp
              solver.hpp
              variable_store.hpp)
 
 # Setup library
-add_library(solver ${sources} ${reconstruction_sources} ${flux_sources} ${boundary_condition_sources} ${includes})
+add_library(solver ${sources} ${reconstruction_sources} ${flux_sources} ${boundary_condition_sources} ${integration_sources} ${includes})
 
 target_link_libraries(solver PUBLIC grid)
 target_link_libraries(solver PUBLIC utilities)

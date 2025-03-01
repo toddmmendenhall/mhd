@@ -13,11 +13,6 @@ enum class BoundaryConditionOption {
     OUTFLOW = 1,
 };
 
-enum class SpatialDerivativeMethod {
-    FINITE_DIFFERENCE = 0,
-    FINITE_VOLUME = 1,
-};
-
 enum class TemporalIntegrationMethod {
     FORWARD_EULER = 0,
 };
@@ -28,10 +23,7 @@ enum class EquationOfState {
 };
 
 enum class FluxScheme {
-    HLLC = 0,
-    KT = 1,
-    HOG = 2,    // High Order Goduov
-    LOG = 3,    // Low Order Godunov
+    KT = 0,
 };
 
 enum class ReconstructionOption {
@@ -41,17 +33,6 @@ enum class ReconstructionOption {
 
 enum class CompressibleOption {
     COMPRESSIBLE = 0,
-    INCOMPRESSIBLE = 1,
-};
-
-enum class ViscousOption {
-    VISCOUS = 0,
-    INVISCID = 1,
-};
-
-enum class HydroOption {
-    MAGNETO_HYDRO = 0,
-    PURE_HYDRO = 1,
 };
 
 enum class OutputDataOption {
