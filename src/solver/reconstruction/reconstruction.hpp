@@ -13,7 +13,7 @@ struct ReconstructionContext {
     ReconstructionContext(VariableStore const& vs, IGrid const& grid);
 
     std::size_t const numFaces;
-    FaceIdxToNodeIdxs const& faceIdxToNodeIdxs;
+    std::map<std::size_t, std::vector<std::size_t>> const& faceIdxToNodeIdxs;
 
     // Cell-centered states
     std::vector<double> const& rho;

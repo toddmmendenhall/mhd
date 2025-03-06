@@ -13,10 +13,10 @@ namespace MHD {
 struct ConstantReconstructionKernel {
     ConstantReconstructionKernel(ReconstructionContext& context) : m_context(context) {}
 
-    void operator()(FaceIdx const i) {
+    void operator()(std::size_t const i) {
         // Get the left and right cell indices for this face
-        NodeIdx iLeft = m_context.faceIdxToNodeIdxs.at(i).left;
-        NodeIdx iRight = m_context.faceIdxToNodeIdxs.at(i).right;
+        std::size_t const iLeft = m_context.faceIdxToNodeIdxs.at(i)[0];
+        std::size_t const iRight = m_context.faceIdxToNodeIdxs.at(i)[1];
 
         m_context.rhoLeft[i] = m_context.rho[iLeft];
         m_context.uLeft[i] = m_context.u[iLeft];
@@ -39,12 +39,12 @@ struct ConstantReconstructionKernel {
 struct LinearReconstructionKernel {
     LinearReconstructionKernel(ReconstructionContext& context) : m_context(context) {}
 
-    void operator()(FaceIdx const i) {
+    void operator()(std::size_t const i) {
         // Get the left and right cell indices for this face
-        NodeIdx iLeft = m_context.faceIdxToNodeIdxs.at(i).left;
-        NodeIdx iRight = m_context.faceIdxToNodeIdxs.at(i).right;
-        NodeIdx iLeftMinusOne = m_context.faceIdxToNodeIdxs.at(i).leftMinusOne;
-        NodeIdx iRightPlusOne = m_context.faceIdxToNodeIdxs.at(i).rightPlusOne;
+        std::size_t const iLeft = m_context.faceIdxToNodeIdxs.at(i)[0];
+        std::size_t const iRight = m_context.faceIdxToNodeIdxs.at(i)[1];
+        std::size_t const iLeftMinusOne = m_context.faceIdxToNodeIdxs.at(i)[2];
+        std::size_t const iRightPlusOne = m_context.faceIdxToNodeIdxs.at(i)[3];
 
         m_context.rhoLeft[i] = 0.5 * (m_context.rho[iLeftMinusOne] + m_context.rho[iLeft]);
         m_context.uLeft[i] = 0.5 * (m_context.u[iLeftMinusOne] + m_context.u[iLeft]);
@@ -66,7 +66,7 @@ struct LinearReconstructionKernel {
 
 ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
     rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs),
-    faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()), numFaces(grid.NumFaces()) {
+    faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), numFaces(grid.NumFaces()) {
     rhoLeft.resize(numFaces, 0.0);
     uLeft.resize(numFaces, 0.0);
     vLeft.resize(numFaces, 0.0);

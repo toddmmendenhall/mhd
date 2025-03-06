@@ -12,6 +12,9 @@ set(boundary_condition_sources boundary_condition/boundary_condition.hpp
 
 set(integration_sources integration/integration.hpp)
 
+set(thermo_sources thermo/thermo_data.hpp
+                   thermo/thermo_data.cpp)
+
 # Accumulate includes
 set(includes execution_controller.hpp
              kernels.hpp

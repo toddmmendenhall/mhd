@@ -48,7 +48,7 @@ void Solver::PerformTimeStep() {
 }
 
 void Solver::ComputePrimitivesFromConserved() {
-    std::size_t const nIntCells = m_grid.NumNodes();
+    std::size_t const nIntCells = m_grid.NumCells();
 
     SpecificVolumeKernel rhoInvKern(m_varStore);
     m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);
@@ -70,7 +70,7 @@ void Solver::ComputePrimitivesFromConserved() {
 }
 
 void Solver::SetupConservedState() {
-    std::size_t const nIntCells = m_grid.NumNodes();
+    std::size_t const nIntCells = m_grid.NumCells();
 
     SpecificVolumeKernel rhoInvKern(m_varStore);
     m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);
@@ -96,10 +96,10 @@ void Solver::SetupConservedState() {
 
 void Solver::CalculateTimeStep() {
     CaloricallyPerfectGasSoundSpeedKernel ccKern(m_varStore);
-    m_execCtrl.LaunchKernel(ccKern, m_grid.NumNodes());
+    m_execCtrl.LaunchKernel(ccKern, m_grid.NumCells());
 
     MaximumWaveSpeedKernel sMaxKern(m_varStore);
-    m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumNodes());
+    m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumCells());
 
     timeStep = cfl * m_grid.CellSize()[0] / m_varStore.sMax;
     m_varStore.sMax = 0.0;

@@ -2,9 +2,6 @@
 
 #include <grid.hpp>
 
-#include <memory>
-#include <vector>
-
 namespace MHD {
 
 class Profile;

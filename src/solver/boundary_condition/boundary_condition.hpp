@@ -13,7 +13,9 @@ class VariableStore;
 struct BoundaryConditionContext {
     BoundaryConditionContext(IGrid const& grid, VariableStore& vs);
 
-    FaceIdxToNodeIdxs const& faceIdxToNodeIdxs;
+    std::size_t const numBoundaries;
+    std::vector<std::size_t> const boundaryIdxs;
+    std::map<std::size_t, std::vector<std::size_t>> boundaryIdxToCellIdxs;
 
     // Properties of the face
     std::vector<double> const& faceNormalX;

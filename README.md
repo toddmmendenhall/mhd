@@ -17,6 +17,9 @@
 * VariableStore - Holds all the data necessary to run a calc
 * ExecutionController - Responsible for launching and cleaning up kernels
 
+# Interfaces
+* Must only utilize standard data formats
+
 # Main private objects own by Solver
 * IReconstruction - Polymorphic class responsible for computing the left and right states of each cell
 * IFlux - Polymorphic class responsible for computing the fluxes

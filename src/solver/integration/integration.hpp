@@ -10,12 +10,12 @@ namespace MHD {
 
 struct IntegrationContext {
     IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const& tStep) : 
-        tStep(tStep), cellIdxs(rc.cellIdxs), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
+        tStep(tStep), numCells(rc.numCells), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
         rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
         rhoE(vs.rhoE) {}
 
     double const& tStep;
-    std::vector<std::size_t> const& cellIdxs;
+    std::size_t const numCells;
 
     // Cell-centered residuals
     std::vector<double> const& rhoRes;     // mass density residual
@@ -64,7 +64,7 @@ public:
 
     void Compute(ExecutionController const& execCtrl) {
         ForwardEulerKernel kern(*m_context);
-        execCtrl.LaunchKernel(kern, m_context->cellIdxs);
+        execCtrl.LaunchKernel(kern, m_context->numCells);
     }
 };
 

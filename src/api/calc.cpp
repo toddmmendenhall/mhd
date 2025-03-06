@@ -35,7 +35,7 @@ void Calc::SetInitialCondition(InitialCondition ic) {
 }
 
 void Calc::SetAtmosphere() {
-    for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
+    for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
         m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
         m_variableStore->u[i] = 0.0;
         m_variableStore->v[i] = 0.0;
@@ -46,7 +46,7 @@ void Calc::SetAtmosphere() {
 
 void Calc::SetSodShockTube() {
     std::size_t const nIntCells = m_grid->NumCells();
-    for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
+    for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
         if (i <= nIntCells / 2) {
             m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
             m_variableStore->u[i] = 0.0;
@@ -91,7 +91,7 @@ void Calc::WriteData(VariableStore const& varStore) {
         myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
         myFile << "# time: " << m_currentTime << " s" << std::endl;
 
-        for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
+        for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
             myFile <<
             m_grid->Nodes()[i][0] << ", " <<
             varStore.rho[i] << ", " <<

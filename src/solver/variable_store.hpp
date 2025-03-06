@@ -8,7 +8,7 @@ namespace MHD {
 
 struct VariableStore {
     VariableStore(IGrid const& grid) {
-        std::size_t const size = grid.NumNodes();
+        std::size_t const size = grid.NumCells();
 
         // Conserved variables
         rho.resize(size, 0.0);

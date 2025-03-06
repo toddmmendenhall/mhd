@@ -141,7 +141,7 @@ struct GodunovConstantFluxKernel {
 };
 
 FluxContext::FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
-    numFaces(grid.NumFaces()), faceIdxToNodeIdxs(grid.GetFaceIdxToNodeIdxs()), faceArea(grid.FaceAreas()),
+    numFaces(grid.NumFaces()), faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), faceArea(grid.FaceAreas()),
     faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
     rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft), csLeft(rc.csLeft),
     rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight), csRight(rc.csRight) {

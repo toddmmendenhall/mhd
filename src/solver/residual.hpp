@@ -6,9 +6,9 @@ namespace MHD {
 
 struct ResidualContext {
     ResidualContext(IGrid const& grid, FluxContext const& flux) :
-        numCells(grid.NumCells()), cellToFaceIndices(grid.GetCellIdxToFaceIdxs()), cellSize(grid.CellSize()),
+        numCells(grid.NumCells()), cellToFaceIndices(grid.CellIdxToFaceIdxs()), cellSize(grid.CellSize()),
         rhoFlux(flux.rhoFlux), rhoUFlux(flux.rhoUFlux), rhoVFlux(flux.rhoVFlux),
-        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux), cellIdxs(grid.GetCellIdxs()) {
+        rhoWFlux(flux.rhoWFlux), rhoEFlux(flux.rhoEFlux) {
             rhoRes.resize(numCells, 0.0);
             rhoURes.resize(numCells, 0.0);
             rhoVRes.resize(numCells, 0.0);
@@ -16,9 +16,8 @@ struct ResidualContext {
             rhoERes.resize(numCells, 0.0);
         }
 
-    std::vector<std::size_t> const& cellIdxs;
     std::size_t const numCells;
-    std::map<CellIdx, FaceIdxs> const& cellToFaceIndices;
+    std::map<std::size_t, std::vector<std::size_t>> const& cellToFaceIndices;
     std::vector<double> const& cellSize;
 
     // Face-centered fluxes
@@ -42,8 +41,8 @@ public:
 
     void operator()(std::size_t const i) {
         // Get the left and right face indices for this cell
-        std::size_t iLeft = m_context.cellToFaceIndices.at(i).left;
-        std::size_t iRight = m_context.cellToFaceIndices.at(i).right;
+        std::size_t const iLeft = m_context.cellToFaceIndices.at(i)[0];
+        std::size_t const iRight = m_context.cellToFaceIndices.at(i)[1];
         double c = -1.0 / m_context.cellSize[0];
 
         m_context.rhoRes[i] = c * (m_context.rhoFlux[iRight] - m_context.rhoFlux[iLeft]);
@@ -64,7 +63,7 @@ public:
     ~Residual() = default;
     void ComputeResidual(ExecutionController const& execCtrl) {
         TransportKernel kernel(*m_context);
-        execCtrl.LaunchKernel(kernel, m_context->cellIdxs);
+        execCtrl.LaunchKernel(kernel, m_context->numCells);
     }
     ResidualContext const& GetContext() const { return *m_context; }
 
