@@ -64,7 +64,6 @@ void Calc::SetSodShockTube() {
 }
 
 void Calc::Run() {
-    m_solver->SetupConservedState();
     while (m_currentTime < m_duration) {
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
             if (m_currentStep % 10 == 0) {

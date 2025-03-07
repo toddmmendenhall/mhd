@@ -17,7 +17,6 @@ class VariableStore;
 class ISolver {
 public:
     virtual ~ISolver() = default;
-    virtual void SetupConservedState() = 0;
     virtual void PerformTimeStep() = 0;
     virtual double const TimeStep() const = 0;
 };
@@ -27,11 +26,11 @@ public:
     Solver(Profile const& profile, ExecutionController const& execCtrl,
            VariableStore& varStore, IGrid const& grid);
     
-    void SetupConservedState();
+    void ConsFromPrim();
     
     void PerformTimeStep();
 
-    void ComputePrimitivesFromConserved();
+    void PrimFromCons();
 
     void CalculateTimeStep();
 

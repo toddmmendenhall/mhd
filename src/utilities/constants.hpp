@@ -2,6 +2,8 @@
 
 namespace MHD {
 
+double constexpr GAS_CONSTANT = 8.314;                                  // J/(mol * K)
+
 double constexpr ATMOSPHERIC_STANDARD_TEMPERATURE = 288.15;             // K
 double constexpr ATMOSPHERIC_PRESSURE_STP = 101325;                     // Pa
 double constexpr ATMOSPHERIC_DENSITY_STP = 1.204;                       // kg / m^3

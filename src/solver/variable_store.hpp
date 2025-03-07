@@ -1,5 +1,6 @@
 #pragma once
 
+#include <constants.hpp>
 #include <grid.hpp>
 
 #include <vector>
@@ -45,7 +46,7 @@ struct VariableStore {
     ~VariableStore() = default;
 
     // Constants
-    double const r = 8.314 / 0.0280134; // specific gas constant for N2 [J/(kg K)]
+    double const r = GAS_CONSTANT / 0.0280134; // specific gas constant for N2 [J/(kg K)]
     double const gamma = 1.4;           // ratio of C_p to C_v for N2 at 298 K and 1 atm
 
     // Cell-centered

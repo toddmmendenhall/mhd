@@ -25,10 +25,13 @@ Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, Vari
 }
 
 void Solver::PerformTimeStep() {
+    // Update the primitives
+    PrimFromCons();
+
     // Use CFL condition to determine a timestep to maintain stability
     CalculateTimeStep();
 
-    // Apply boundary conditions to ghost cell states
+    // Apply boundary conditions
     m_boundCon->Compute(m_execCtrl);
 
     // Compute the face-centered states
@@ -42,67 +45,42 @@ void Solver::PerformTimeStep() {
 
     // Integrate over the timestep to update the conserved variables
     m_integrator->Compute(m_execCtrl);
-
-    // Update the primitives
-    ComputePrimitivesFromConserved();
 }
 
-void Solver::ComputePrimitivesFromConserved() {
-    std::size_t const nIntCells = m_grid.NumCells();
-
-    SpecificVolumeKernel rhoInvKern(m_varStore);
-    m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);
+void Solver::PrimFromCons() {
+    std::size_t const numCells = m_grid.NumCells();
 
     VelocityKernel velKern(m_varStore);
-    m_execCtrl.LaunchKernel(velKern, nIntCells);
+    m_execCtrl.LaunchKernel(velKern, numCells);
 
     SpecificInternalEnergyKernel eKern(m_varStore);
-    m_execCtrl.LaunchKernel(eKern, nIntCells);
+    m_execCtrl.LaunchKernel(eKern, numCells);
 
     CaloricallyPerfectGasPressureKernel pKern(m_varStore);
-    m_execCtrl.LaunchKernel(pKern, nIntCells);
+    m_execCtrl.LaunchKernel(pKern, numCells);
 
-    PerfectGasTemperatureKernel tKern(m_varStore);
-    m_execCtrl.LaunchKernel(tKern, nIntCells);
+    CaloricallyPerfectGasTemperatureKernel tKern(m_varStore);
+    m_execCtrl.LaunchKernel(tKern, numCells);
 
     CaloricallyPerfectGasSoundSpeedKernel ccKern(m_varStore);
-    m_execCtrl.LaunchKernel(ccKern, nIntCells);
+    m_execCtrl.LaunchKernel(ccKern, numCells);
 }
 
-void Solver::SetupConservedState() {
-    std::size_t const nIntCells = m_grid.NumCells();
-
-    SpecificVolumeKernel rhoInvKern(m_varStore);
-    m_execCtrl.LaunchKernel(rhoInvKern, nIntCells);
-
-    VelocitySquaredKernel uuKern(m_varStore);
-    m_execCtrl.LaunchKernel(uuKern, nIntCells);
-
-    CaloricallyPerfectGasSpecificInternalEnergyKernel eKern(m_varStore);
-    m_execCtrl.LaunchKernel(eKern, nIntCells);
-
-    PerfectGasTemperatureKernel tKern(m_varStore);
-    m_execCtrl.LaunchKernel(tKern, nIntCells);
-
-    CaloricallyPerfectGasSoundSpeedKernel ccKern(m_varStore);
-    m_execCtrl.LaunchKernel(ccKern, nIntCells);
+void Solver::ConsFromPrim() {
+    std::size_t const numCells = m_grid.NumCells();
 
     MomentumDensityKernel rhoUKern(m_varStore);
-    m_execCtrl.LaunchKernel(rhoUKern, nIntCells);
+    m_execCtrl.LaunchKernel(rhoUKern, numCells);
 
     TotalEnergyDensityKernel totalEnergyDensityKern(m_varStore);
-    m_execCtrl.LaunchKernel(totalEnergyDensityKern, nIntCells);
+    m_execCtrl.LaunchKernel(totalEnergyDensityKern, numCells);
 }
 
 void Solver::CalculateTimeStep() {
-    CaloricallyPerfectGasSoundSpeedKernel ccKern(m_varStore);
-    m_execCtrl.LaunchKernel(ccKern, m_grid.NumCells());
-
     MaximumWaveSpeedKernel sMaxKern(m_varStore);
     m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumCells());
 
     timeStep = cfl * m_grid.CellSize()[0] / m_varStore.sMax;
-    m_varStore.sMax = 0.0;
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,
