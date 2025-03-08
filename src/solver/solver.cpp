@@ -32,7 +32,7 @@ void Solver::PerformTimeStep() {
     CalculateTimeStep();
 
     // Apply boundary conditions
-    m_boundCon->Compute(m_execCtrl);
+    m_boundCon->ApplyBoundaryConditions(m_execCtrl);
 
     // Compute the face-centered states
     m_reconstruction->ComputeLeftRightStates(m_execCtrl);
@@ -44,7 +44,7 @@ void Solver::PerformTimeStep() {
     m_residual->ComputeResidual(m_execCtrl);
 
     // Integrate over the timestep to update the conserved variables
-    m_integrator->Compute(m_execCtrl);
+    m_integrator->Integrate(m_execCtrl);
 }
 
 void Solver::PrimFromCons() {

@@ -15,8 +15,8 @@ struct ConstantReconstructionKernel {
 
     void operator()(std::size_t const i) {
         // Get the left and right cell indices for this face
-        std::size_t const iLeft = m_context.faceIdxToNodeIdxs.at(i)[0];
-        std::size_t const iRight = m_context.faceIdxToNodeIdxs.at(i)[1];
+        std::size_t const iLeft = m_context.faceIdxToNodeIdxs.at(m_context.faceIdxs[i])[0];
+        std::size_t const iRight = m_context.faceIdxToNodeIdxs.at(m_context.faceIdxs[i])[1];
 
         m_context.rhoLeft[i] = m_context.rho[iLeft];
         m_context.uLeft[i] = m_context.u[iLeft];
@@ -66,7 +66,7 @@ struct LinearReconstructionKernel {
 
 ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
     rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs),
-    faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), numFaces(grid.NumFaces()) {
+    faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), numFaces(grid.NumFaces()), faceIdxs(grid.FaceIdxs()) {
     rhoLeft.resize(numFaces, 0.0);
     uLeft.resize(numFaces, 0.0);
     vLeft.resize(numFaces, 0.0);

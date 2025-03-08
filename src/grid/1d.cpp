@@ -14,17 +14,19 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     m_numFaces = m_numCells + 1;
     m_numBoundaries = 2;
 
-    // Nodes correspond to the face centers
-    for (std::size_t i = 0; i < m_numFaces; ++i) {
-        m_nodes.push_back({bounds[0] + i * m_cellSize[0], 0.0, 0.0});
+    // Internal nodes correspond to the cell centers
+    for (std::size_t i = 0; i < m_numCells; ++i) {
+        m_nodes.push_back({bounds[0] + (i + 0.5) * m_cellSize[0], 0.0, 0.0});
     }
     
-    // External nodes correspond to the ghost cell face centers
-    m_nodes.push_back({bounds[0] - m_cellSize[0], 0.0, 0.0});
-    m_nodes.push_back({bounds[1] + m_cellSize[0], 0.0, 0.0});
+    // External nodes correspond to the ghost cells
+    m_nodes.push_back({bounds[0] - 0.5 * m_cellSize[0], 0.0, 0.0});
+    m_nodes.push_back({bounds[1] + 0.5 * m_cellSize[0], 0.0, 0.0});
 
     // Each face has a "left" and "right" cell
+    // Boundary faces have an "inner" and "outer" cell
     for (std::size_t i = 0; i < m_numFaces; ++i) {
+        m_faceIdxs.push_back(i);
         if (i == 0) {
             m_faceIdxToCellIdxs[i] = {m_numCells, i};
             m_boundaryIdxs.push_back(i);

@@ -36,7 +36,7 @@ struct BoundaryConditionContext {
 class IBoundaryCondition {
 public:
     virtual ~IBoundaryCondition() = default;
-    virtual void Compute(ExecutionController const& execCtrl) = 0;
+    virtual void ApplyBoundaryConditions(ExecutionController const& execCtrl) = 0;
     BoundaryConditionContext const& GetContext() const { return *m_context; }
 
 protected:

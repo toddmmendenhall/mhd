@@ -60,11 +60,14 @@ public:
     Residual(IGrid const& grid, FluxContext const& fc) {
         m_context = std::make_unique<ResidualContext>(grid, fc);
     }
+
     ~Residual() = default;
+
     void ComputeResidual(ExecutionController const& execCtrl) {
         TransportKernel kernel(*m_context);
         execCtrl.LaunchKernel(kernel, m_context->numCells);
     }
+
     ResidualContext const& GetContext() const { return *m_context; }
 
 private:

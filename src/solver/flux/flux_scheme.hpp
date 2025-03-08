@@ -13,6 +13,7 @@ struct FluxContext {
     FluxContext(IGrid const& grid, ReconstructionContext const& rc);
 
     std::size_t const numFaces;
+    std::vector<std::size_t> const faceIdxs;
     std::map<std::size_t, std::vector<std::size_t>> const& faceIdxToNodeIdxs;
 
     // properties of the faces

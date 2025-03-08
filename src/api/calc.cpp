@@ -35,30 +35,45 @@ void Calc::SetInitialCondition(InitialCondition ic) {
 }
 
 void Calc::SetAtmosphere() {
+    double const p = STANDARD_PRESSURE;
+    double const rho = ATMOSPHERIC_DENSITY_STP;
+    double const gamma = 1.4;
+    double const e = p / ((gamma - 1.0) * rho);
+
     for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
-        m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
-        m_variableStore->u[i] = 0.0;
-        m_variableStore->v[i] = 0.0;
-        m_variableStore->w[i] = 0.0;
-        m_variableStore->p[i] = ATMOSPHERIC_PRESSURE_STP;
+        m_variableStore->rho[i] = rho;
+        m_variableStore->rhoU[i] = 0.0;
+        m_variableStore->rhoV[i] = 0.0;
+        m_variableStore->rhoW[i] = 0.0;
+        m_variableStore->rhoE[i] = rho * e;
     }
 }
 
 void Calc::SetSodShockTube() {
-    std::size_t const nIntCells = m_grid->NumCells();
-    for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
-        if (i <= nIntCells / 2) {
-            m_variableStore->rho[i] = ATMOSPHERIC_DENSITY_STP;
-            m_variableStore->u[i] = 0.0;
-            m_variableStore->v[i] = 0.0;
-            m_variableStore->w[i] = 0.0;
-            m_variableStore->p[i] = ATMOSPHERIC_PRESSURE_STP;
+    double const gamma = 1.4;
+
+    double const p1 = STANDARD_PRESSURE;
+    double const rho1 = ATMOSPHERIC_DENSITY_STP;
+    double const e1 = p1 / ((gamma - 1.0) * rho1);
+
+    double const p2 = 0.1 * STANDARD_PRESSURE;
+    double const rho2 = 0.125 * ATMOSPHERIC_DENSITY_STP;
+    double const e2 = p2 / ((gamma - 1.0) * rho2);
+
+    std::size_t const numCells = m_grid->NumCells();
+    for (std::size_t i = 0; i < numCells; ++i) {
+        if (i <= numCells / 2) {
+            m_variableStore->rho[i] = rho1;
+            m_variableStore->rhoU[i] = 0.0;
+            m_variableStore->rhoV[i] = 0.0;
+            m_variableStore->rhoW[i] = 0.0;
+            m_variableStore->rhoE[i] = rho1 * e1;
         } else {
-            m_variableStore->rho[i] = 0.125 * ATMOSPHERIC_DENSITY_STP;
-            m_variableStore->u[i] = 0.0;
-            m_variableStore->v[i] = 0.0;
-            m_variableStore->w[i] = 0.0;
-            m_variableStore->p[i] = 0.1 * ATMOSPHERIC_PRESSURE_STP;
+            m_variableStore->rho[i] = rho2;
+            m_variableStore->rhoU[i] = 0.0;
+            m_variableStore->rhoV[i] = 0.0;
+            m_variableStore->rhoW[i] = 0.0;
+            m_variableStore->rhoE[i] = rho2 * e2;
         }
     }
 }
@@ -90,7 +105,7 @@ void Calc::WriteData(VariableStore const& varStore) {
         myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
         myFile << "# time: " << m_currentTime << " s" << std::endl;
 
-        for (std::size_t i = 0; i < m_grid->NumCells(); ++i) {
+        for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
             myFile <<
             m_grid->Nodes()[i][0] << ", " <<
             varStore.rho[i] << ", " <<

@@ -35,7 +35,7 @@ struct IntegrationContext {
 class IIntegrator {
 public:
     virtual ~IIntegrator() = default;
-    virtual void Compute(ExecutionController const& execCtrl) = 0;
+    virtual void Integrate(ExecutionController const& execCtrl) = 0;
     IntegrationContext const& GetContext() const { return *m_context; }
 
 protected:
@@ -62,7 +62,7 @@ public:
         m_context = std::make_unique<IntegrationContext>(rc, vs, tStep);
     }
 
-    void Compute(ExecutionController const& execCtrl) {
+    void Integrate(ExecutionController const& execCtrl) {
         ForwardEulerKernel kern(*m_context);
         execCtrl.LaunchKernel(kern, m_context->numCells);
     }

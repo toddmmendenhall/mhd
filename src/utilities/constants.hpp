@@ -2,12 +2,11 @@
 
 namespace MHD {
 
-double constexpr GAS_CONSTANT = 8.314;                                  // J/(mol * K)
+double constexpr GAS_CONSTANT = 8.314;                          // J/(mol * K)
+double constexpr STANDARD_TEMPERATURE = 273.15;                 // K
+double constexpr STANDARD_PRESSURE = 100000;                    // Pa
 
-double constexpr ATMOSPHERIC_STANDARD_TEMPERATURE = 288.15;             // K
-double constexpr ATMOSPHERIC_PRESSURE_STP = 101325;                     // Pa
-double constexpr ATMOSPHERIC_DENSITY_STP = 1.204;                       // kg / m^3
-double constexpr ATMOSPHERIC_INTERNAL_ENERGY_STP = 250000;              // J / kg
+double constexpr ATMOSPHERIC_DENSITY_STP = 1.2754;              // kg / m^3
 
 double constexpr VACUUM_PERMEABILITY = 1.256E-6;                        // N * A^-2
 double constexpr VACUUM_PERMEABILITY_INV = 1.0 / VACUUM_PERMEABILITY;   // A^2 / N

@@ -97,7 +97,9 @@ struct KTFluxKernel {
 struct GodunovConstantFluxKernel {
     GodunovConstantFluxKernel(FluxContext& context) : m_context(context) {}
 
-    inline void operator()(std::size_t const faceIdx) {
+    inline void operator()(std::size_t const i) {
+        std::size_t const faceIdx = m_context.faceIdxs[i];
+
         // Face-centered magnitude of the velocity on the left
         auto uuLeft =  m_context.uLeft[faceIdx] * m_context.uLeft[faceIdx] +
                        m_context.vLeft[faceIdx] * m_context.vLeft[faceIdx] +
@@ -142,7 +144,7 @@ struct GodunovConstantFluxKernel {
 
 FluxContext::FluxContext(IGrid const& grid, ReconstructionContext const& rc) :
     numFaces(grid.NumFaces()), faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), faceArea(grid.FaceAreas()),
-    faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
+    faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()), faceIdxs(grid.FaceIdxs()),
     rhoLeft(rc.rhoLeft), uLeft(rc.uLeft), vLeft(rc.vLeft), wLeft(rc.wLeft), pLeft(rc.pLeft), eLeft(rc.eLeft), csLeft(rc.csLeft),
     rhoRight(rc.rhoRight), uRight(rc.uRight), vRight(rc.vRight), wRight(rc.wRight), pRight(rc.pRight), eRight(rc.eRight), csRight(rc.csRight) {
     rhoFlux.resize(numFaces, 0.0);
