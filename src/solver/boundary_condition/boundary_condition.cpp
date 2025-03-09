@@ -36,14 +36,14 @@ struct ReflectiveBoundaryConditionKernel {
     ReflectiveBoundaryConditionKernel(BoundaryConditionContext& context) : m_context(context) {}
 
     void operator()(std::size_t const i) {
-        std::size_t const iIn = m_context.boundaryIdxToCellIdxs.at(m_context.boundaryIdxs[i])[0];
-        std::size_t const iOut = m_context.boundaryIdxToCellIdxs.at(m_context.boundaryIdxs[i])[1];
+        std::size_t const iInt = m_context.boundaryIdxToCellIdxs.at(m_context.boundaryIdxs[i])[0];
+        std::size_t const iExt = m_context.boundaryIdxToCellIdxs.at(m_context.boundaryIdxs[i])[1];
 
-        m_context.rho[iOut] = m_context.rho[iIn];
-        m_context.p[iOut] = m_context.p[iIn];
-        m_context.u[iOut] = -m_context.u[iIn];
-        m_context.v[iOut] = -m_context.v[iIn];
-        m_context.w[iOut] = -m_context.w[iIn];
+        m_context.rho[iExt] = m_context.rho[iInt];
+        m_context.p[iExt] = m_context.p[iInt];
+        m_context.u[iExt] = -m_context.u[iInt];
+        m_context.v[iExt] = -m_context.v[iInt];
+        m_context.w[iExt] = -m_context.w[iInt];
     }
 
     BoundaryConditionContext& m_context;

@@ -28,15 +28,19 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     for (std::size_t i = 0; i < m_numFaces; ++i) {
         m_faceIdxs.push_back(i);
         if (i == 0) {
-            m_faceIdxToCellIdxs[i] = {m_numCells, i};
+            m_faceIdxToCellIdxs[i] = {m_numCells, i, m_numCells, i + 1};
             m_boundaryIdxs.push_back(i);
             m_boundaryIdxToCellIdxs[i] = {i, m_numCells};
+        } else if (i == 1) {
+            m_faceIdxToCellIdxs[i] = {i - 1, i, m_numCells, i + 1};
+        } else if (i == m_numFaces - 2) {
+            m_faceIdxToCellIdxs[i] = {i - 1, i, i - 2, m_numCells + 1};
         } else if (i == m_numFaces - 1) {
-            m_faceIdxToCellIdxs[i] = {i - 1, m_numCells + 1};
+            m_faceIdxToCellIdxs[i] = {i - 1, m_numCells + 1, i - 2, m_numCells + 1};
             m_boundaryIdxs.push_back(i);
             m_boundaryIdxToCellIdxs[i] = {i - 1, m_numCells + 1};
         } else {
-            m_faceIdxToCellIdxs[i] = {i - 1, i + 1};
+            m_faceIdxToCellIdxs[i] = {i - 1, i, i - 2, i + 1};
         }
     }
 

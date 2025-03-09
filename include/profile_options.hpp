@@ -29,6 +29,7 @@ enum class FluxScheme {
 enum class ReconstructionOption {
     CONSTANT = 0,
     LINEAR = 1,
+    MUSCL = 2,
 };
 
 enum class CompressibleOption {

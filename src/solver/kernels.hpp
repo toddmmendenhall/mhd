@@ -13,6 +13,9 @@ struct VelocityKernel {
         rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW), u(vs.u), v(vs.v), w(vs.w) {}
     
     inline void operator()(std::size_t const i) {
+        if (rho[i] < 0.0) {
+            throw;
+        }
         double const rhoInv = 1.0 / rho[i];
         u[i] = rhoU[i] * rhoInv;
         v[i] = rhoV[i] * rhoInv;

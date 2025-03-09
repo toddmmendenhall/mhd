@@ -19,6 +19,7 @@ public:
     virtual ~ISolver() = default;
     virtual void PerformTimeStep() = 0;
     virtual double const TimeStep() const = 0;
+    virtual void PrimFromCons() = 0;
 };
 
 class Solver : public ISolver {

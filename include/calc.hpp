@@ -38,6 +38,7 @@ private:
     double m_currentTime = 0.0;
     std::size_t m_currentStep = 0;
     std::size_t m_currentOutput = 0;
+    double const m_outputPeriod = m_duration / 100;
 };
 
 } // namespace MHD

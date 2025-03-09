@@ -17,17 +17,14 @@ namespace MHD {
 Solver::Solver(Profile const& profile, ExecutionController const& execCtrl, VariableStore& varStore, IGrid const& grid) :
     m_execCtrl(execCtrl), m_varStore(varStore), m_grid(grid)
 {
+    m_boundCon = boundaryConditionFactory(profile, grid, varStore);
     m_reconstruction = reconstructionFactory(profile, varStore, grid);
     m_flux = fluxFactory(profile, grid, m_reconstruction->GetContext());
     m_residual = std::make_unique<Residual>(grid, m_flux->GetContext());
     m_integrator = integratorFactory(m_residual->GetContext(), m_varStore, timeStep);
-    m_boundCon = boundaryConditionFactory(profile, grid, varStore);
 }
 
 void Solver::PerformTimeStep() {
-    // Update the primitives
-    PrimFromCons();
-
     // Use CFL condition to determine a timestep to maintain stability
     CalculateTimeStep();
 
@@ -81,6 +78,9 @@ void Solver::CalculateTimeStep() {
     m_execCtrl.LaunchKernel(sMaxKern, m_grid.NumCells());
 
     timeStep = cfl * m_grid.CellSize()[0] / m_varStore.sMax;
+    if (timeStep < 1e-15) {
+        throw;
+    }
 }
 
 std::unique_ptr<ISolver> solverFactory(Profile const& profile, ExecutionController const& execCtrl,

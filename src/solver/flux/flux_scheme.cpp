@@ -14,7 +14,9 @@ namespace MHD {
 struct KTFluxKernel {
     KTFluxKernel(FluxContext& context) : m_context(context) {}
 
-    inline void operator()(std::size_t const faceIdx) {
+    inline void operator()(std::size_t const i) {
+        std::size_t const faceIdx = m_context.faceIdxs[i];
+    
         // Face-centered magnitude of the velocity on the left
         auto uuLeft =  m_context.uLeft[faceIdx] * m_context.uLeft[faceIdx] +
                        m_context.vLeft[faceIdx] * m_context.vLeft[faceIdx] +
@@ -52,12 +54,12 @@ struct KTFluxKernel {
         auto rhoERight = m_context.rhoRight[faceIdx] * (m_context.eRight[faceIdx] + 0.5 * uuRight);
 
         // Local propagation speed
-        double maxEigenValX = std::max(std::max(std::abs(m_context.uLeft[faceIdx] - m_context.csLeft[faceIdx]), std::abs(m_context.uLeft[faceIdx] + m_context.csLeft[faceIdx])),
-                                       std::max(std::abs(m_context.uRight[faceIdx] - m_context.csRight[faceIdx]), std::abs(m_context.uRight[faceIdx] + m_context.csRight[faceIdx])));
-        double maxEigenValY = std::max(std::max(std::abs(m_context.vLeft[faceIdx] - m_context.csLeft[faceIdx]), std::abs(m_context.vLeft[faceIdx] + m_context.csLeft[faceIdx])),
-                                       std::max(std::abs(m_context.vRight[faceIdx] - m_context.csRight[faceIdx]), std::abs(m_context.vRight[faceIdx] + m_context.csRight[faceIdx])));
-        double maxEigenValZ = std::max(std::max(std::abs(m_context.wLeft[faceIdx] - m_context.csLeft[faceIdx]), std::abs(m_context.wLeft[faceIdx] + m_context.csLeft[faceIdx])),
-                                       std::max(std::abs(m_context.wRight[faceIdx] - m_context.csRight[faceIdx]), std::abs(m_context.wRight[faceIdx] + m_context.csRight[faceIdx])));
+        double maxEigenValX = std::max(std::abs(m_context.uLeft[faceIdx]) + m_context.csLeft[faceIdx],
+                                       std::abs(m_context.uRight[faceIdx]) + m_context.csRight[faceIdx]);
+        double maxEigenValY = std::max(std::abs(m_context.vLeft[faceIdx]) + m_context.csLeft[faceIdx],
+                                       std::abs(m_context.vRight[faceIdx]) + m_context.csRight[faceIdx]);
+        double maxEigenValZ = std::max(std::abs(m_context.wLeft[faceIdx]) + m_context.csLeft[faceIdx],
+                                       std::abs(m_context.wRight[faceIdx]) + m_context.csRight[faceIdx]);
         double maxEigenVal = maxEigenValX + maxEigenValY + maxEigenValZ;
 
         // Mass density flux
@@ -69,19 +71,19 @@ struct KTFluxKernel {
         // x-momentum density flux
         m_context.rhoUFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
                                 (rhoULeft * uDotNLeft + m_context.pLeft[faceIdx] * m_context.faceNormalX[faceIdx] +
-                                rhoURight * uDotNRight + m_context.pRight[faceIdx] * -m_context.faceNormalX[faceIdx] -
+                                rhoURight * uDotNRight + m_context.pRight[faceIdx] * m_context.faceNormalX[faceIdx] -
                                 maxEigenVal * (rhoURight - rhoULeft));
                                                              
         // y-momentum density flux
         m_context.rhoVFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
                                 (rhoVRight * uDotNLeft + m_context.pLeft[faceIdx] * m_context.faceNormalY[faceIdx] +
-                                rhoVRight * uDotNRight + m_context.pRight[faceIdx] * -m_context.faceNormalY[faceIdx] -
+                                rhoVRight * uDotNRight + m_context.pRight[faceIdx] * m_context.faceNormalY[faceIdx] -
                                 maxEigenVal * (rhoVRight - rhoVLeft));
 
         // z-momentum density flux
         m_context.rhoWFlux[faceIdx] = 0.5 * m_context.faceArea[faceIdx] *
                                 (rhoWLeft * uDotNLeft + m_context.pLeft[faceIdx] * m_context.faceNormalZ[faceIdx] +
-                                rhoWRight * uDotNRight + m_context.pRight[faceIdx] * -m_context.faceNormalZ[faceIdx] -
+                                rhoWRight * uDotNRight + m_context.pRight[faceIdx] * m_context.faceNormalZ[faceIdx] -
                                 maxEigenVal * (rhoWRight - rhoWLeft));
 
         // total energy density flux
@@ -180,7 +182,7 @@ public:
 
 std::unique_ptr<IFlux> fluxFactory(Profile const& profile, IGrid const& grid, ReconstructionContext const& rc) {
     if (FluxScheme::KT == profile.m_fluxOption) {
-        return std::make_unique<GodunovConstantFlux>(grid, rc);
+        return std::make_unique<KTFlux>(grid, rc);
     }
     throw Error::INVALID_FLUX_SCHEME;
 }

@@ -52,12 +52,12 @@ void Calc::SetAtmosphere() {
 void Calc::SetSodShockTube() {
     double const gamma = 1.4;
 
-    double const p1 = STANDARD_PRESSURE;
-    double const rho1 = ATMOSPHERIC_DENSITY_STP;
+    double const p1 = 1.0 * STANDARD_PRESSURE;
+    double const rho1 = 1.0;
     double const e1 = p1 / ((gamma - 1.0) * rho1);
 
     double const p2 = 0.1 * STANDARD_PRESSURE;
-    double const rho2 = 0.125 * ATMOSPHERIC_DENSITY_STP;
+    double const rho2 = 0.125;
     double const e2 = p2 / ((gamma - 1.0) * rho2);
 
     std::size_t const numCells = m_grid->NumCells();
@@ -80,8 +80,9 @@ void Calc::SetSodShockTube() {
 
 void Calc::Run() {
     while (m_currentTime < m_duration) {
+        m_solver->PrimFromCons();
         if (OutputDataOption::YES == m_profile.m_outputDataOption) {
-            if (m_currentStep % 10 == 0) {
+            if (m_currentTime >= m_currentOutput * m_outputPeriod) {
                 WriteData(*m_variableStore);
                 ++m_currentOutput;
             }
@@ -102,7 +103,7 @@ void Calc::WriteData(VariableStore const& varStore) {
     // Check if the file was successfully opened
     if (myFile.is_open()) {
         // Write data to the file
-        myFile << "# x, rho, u, v, w, p, e, cc, T" << std::endl;
+        myFile << "# x, rho, u, v, w, e, p, T, cs" << std::endl;
         myFile << "# time: " << m_currentTime << " s" << std::endl;
 
         for (std::size_t i = 0; i < m_grid->NumNodes(); ++i) {
@@ -112,15 +113,15 @@ void Calc::WriteData(VariableStore const& varStore) {
             varStore.u[i] << ", " <<
             varStore.v[i] << ", " <<
             varStore.w[i] << ", " <<
-            varStore.p[i] << ", " <<
             varStore.e[i] << ", " <<
-            varStore.cs[i] << ", " <<
-            varStore.t[i] << std::endl;
+            varStore.p[i] << ", " <<
+            varStore.t[i] << ", " <<
+            varStore.cs[i] << std::endl;
         }
 
         // Close the file
         myFile.close();
-        std::cout << "Data written to " << filename.data() << std::endl;
+        std::cout << "Data written at time: " << m_currentTime << " s" << std::endl;
     } else {
         std::cerr << "Unable to open file: " << filename << std::endl;
     }
