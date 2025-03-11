@@ -41,6 +41,9 @@ struct ReflectiveBoundaryConditionKernel {
 
         m_context.rho[iExt] = m_context.rho[iInt];
         m_context.p[iExt] = m_context.p[iInt];
+        m_context.e[iExt] = m_context.e[iInt];
+        m_context.t[iExt] = m_context.t[iInt];
+        m_context.cs[iExt] = m_context.cs[iInt];
         m_context.u[iExt] = -m_context.u[iInt];
         m_context.v[iExt] = -m_context.v[iInt];
         m_context.w[iExt] = -m_context.w[iInt];

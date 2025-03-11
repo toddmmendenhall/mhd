@@ -34,7 +34,7 @@ private:
     Profile const& m_profile;
     std::unique_ptr<ISolver> m_solver;
     std::unique_ptr<VariableStore> m_variableStore;
-    double const m_duration = 1e-2;
+    double const m_duration = 1e0;
     double m_currentTime = 0.0;
     std::size_t m_currentStep = 0;
     std::size_t m_currentOutput = 0;

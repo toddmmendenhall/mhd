@@ -14,9 +14,9 @@ struct Profile {
 
     // Solver options
     BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::REFLECTIVE;
-    TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
-    FluxScheme m_fluxOption = FluxScheme::KT;
     ReconstructionOption m_reconstructionOption = ReconstructionOption::MUSCL;
+    FluxScheme m_fluxOption = FluxScheme::KT;
+    TemporalIntegrationMethod m_temporalIntegrationOption = TemporalIntegrationMethod::FORWARD_EULER;
 
     // Phenomenon options
     CompressibleOption m_compressibleOption = CompressibleOption::COMPRESSIBLE;
