@@ -68,6 +68,9 @@ struct CaloricallyPerfectGasPressureKernel {
         gammaMinusOne(vs.gamma - 1.0), rho(vs.rho), e(vs.e), p(vs.p) {}
 
     inline void operator()(std::size_t const i) {
+        if (rho[i] < 0.0 || e[i] < 0.0) {
+            throw;
+        }
         p[i] = gammaMinusOne * rho[i] * e[i];
     }
 

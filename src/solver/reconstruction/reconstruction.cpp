@@ -76,7 +76,6 @@ double vanLeer(double const r) {
         return 2.0;
     }
     return (r + std::abs(r)) / (1.0 + std::abs(r));
-    // return std::max(0.0, std::max(std::min(2.0 * r, 1.0), std::min(r, 2.0)));
 }
 
 struct MUSCLReconstructionKernel {
@@ -172,7 +171,7 @@ struct MUSCLReconstructionKernel {
 
     ReconstructionContext& m_context;
     double const m_phi = 1.0;
-    double const m_kappa = -1.0;
+    double const m_kappa = 1.0 / 3.0;
 };
 
 ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid const& grid) :

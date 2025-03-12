@@ -38,7 +38,7 @@ public:
     double const TimeStep() const { return timeStep; }
 
 private:
-    double cfl = 0.5;
+    double cfl = 0.4;
     double timeStep = 1e-5;
     std::unique_ptr<IBoundaryCondition> m_boundCon;
     std::unique_ptr<IIntegrator> m_integrator;

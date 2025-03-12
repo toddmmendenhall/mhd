@@ -50,7 +50,7 @@ Cartesian1DGrid::Cartesian1DGrid(Profile const& profile) {
     }
 
     // The area of each face is determined from the other two dimensions
-    double const faceArea = m_cellSize[1] * m_cellSize[2];
+    double const faceArea = 1.0;
 
     // The domain is assumed to lie on the x-axis
     for (std::size_t i = 0; i < m_numFaces; ++i) {

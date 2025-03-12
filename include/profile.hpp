@@ -10,7 +10,7 @@ struct Profile {
     // Grid options
     Dimension m_gridDimensionOption = Dimension::ONE;
     std::vector<double> m_gridBoundsOption = {0.0, 20.0, 0.0, 1.0, 0.0, 1.0};
-    std::vector<double> m_gridSpacingsOption = {0.1, 0.1, 0.1};
+    std::vector<double> m_gridSpacingsOption = {0.04, 0.1, 0.1};
 
     // Solver options
     BoundaryConditionOption m_boundaryConditionOption = BoundaryConditionOption::REFLECTIVE;
