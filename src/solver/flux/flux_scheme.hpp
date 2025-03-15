@@ -30,6 +30,9 @@ struct FluxContext {
     std::vector<double> const& pLeft;
     std::vector<double> const& eLeft;
     std::vector<double> const& csLeft;
+    std::vector<double> const& bxLeft;
+    std::vector<double> const& byLeft;
+    std::vector<double> const& bzLeft;
 
     // Face-centered right states
     std::vector<double> const& rhoRight;
@@ -39,6 +42,9 @@ struct FluxContext {
     std::vector<double> const& pRight;
     std::vector<double> const& eRight;
     std::vector<double> const& csRight;
+    std::vector<double> const& bxRight;
+    std::vector<double> const& byRight;
+    std::vector<double> const& bzRight;
 
     // Face-centered fluxes
     std::vector<double> rhoFlux;
@@ -46,6 +52,9 @@ struct FluxContext {
     std::vector<double> rhoVFlux;
     std::vector<double> rhoWFlux;
     std::vector<double> rhoEFlux;
+    std::vector<double> bxFlux;
+    std::vector<double> byFlux;
+    std::vector<double> bzFlux;
 };
 
 class IFlux {

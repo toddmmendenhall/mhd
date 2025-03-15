@@ -11,8 +11,9 @@ namespace MHD {
 struct IntegrationContext {
     IntegrationContext(ResidualContext const& rc, VariableStore& vs, double const& tStep) : 
         tStep(tStep), numCells(rc.numCells), rhoRes(rc.rhoRes), rhoURes(rc.rhoURes), rhoVRes(rc.rhoVRes),
-        rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
-        rhoE(vs.rhoE) {}
+        rhoWRes(rc.rhoWRes), rhoERes(rc.rhoERes), bxRes(rc.bxRes), byRes(rc.byRes), bzRes(rc.bzRes),
+        rho(vs.rho), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
+        rhoE(vs.rhoE), bx(vs.bx), by(vs.by), bz(vs.bz) {}
 
     double const& tStep;
     std::size_t const numCells;
@@ -23,6 +24,9 @@ struct IntegrationContext {
     std::vector<double> const& rhoVRes;    // y momentum density residual
     std::vector<double> const& rhoWRes;    // z momentum density residual
     std::vector<double> const& rhoERes;    // total energy density residual
+    std::vector<double> const& bxRes;       // x magnetic field residual
+    std::vector<double> const& byRes;       // y magnetic field residual
+    std::vector<double> const& bzRes;       // z magnetic field residual
 
     // Cell-centered states
     std::vector<double>& rho;
@@ -30,6 +34,9 @@ struct IntegrationContext {
     std::vector<double>& rhoV;
     std::vector<double>& rhoW;
     std::vector<double>& rhoE;
+    std::vector<double>& bx;
+    std::vector<double>& by;
+    std::vector<double>& bz;
 };
 
 class IIntegrator {
@@ -51,6 +58,9 @@ struct ForwardEulerKernel {
         m_context.rhoV[i] += m_context.tStep * m_context.rhoVRes[i];
         m_context.rhoW[i] += m_context.tStep * m_context.rhoWRes[i];
         m_context.rhoE[i] += m_context.tStep * m_context.rhoERes[i];
+        m_context.bx[i] += m_context.tStep * m_context.bxRes[i];
+        m_context.by[i] += m_context.tStep * m_context.byRes[i];
+        m_context.bz[i] += m_context.tStep * m_context.bzRes[i];
     }
 
     IntegrationContext const& m_context;

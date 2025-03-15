@@ -96,7 +96,10 @@ struct MUSCLReconstructionKernel {
         double rLeftP = (m_context.p[iRight] - m_context.p[iLeft]) / (m_context.p[iLeft] - m_context.p[iLeftMinusOne]);
         double rLeftE = (m_context.e[iRight] - m_context.e[iLeft]) / (m_context.e[iLeft] - m_context.e[iLeftMinusOne]);
         double rLeftCs = (m_context.cs[iRight] - m_context.cs[iLeft]) / (m_context.cs[iLeft] - m_context.cs[iLeftMinusOne]);
-        
+        double rLeftBx = (m_context.bx[iRight] - m_context.bx[iLeft]) / (m_context.bx[iLeft] - m_context.bx[iLeftMinusOne]);
+        double rLeftBy = (m_context.by[iRight] - m_context.by[iLeft]) / (m_context.by[iLeft] - m_context.by[iLeftMinusOne]);
+        double rLeftBz = (m_context.bz[iRight] - m_context.bz[iLeft]) / (m_context.bz[iLeft] - m_context.bz[iLeftMinusOne]);
+
         double rRightRho = (m_context.rho[iRightPlusOne] - m_context.rho[iRight]) / (m_context.rho[iRight] - m_context.rho[iLeft]);
         double rRightU = (m_context.u[iRightPlusOne] - m_context.u[iRight]) / (m_context.u[iRight] - m_context.u[iLeft]);
         double rRightV = (m_context.v[iRightPlusOne] - m_context.v[iRight]) / (m_context.v[iRight] - m_context.v[iLeft]);
@@ -104,6 +107,9 @@ struct MUSCLReconstructionKernel {
         double rRightP = (m_context.p[iRightPlusOne] - m_context.p[iRight]) / (m_context.p[iRight] - m_context.p[iLeft]);
         double rRightE = (m_context.e[iRightPlusOne] - m_context.e[iRight]) / (m_context.e[iRight] - m_context.e[iLeft]);
         double rRightCs = (m_context.cs[iRightPlusOne] - m_context.cs[iRight]) / (m_context.cs[iRight] - m_context.cs[iLeft]);
+        double rRightBx = (m_context.bx[iRightPlusOne] - m_context.bx[iRight]) / (m_context.bx[iRight] - m_context.bx[iLeft]);
+        double rRightBy = (m_context.by[iRightPlusOne] - m_context.by[iRight]) / (m_context.by[iRight] - m_context.by[iLeft]);
+        double rRightBz = (m_context.bz[iRightPlusOne] - m_context.bz[iRight]) / (m_context.bz[iRight] - m_context.bz[iLeft]);
 
         double phiLeftRho = vanLeer(rLeftRho);
         double phiLeftU = vanLeer(rLeftU);
@@ -112,6 +118,9 @@ struct MUSCLReconstructionKernel {
         double phiLeftP = vanLeer(rLeftP);
         double phiLeftE = vanLeer(rLeftE);
         double phiLeftCs = vanLeer(rLeftCs);
+        double phiLeftBx = vanLeer(rLeftBx);
+        double phiLeftBy = vanLeer(rLeftBy);
+        double phiLeftBz = vanLeer(rLeftBz);
 
         double phiLeftRhoInv = vanLeer(1.0 / rLeftRho);
         double phiLeftUInv = vanLeer(1.0 / rLeftU);
@@ -120,6 +129,9 @@ struct MUSCLReconstructionKernel {
         double phiLeftPInv = vanLeer(1.0 / rLeftP);
         double phiLeftEInv = vanLeer(1.0 / rLeftE);
         double phiLeftCsInv = vanLeer(1.0 / rLeftCs);
+        double phiLeftBxInv = vanLeer(1.0 / rLeftBx);
+        double phiLeftByInv = vanLeer(1.0 / rLeftBy);
+        double phiLeftBzInv = vanLeer(1.0 / rLeftBz);
         
         double phiRightRho = vanLeer(rRightRho);
         double phiRightU = vanLeer(rRightU);
@@ -128,6 +140,9 @@ struct MUSCLReconstructionKernel {
         double phiRightP = vanLeer(rRightP);
         double phiRightE = vanLeer(rRightE);
         double phiRightCs = vanLeer(rRightCs);
+        double phiRightBx = vanLeer(rRightBx);
+        double phiRightBy = vanLeer(rRightBy);
+        double phiRightBz = vanLeer(rRightBz);
 
         double phiRightRhoInv = vanLeer(1.0 / rRightRho);
         double phiRightUInv = vanLeer(1.0 / rRightU);
@@ -136,6 +151,9 @@ struct MUSCLReconstructionKernel {
         double phiRightPInv = vanLeer(1.0 / rRightP);
         double phiRightEInv = vanLeer(1.0 / rRightE);
         double phiRightCsInv = vanLeer(1.0 / rRightCs);
+        double phiRightBxInv = vanLeer(1.0 / rRightBx);
+        double phiRightByInv = vanLeer(1.0 / rRightBy);
+        double phiRightBzInv = vanLeer(1.0 / rRightBz);
 
         m_context.rhoLeft[i] = m_context.rho[iLeft] + 0.25 * m_phi * ((1.0 - m_kappa) * phiLeftRho * (m_context.rho[iLeft] - m_context.rho[iLeftMinusOne]) +
                                                                       (1.0 + m_kappa) * phiLeftRhoInv * (m_context.rho[iRight] - m_context.rho[iLeft]));
@@ -151,22 +169,33 @@ struct MUSCLReconstructionKernel {
                                                                   (1.0 + m_kappa) * phiLeftEInv * (m_context.e[iRight] - m_context.e[iLeft]));
         m_context.csLeft[i] = m_context.cs[iLeft] + 0.25 * m_phi * ((1.0 - m_kappa) * phiLeftCs * (m_context.cs[iLeft] - m_context.cs[iLeftMinusOne]) +
                                                                     (1.0 + m_kappa) * phiLeftCs * (m_context.cs[iRight] - m_context.cs[iLeft]));
-
+        m_context.bxLeft[i] = m_context.bx[iLeft] + 0.25 * m_phi * ((1.0 - m_kappa) * phiLeftBx * (m_context.bx[iLeft] - m_context.bx[iLeftMinusOne]) +
+                                                                    (1.0 + m_kappa) * phiLeftBx * (m_context.bx[iRight] - m_context.bx[iLeft]));
+        m_context.byLeft[i] = m_context.by[iLeft] + 0.25 * m_phi * ((1.0 - m_kappa) * phiLeftBy * (m_context.by[iLeft] - m_context.by[iLeftMinusOne]) +
+                                                                    (1.0 + m_kappa) * phiLeftBy * (m_context.by[iRight] - m_context.by[iLeft]));
+        m_context.bzLeft[i] = m_context.bz[iLeft] + 0.25 * m_phi * ((1.0 - m_kappa) * phiLeftBz * (m_context.bz[iLeft] - m_context.bz[iLeftMinusOne]) +
+                                                                    (1.0 + m_kappa) * phiLeftBz * (m_context.bz[iRight] - m_context.bz[iLeft]));
 
         m_context.rhoRight[i] = m_context.rho[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightRho * (m_context.rho[iRight] - m_context.rho[iLeft]) +
-                                                                       (1.0 - m_kappa) * phiRightRhoInv * (m_context.rho[iRightPlusOne] - m_context.rho[iRight]));
+                                                                        (1.0 - m_kappa) * phiRightRhoInv * (m_context.rho[iRightPlusOne] - m_context.rho[iRight]));
         m_context.uRight[i] = m_context.u[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightU * (m_context.u[iRight] - m_context.u[iLeft]) +
-                                                                   (1.0 - m_kappa) * phiRightUInv * (m_context.u[iRightPlusOne] - m_context.u[iRight]));
+                                                                    (1.0 - m_kappa) * phiRightUInv * (m_context.u[iRightPlusOne] - m_context.u[iRight]));
         m_context.vRight[i] = m_context.v[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightV * (m_context.v[iRight] - m_context.v[iLeft]) +
-                                                                   (1.0 - m_kappa) * phiRightVInv * (m_context.v[iRightPlusOne] - m_context.v[iRight]));
+                                                                    (1.0 - m_kappa) * phiRightVInv * (m_context.v[iRightPlusOne] - m_context.v[iRight]));
         m_context.wRight[i] = m_context.w[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightW * (m_context.w[iRight] - m_context.w[iLeft]) +
-                                                                   (1.0 - m_kappa) * phiRightWInv * (m_context.v[iRightPlusOne] - m_context.v[iRight]));
+                                                                    (1.0 - m_kappa) * phiRightWInv * (m_context.v[iRightPlusOne] - m_context.v[iRight]));
         m_context.pRight[i] = m_context.p[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightP * (m_context.p[iRight] - m_context.p[iLeft]) +
-                                                                   (1.0 - m_kappa) * phiRightPInv * (m_context.p[iRightPlusOne] - m_context.p[iRight]));
+                                                                    (1.0 - m_kappa) * phiRightPInv * (m_context.p[iRightPlusOne] - m_context.p[iRight]));
         m_context.eRight[i] = m_context.e[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightE * (m_context.e[iRight] - m_context.e[iLeft]) +
-                                                                   (1.0 - m_kappa) * phiRightEInv * (m_context.e[iRightPlusOne] - m_context.e[iRight]));
+                                                                    (1.0 - m_kappa) * phiRightEInv * (m_context.e[iRightPlusOne] - m_context.e[iRight]));
         m_context.csRight[i] = m_context.cs[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightCs * (m_context.cs[iRight] - m_context.cs[iLeft]) +
-                                                                     (1.0 - m_kappa) * phiRightCsInv * (m_context.cs[iRightPlusOne] - m_context.cs[iRight]));
+                                                                      (1.0 - m_kappa) * phiRightCsInv * (m_context.cs[iRightPlusOne] - m_context.cs[iRight]));
+        m_context.bxRight[i] = m_context.bx[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightBx * (m_context.bx[iRight] - m_context.bx[iLeft]) +
+                                                                    (1.0 - m_kappa) * phiRightBxInv * (m_context.bx[iRightPlusOne] - m_context.bx[iRight]));
+        m_context.byRight[i] = m_context.by[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightBy * (m_context.by[iRight] - m_context.by[iLeft]) +
+                                                                    (1.0 - m_kappa) * phiRightByInv * (m_context.by[iRightPlusOne] - m_context.by[iRight]));
+        m_context.bzRight[i] = m_context.bz[iRight] - 0.25 * m_phi * ((1.0 + m_kappa) * phiRightBz * (m_context.bz[iRight] - m_context.bz[iLeft]) +
+                                                                    (1.0 - m_kappa) * phiRightBzInv * (m_context.bz[iRightPlusOne] - m_context.bz[iRight]));
     }
 
     ReconstructionContext& m_context;
@@ -176,7 +205,8 @@ struct MUSCLReconstructionKernel {
 
 ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid const& grid) :
     rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), cs(vs.cs),
-    faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), numFaces(grid.NumFaces()), faceIdxs(grid.FaceIdxs()) {
+    faceIdxToNodeIdxs(grid.FaceIdxToCellIdxs()), numFaces(grid.NumFaces()), faceIdxs(grid.FaceIdxs()),
+    bx(vs.bx), by(vs.by), bz(vs.bz) {
         std::size_t const size = numFaces;
         rhoLeft.resize(size, 0.0);
         uLeft.resize(size, 0.0);
@@ -185,6 +215,9 @@ ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid cons
         pLeft.resize(size, 0.0);
         eLeft.resize(size, 0.0);
         csLeft.resize(size, 0.0);
+        bxLeft.resize(size, 0.0);
+        byLeft.resize(size, 0.0);
+        bzLeft.resize(size, 0.0);
         rhoRight.resize(size, 0.0);
         uRight.resize(size, 0.0);
         vRight.resize(size, 0.0);
@@ -192,6 +225,9 @@ ReconstructionContext::ReconstructionContext(VariableStore const& vs, IGrid cons
         pRight.resize(size, 0.0);
         eRight.resize(size, 0.0);
         csRight.resize(size, 0.0);
+        bxRight.resize(size, 0.0);
+        byRight.resize(size, 0.0);
+        bzRight.resize(size, 0.0);
 }
 
 class ConstantReconstruction : public IReconstruction {

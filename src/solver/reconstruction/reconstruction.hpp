@@ -24,6 +24,9 @@ struct ReconstructionContext {
     std::vector<double> const& p;
     std::vector<double> const& e;
     std::vector<double> const& cs;
+    std::vector<double> const& bx;
+    std::vector<double> const& by;
+    std::vector<double> const& bz;
 
     // Left states
     std::vector<double> rhoLeft;
@@ -33,6 +36,9 @@ struct ReconstructionContext {
     std::vector<double> pLeft;
     std::vector<double> eLeft;
     std::vector<double> csLeft;
+    std::vector<double> bxLeft;
+    std::vector<double> byLeft;
+    std::vector<double> bzLeft;
 
     // Right states
     std::vector<double> rhoRight;
@@ -42,6 +48,9 @@ struct ReconstructionContext {
     std::vector<double> pRight;
     std::vector<double> eRight;
     std::vector<double> csRight;
+    std::vector<double> bxRight;
+    std::vector<double> byRight;
+    std::vector<double> bzRight;
 };
 
 class IReconstruction {

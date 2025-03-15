@@ -31,6 +31,9 @@ struct BoundaryConditionContext {
     std::vector<double>& e;
     std::vector<double>& t;
     std::vector<double>& cs;
+    std::vector<double>& bx;
+    std::vector<double>& by;
+    std::vector<double>& bz;
 };
 
 class IBoundaryCondition {

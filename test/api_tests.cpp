@@ -27,10 +27,18 @@ TEST(APITests, CanCreateCalc) {
 //     calc.Run();
 // }
 
-TEST(APITests, RunSodShockTube) {
+// TEST(APITests, RunSodShockTube) {
+//     MHD::Profile profile;
+//     profile.m_outputDataOption = MHD::OutputDataOption::YES;
+//     MHD::Calc calc(profile);
+//     calc.SetInitialCondition(InitialCondition::SOD_SHOCK_TUBE);
+//     calc.Run();
+// }
+
+TEST(APITests, RunBrioWuShockTube) {
     MHD::Profile profile;
     profile.m_outputDataOption = MHD::OutputDataOption::YES;
     MHD::Calc calc(profile);
-    calc.SetInitialCondition(InitialCondition::SOD_SHOCK_TUBE);
+    calc.SetInitialCondition(InitialCondition::BRIO_WU_SHOCK_TUBE);
     calc.Run();
 }

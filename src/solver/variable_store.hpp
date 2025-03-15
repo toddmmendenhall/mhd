@@ -17,8 +17,11 @@ struct VariableStore {
         rhoV.resize(size, 0.0);
         rhoW.resize(size, 0.0);
         rhoE.resize(size, 0.0);
+        bx.resize(size, 0.0);
+        by.resize(size, 0.0);
+        bz.resize(size, 0.0);
 
-        // Primitve variables
+        // Primitive variables
         u.resize(size, 0.0);
         v.resize(size, 0.0);
         w.resize(size, 0.0);
@@ -43,6 +46,9 @@ struct VariableStore {
     std::vector<double> rhoV;     // y momentum density
     std::vector<double> rhoW;     // z momentum density
     std::vector<double> rhoE;     // total energy density
+    std::vector<double> bx;       // x magnetic field
+    std::vector<double> by;       // y magnetic field
+    std::vector<double> bz;       // z magnetic field
 
     // Primitive
     std::vector<double> u;        // x velocity

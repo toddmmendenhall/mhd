@@ -47,6 +47,9 @@ struct ReflectiveBoundaryConditionKernel {
         m_context.u[iExt] = -m_context.u[iInt];
         m_context.v[iExt] = -m_context.v[iInt];
         m_context.w[iExt] = -m_context.w[iInt];
+        m_context.bx[iExt] = -m_context.bx[iInt];
+        m_context.by[iExt] = -m_context.by[iInt];
+        m_context.bz[iExt] = -m_context.bz[iInt];
     }
 
     BoundaryConditionContext& m_context;
@@ -56,7 +59,8 @@ BoundaryConditionContext::BoundaryConditionContext(IGrid const& grid, VariableSt
     numBoundaries(grid.NumBoundaries()), boundaryIdxToCellIdxs(grid.BoundaryIdxToCellIdxs()),
     boundaryIdxs(grid.BoundaryIdxs()),
     faceNormalX(grid.FaceNormalX()), faceNormalY(grid.FaceNormalY()), faceNormalZ(grid.FaceNormalZ()),
-    rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), t(vs.t), cs(vs.cs) {}
+    rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), p(vs.p), e(vs.e), t(vs.t), cs(vs.cs),
+    bx(vs.bx), by(vs.by), bz(vs.bz) {}
 
 class OutflowBoundaryCondition : public IBoundaryCondition {
 public:

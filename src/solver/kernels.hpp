@@ -31,28 +31,15 @@ struct VelocityKernel {
     std::vector<double>& w;
 };
 
-struct MagneticFieldSquaredKernel {
-    MagneticFieldSquaredKernel(std::vector<double> const& bx, std::vector<double> const& by, std::vector<double> const& bz,
-                               std::vector<double>& b_b) :
-        bx(bx), by(by), bz(bz), b_b(b_b) {}
-    
-    inline void operator()(std::size_t idx) {
-        b_b[idx] = bx[idx] * bx[idx] + by[idx] * by[idx] + bz[idx] * bz[idx];
-    }
-
-    std::vector<double> const& bx;
-    std::vector<double> const& by;
-    std::vector<double> const& bz;
-    std::vector<double>& b_b;
-};
-
 struct SpecificInternalEnergyKernel {
     SpecificInternalEnergyKernel(VariableStore& vs) :
-        rho(vs.rho), rhoE(vs.rhoE), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW), e(vs.e) {}
+        rho(vs.rho), rhoE(vs.rhoE), rhoU(vs.rhoU), rhoV(vs.rhoV), rhoW(vs.rhoW),
+        bx(vs.bx), by(vs.by), bz(vs.bz), e(vs.e) {}
 
     inline void operator()(std::size_t const i) {
         double const rhoInv = 1.0 / rho[i];
-        e[i] = (rhoE[i] - 0.5 * (rhoU[i] * rhoU[i] + rhoV[i] * rhoV[i] + rhoW[i] * rhoW[i]) * rhoInv) * rhoInv;
+        e[i] = (rhoE[i] - 0.5 * (rhoU[i] * rhoU[i] + rhoV[i] * rhoV[i] + rhoW[i] * rhoW[i]) * rhoInv -
+               0.5 * (bx[i] * bx[i] + by[i] * by[i] + bz[i] * bz[i])) * rhoInv;
     }
 
     std::vector<double> const& rho;
@@ -60,23 +47,29 @@ struct SpecificInternalEnergyKernel {
     std::vector<double> const& rhoU;
     std::vector<double> const& rhoV;
     std::vector<double> const& rhoW;
+    std::vector<double> const& bx;
+    std::vector<double> const& by;
+    std::vector<double> const& bz;
     std::vector<double>& e;
 };
 
 struct CaloricallyPerfectGasPressureKernel {
     CaloricallyPerfectGasPressureKernel(VariableStore& vs) :
-        gammaMinusOne(vs.gamma - 1.0), rho(vs.rho), e(vs.e), p(vs.p) {}
+        gammaMinusOne(vs.gamma - 1.0), rho(vs.rho), e(vs.e), bx(vs.bx), by(vs.by), bz(vs.bz), p(vs.p) {}
 
     inline void operator()(std::size_t const i) {
         if (rho[i] < 0.0 || e[i] < 0.0) {
             throw;
         }
-        p[i] = gammaMinusOne * rho[i] * e[i];
+        p[i] = gammaMinusOne * rho[i] * e[i] + 0.5 * (bx[i] * bx[i] + by[i] * by[i] + bz[i] * bz[i]);
     }
 
     double const gammaMinusOne;
     std::vector<double> const& rho;
     std::vector<double> const& e;
+    std::vector<double> const& bx;
+    std::vector<double> const& by;
+    std::vector<double> const& bz;
     std::vector<double>& p;
 };
 
@@ -144,10 +137,11 @@ struct MomentumDensityKernel {
 
 struct TotalEnergyDensityKernel {
     TotalEnergyDensityKernel(VariableStore& vs) :
-        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), e(vs.e), rhoE(vs.rhoE) {}
+        rho(vs.rho), u(vs.u), v(vs.v), w(vs.w), e(vs.e), bx(vs.bx), by(vs.by), bz(vs.bz), rhoE(vs.rhoE) {}
 
     void operator()(std::size_t const i) {
-        rhoE[i] = rho[i] * (e[i] + 0.5 * (u[i] * u[i] + v[i] * v[i] + w[i] * w[i]));
+        rhoE[i] = rho[i] * (e[i] + 0.5 * (u[i] * u[i] + v[i] * v[i] + w[i] * w[i])
+                                 + 0.5 * (bx[i] * bx[i] + by[i] * by[i] + bz[i] * bz[i]));
     }
 
     std::vector<double> const& rho;
@@ -155,6 +149,9 @@ struct TotalEnergyDensityKernel {
     std::vector<double> const& v;
     std::vector<double> const& w;
     std::vector<double> const& e;
+    std::vector<double> const& bx;
+    std::vector<double> const& by;
+    std::vector<double> const& bz;
     std::vector<double>& rhoE;
 };
 
